@@ -124,7 +124,7 @@ export const Header = () => {
               <div className="flex items-center gap-2 flex-shrink-0">
                 <a href="/">
                   <span className="text-2xl font-bold text-gray-900 tracking-tight">
-                    <img src="../../public/logo.png" className="h-24" alt="Ariana Bandencentraal" />
+                    <img src="/logo.png" className="h-24" alt="Ariana Bandencentraal" />
                   </span>
                 </a>
               </div>
@@ -204,7 +204,7 @@ export const Header = () => {
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <a href="/" className="flex items-center">
                     <span className="text-xl font-bold text-gray-900 tracking-tight">
-                       <img src="../../public/logo.png" className="h-20" alt="Ariana Bandencentraal" />
+                       <img src="/logo.png" className="h-20" alt="Ariana Bandencentraal" />
                     </span>
                   </a>
                 </div>
@@ -228,7 +228,7 @@ export const Header = () => {
                   >
                     <ShoppingCart className="h-5 w-5 text-gray-400" />
                     {cartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 p-0.5 rounded-full bg-gray-900 text-white text-xs font-semibold flex items-center justify-center border-2 border-white">
+                      <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full bg-gray-900 text-white text-xs font-semibold border-2 border-white p-2">
                         {cartCount > 9 ? '9+' : cartCount}
                       </span>
                     )}

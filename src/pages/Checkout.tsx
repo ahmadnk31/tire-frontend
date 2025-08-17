@@ -4,7 +4,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, AddressElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { addressApi } from "@/lib/addressApi";
 import { stripeApi } from "@/lib/api";
-import { Check, ChevronRight, ShoppingBag, MapPin, CreditCard, Eye } from "lucide-react";
+import { Check, ShoppingBag, MapPin, CreditCard, Eye } from "lucide-react";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY!);
 
