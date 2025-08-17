@@ -1,0 +1,268 @@
+// Auth API
+export const authApi = {
+  register: (data: { name: string; email: string; password: string; role?: string }) =>
+    apiClient.post('/auth/register', data),
+
+  login: (data: { email: string; password: string; resendVerification?: boolean }) =>
+    apiClient.post('/auth/login', data),
+
+  verify: (email: string, token: string) =>
+    apiClient.get('/auth/verify', { email, token }),
+
+  logout: () =>
+    apiClient.post('/auth/logout', {}),
+
+  socialLogin: (provider: string, token: string) =>
+    apiClient.post('/auth/social-login', { provider, token }),
+
+  forgotPassword: (email: string) =>
+    apiClient.post('/auth/forgot-password', { email }),
+
+  resetPassword: (data: { email: string; token: string; password: string }) =>
+    apiClient.post('/auth/reset-password', data),
+
+  resendVerification: (email: string) =>
+    apiClient.post('/auth/resend-verification', { email }),
+};
+// API Configuration
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+
+// Helper function to get auth headers
+const getAuthHeaders = (token?: string) => {
+  const authToken = token || localStorage.getItem('token');
+  return authToken ? { 'Authorization': `Bearer ${authToken}` } : {};
+};
+
+// Generic API client
+const apiClient = {
+  async get(endpoint: string, params?: Record<string, any>, token?: string) {
+    const url = new URL(`${API_BASE_URL}${endpoint}`);
+    if (params) {
+      Object.keys(params).forEach(key => {
+        if (params[key] !== undefined && params[key] !== null) {
+          url.searchParams.append(key, params[key].toString());
+        }
+      });
+    }
+    const headers: Record<string, string> = {
+      ...getAuthHeaders(token)
+    };
+
+    const response = await fetch(url.toString(), { headers });
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+    return response.json();
+  },
+
+  async post(endpoint: string, data: any, options?: { headers?: Record<string, string>; token?: string }) {
+    const isFormData = data instanceof FormData;
+    const headers: Record<string, string> = {
+      ...getAuthHeaders(options?.token),
+      ...(options?.headers || {}),
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' })
+    };
+
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'POST',
+      headers,
+      body: isFormData ? data : JSON.stringify(data),
+    });
+
+    let json;
+    try {
+      json = await response.json();
+    } catch {
+      json = { error: `API Error: ${response.status} ${response.statusText}` };
+    }
+    if (!response.ok) {
+      // Return the error body so the UI can handle unverified, etc.
+      throw json;
+    }
+    return json;
+  },
+
+  async put(endpoint: string, data: any, options?: { headers?: Record<string, string>; token?: string }) {
+    const headers: Record<string, string> = {
+      ...getAuthHeaders(options?.token),
+      ...(options?.headers || {}),
+      'Content-Type': 'application/json',
+    };
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+    return response.json();
+  },
+
+  async delete(endpoint: string, token?: string) {
+    const headers: Record<string, string> = {
+      ...getAuthHeaders(token)
+    };
+
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'DELETE',
+      headers,
+    });
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+    
+    // Handle 204 No Content responses
+    if (response.status === 204) {
+      return null;
+    }
+    
+    return response.json();
+  },
+};
+
+// Products API
+export const productsApi = {
+  getAll: (params?: {
+    page?: number;
+    limit?: number;
+    brand?: string;
+    model?: string;
+    size?: string;
+    category?: string;
+    featured?: boolean;
+    status?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    search?: string;
+    sortBy?: string;
+    sortOrder?: string;
+  }) => apiClient.get('/products', params),
+
+  getById: (id: string) => apiClient.get(`/products/${id}`),
+
+  create: (product: any) => apiClient.post('/products', product),
+
+  update: (id: string, product: any) => apiClient.put(`/products/${id}`, product),
+
+  delete: (id: string) => apiClient.delete(`/products/${id}`),
+
+  getFeatured: () => apiClient.get('/products/featured/list'),
+
+  getRelated: (id: string | number) => apiClient.get(`/products/${id}/related`),
+
+  search: (q: string, brand?: string) => {
+    const params: any = { q };
+    if (brand && brand !== 'all') params.brand = brand;
+    return apiClient.get('/products/search', params);
+  },
+
+  // Category management
+  getCategories: () => apiClient.get('/categories'),
+  createCategory: (data: {
+    name: string;
+    slug: string;
+    description?: string;
+    icon?: string;
+    image?: string;
+    isActive?: boolean;
+    sortOrder?: number;
+    parentId?: number | null;
+  }) => apiClient.post('/categories', data),
+  updateCategory: (id: number, data: any) => apiClient.put(`/categories/${id}`, data),
+  deleteCategory: (id: number) => apiClient.delete(`/categories/${id}`),
+};
+
+// Orders API
+export const ordersApi = {
+  getAll: (params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    paymentStatus?: string;
+    sortBy?: string;
+    sortOrder?: string;
+  }) => apiClient.get('/orders', params),
+
+  getById: (id: string) => apiClient.get(`/orders/${id}`),
+
+  create: (order: any) => apiClient.post('/orders', order),
+
+  update: (id: string, order: any) => apiClient.put(`/orders/${id}`, order),
+
+  getStats: () => apiClient.get('/orders/stats/summary'),
+};
+
+// Dashboard API
+export const dashboardApi = {
+  getOverview: (token?: string) => apiClient.get('/dashboard/overview', undefined, token),
+
+  getRecentOrders: (token?: string) => apiClient.get('/dashboard/recent-orders', undefined, token),
+
+  getLowStock: (token?: string) => apiClient.get('/dashboard/low-stock', undefined, token),
+
+  getSalesData: (period?: 'daily' | 'monthly', token?: string) => 
+    apiClient.get('/dashboard/sales-data', { period }, token),
+
+  getTopProducts: (token?: string) => apiClient.get('/dashboard/top-products', undefined, token),
+
+  getAlerts: (token?: string) => apiClient.get('/dashboard/alerts', undefined, token),
+
+  getAnalytics: (token?: string) => apiClient.get('/dashboard/analytics', undefined, token),
+};
+
+// Users API
+export const usersApi = {
+  getAll: (params?: {
+    page?: number;
+    limit?: number;
+    role?: string;
+    isActive?: string;
+    search?: string;
+  }) => apiClient.get('/users', params),
+
+  getById: (id: string) => apiClient.get(`/users/${id}`),
+
+  update: (id: string, data: any) => apiClient.put(`/users/${id}`, data),
+
+  delete: (id: string) => apiClient.delete(`/users/${id}`),
+
+  getStats: () => apiClient.get('/users/stats/summary'),
+};
+
+// Upload API
+export const uploadApi = {
+  single: (file: File, folder = 'products') => {
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('folder', folder);
+    return apiClient.post('/upload/single', formData);
+  },
+
+  multiple: (files: File[], folder = 'products') => {
+    const formData = new FormData();
+    files.forEach(file => formData.append('images', file));
+    formData.append('folder', folder);
+    return apiClient.post('/upload/multiple', formData);
+  },
+
+  delete: (imageUrl: string) => apiClient.delete(`/upload/delete?imageUrl=${encodeURIComponent(imageUrl)}`),
+
+  getPresignedUrl: (fileName: string, folder = 'products') => 
+    apiClient.get('/upload/presigned-url', { fileName, folder }),
+};
+
+// Stripe API
+export const stripeApi = {
+  createPaymentIntent: (data: {
+    cart: any[];
+    userId?: string;
+    userEmail?: string;
+    userName?: string;
+    shipping?: any;
+  }) => apiClient.post('/stripe/create-payment-intent', data),
+};
+
+export default apiClient;
