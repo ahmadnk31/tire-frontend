@@ -5,11 +5,22 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  base: "/",
+  build: {
+    outDir: "dist",
+    assetsDir: "assets",
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
+  },
   server: {
     host: "::",
     port: 8080,
     proxy: {
-      '/api': 'http://localhost:3001',
+      '/api': 'tire-backend.netlify.app/api', // Updated to match backend API URL
+      // '/api': 'http://localhost:3001', // Uncomment for local development
     },
   },
   plugins: [
