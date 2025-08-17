@@ -185,36 +185,99 @@ export const CategorySection = () => {
 
 // Separate component for individual category items
 const CategoryItem = ({ category, onClick }: { category: any; onClick: () => void }) => {
-  // Icon mapping for demo (expand as needed)
+  // Enhanced icon mapping for tire categories
   const iconMap: Record<string, JSX.Element> = {
-    sun: <span role="img" aria-label="Summer"><svg width="28" height="28" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" fill="#FFD600"/><g stroke="#FFD600" strokeWidth="2"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.22" y1="4.22" x2="7.07" y2="7.07"/><line x1="16.93" y1="16.93" x2="19.78" y2="19.78"/><line x1="4.22" y1="19.78" x2="7.07" y2="16.93"/><line x1="16.93" y1="7.07" x2="19.78" y2="4.22"/></g></svg></span>,
-    snowflake: <span role="img" aria-label="Winter"><svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14" stroke="#00BFFF" strokeWidth="2"/></svg></span>,
-    cloud: <span role="img" aria-label="All Season"><svg width="28" height="28" fill="none" viewBox="0 0 24 24"><ellipse cx="12" cy="16" rx="8" ry="5" fill="#B0BEC5"/><ellipse cx="16" cy="12" rx="6" ry="4" fill="#90A4AE"/></svg></span>,
-    speed: <span role="img" aria-label="Performance"><svg width="28" height="28" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#FF5252" strokeWidth="2"/><path d="M12 6v6l4 2" stroke="#FF5252" strokeWidth="2"/></svg></span>,
+    // Summer tires
+    sun: <span role="img" aria-label="Summer" className="text-2xl">☀️</span>,
+    summer: <span role="img" aria-label="Summer" className="text-2xl">🌞</span>,
+    
+    // Winter tires
+    snowflake: <span role="img" aria-label="Winter" className="text-2xl">❄️</span>,
+    winter: <span role="img" aria-label="Winter" className="text-2xl">🌨️</span>,
+    snow: <span role="img" aria-label="Snow" className="text-2xl">⛄</span>,
+    
+    // All season
+    cloud: <span role="img" aria-label="All Season" className="text-2xl">☁️</span>,
+    allseason: <span role="img" aria-label="All Season" className="text-2xl">🌤️</span>,
+    
+    // Performance/Sports
+    speed: <span role="img" aria-label="Performance" className="text-2xl">🏎️</span>,
+    performance: <span role="img" aria-label="Performance" className="text-2xl">🏁</span>,
+    sports: <span role="img" aria-label="Sports" className="text-2xl">🏆</span>,
+    racing: <span role="img" aria-label="Racing" className="text-2xl">🚗</span>,
+    
+    // Commercial/Truck
+    truck: <span role="img" aria-label="Truck" className="text-2xl">🚛</span>,
+    commercial: <span role="img" aria-label="Commercial" className="text-2xl">🚚</span>,
+    delivery: <span role="img" aria-label="Delivery" className="text-2xl">📦</span>,
+    
+    // SUV/4x4
+    suv: <span role="img" aria-label="SUV" className="text-2xl">🚙</span>,
+    offroad: <span role="img" aria-label="Off-road" className="text-2xl">🏔️</span>,
+    fourwheeldrive: <span role="img" aria-label="4WD" className="text-2xl">🛻</span>,
+    
+    // Motorcycle
+    motorcycle: <span role="img" aria-label="Motorcycle" className="text-2xl">🏍️</span>,
+    bike: <span role="img" aria-label="Bike" className="text-2xl">🛵</span>,
+    
+    // Economy/Budget
+    economy: <span role="img" aria-label="Economy" className="text-2xl">💰</span>,
+    budget: <span role="img" aria-label="Budget" className="text-2xl">💵</span>,
+    
+    // Eco-friendly
+    eco: <span role="img" aria-label="Eco" className="text-2xl">🌱</span>,
+    green: <span role="img" aria-label="Green" className="text-2xl">♻️</span>,
+    electric: <span role="img" aria-label="Electric" className="text-2xl">🔋</span>,
+    
+    // Premium/Luxury
+    premium: <span role="img" aria-label="Premium" className="text-2xl">💎</span>,
+    luxury: <span role="img" aria-label="Luxury" className="text-2xl">👑</span>,
+    
+    // Run-flat
+    runflat: <span role="img" aria-label="Run-flat" className="text-2xl">🛡️</span>,
+    safety: <span role="img" aria-label="Safety" className="text-2xl">🔒</span>,
   };
+
+  // Try to match category name to icon (case insensitive)
+  const getIconForCategory = (categoryName: string) => {
+    const name = categoryName.toLowerCase().replace(/\s+/g, '');
+    
+    // Direct matches
+    if (iconMap[name]) return iconMap[name];
+    
+    // Partial matches
+    if (name.includes('summer') || name.includes('zomer')) return iconMap.summer;
+    if (name.includes('winter') || name.includes('winter')) return iconMap.winter;
+    if (name.includes('allseason') || name.includes('all') || name.includes('seizoen')) return iconMap.allseason;
+    if (name.includes('performance') || name.includes('sport') || name.includes('racing')) return iconMap.performance;
+    if (name.includes('truck') || name.includes('commercial') || name.includes('van')) return iconMap.truck;
+    if (name.includes('suv') || name.includes('4x4') || name.includes('offroad')) return iconMap.suv;
+    if (name.includes('motorcycle') || name.includes('motor') || name.includes('bike')) return iconMap.motorcycle;
+    if (name.includes('economy') || name.includes('budget') || name.includes('cheap')) return iconMap.economy;
+    if (name.includes('eco') || name.includes('green') || name.includes('electric')) return iconMap.eco;
+    if (name.includes('premium') || name.includes('luxury') || name.includes('high')) return iconMap.premium;
+    if (name.includes('runflat') || name.includes('run') || name.includes('flat')) return iconMap.runflat;
+    
+    // Default fallback
+    return <span role="img" aria-label="Tire" className="text-2xl">🛞</span>;
+  };
+
   return (
     <div
       onClick={onClick}
       className="flex flex-col items-center min-w-[90px] cursor-pointer group hover:transform hover:scale-105 transition-transform duration-200"
     >
-      <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-2 border border-gray-200 group-hover:border-blue-300 group-hover:bg-blue-50 transition-colors">
-        {category.icon && iconMap[category.icon] ? (
-          iconMap[category.icon]
-        ) : category.image ? (
+      <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-2 border border-gray-200 group-hover:border-blue-300 group-hover:bg-blue-50 transition-colors shadow-sm">
+        {category.image ? (
           <img 
             src={category.image} 
             alt={category.name} 
             className="w-10 h-10 object-contain rounded-full" 
           />
         ) : category.id === null ? (
-          <svg width="28" height="28" fill="none" viewBox="0 0 24 24">
-            <rect x="4" y="4" width="4" height="4" rx="1.5" fill="#bbb"/>
-            <rect x="4" y="16" width="4" height="4" rx="1.5" fill="#bbb"/>
-            <rect x="16" y="4" width="4" height="4" rx="1.5" fill="#bbb"/>
-            <rect x="16" y="16" width="4" height="4" rx="1.5" fill="#bbb"/>
-          </svg>
+          <span role="img" aria-label="All Categories" className="text-2xl">📋</span>
         ) : (
-          <ImageIcon className="w-8 h-8 text-gray-400" />
+          getIconForCategory(category.name)
         )}
       </div>
       <span className="text-sm font-medium text-gray-900 text-center group-hover:text-blue-600 transition-colors">

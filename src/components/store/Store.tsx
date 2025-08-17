@@ -1,12 +1,11 @@
 
-import { HeroSection } from "./HeroSection";
 import { CategorySection } from "./CategorySection";
 import { ProductGrid } from "./ProductGrid";
 import { TodaysForYouSection } from "./TodaysForYouSection";
 import { HeroCarousel } from "../HeroCarousel";
-import BrandsMarquee from "../BrandsMarquee";
-import { LoadingSkeleton } from "../ui/skeletons";
+
 import { useState, useEffect } from "react";
+import BrandsMarquee from "../BrandsMarquee";
 
 export const Store = () => {
   const [initialLoading, setInitialLoading] = useState(true);
@@ -19,7 +18,7 @@ export const Store = () => {
 
     return () => clearTimeout(timer);
   }, []);
-
+  
   // Show full page skeleton on initial load
   if (initialLoading) {
     return (
@@ -101,6 +100,7 @@ export const Store = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <ProductGrid sectionTitle="Featured Products" showAllButton={true} featuredOnly={true} />
       </div>
+      {/* <BrandsMarquee /> --- IGNORE */}
       
     </div>
   );

@@ -26,6 +26,7 @@ import Settings from "./pages/Settings";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import About from "./pages/About";
+import SizeGuide from "./pages/SizeGuide";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -74,6 +75,7 @@ const App = () => {
             <Route path="/order-success" element={<OrderSuccess />} />
             <Route path="/about" element={<About />} />
             <Route path="/not-found" element={<NotFound />} />
+            <Route path="/size-guide" element={<SizeGuide />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

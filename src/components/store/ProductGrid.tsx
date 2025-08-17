@@ -6,7 +6,7 @@ import { productsApi } from "@/lib/api";
 import { wishlistApi } from "@/lib/wishlistApi";
 import { useToast } from "@/hooks/use-toast";
 import { ProductCard } from "./ProductCard";
-import { ProductGridSkeleton } from "@/components/ui/skeletons";
+
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 

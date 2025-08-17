@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import BrandsMarquee from "./BrandsMarquee";
 
 const footerLinks = {
   shop: [
@@ -53,6 +54,7 @@ const Footer: React.FC = () => {
   return (
     <footer className="w-full bg-background border-t border-border">
       {/* Trust Badges Section */}
+      <BrandsMarquee />
       <div className="bg-muted/30 border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
