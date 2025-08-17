@@ -270,31 +270,78 @@ export const Header = () => {
                     {/* Top bar links for mobile */}
                     <div className="space-y-2 pb-3 border-b border-gray-100">
                       <a href="#" className="block text-sm text-gray-600 hover:text-gray-900 py-1">
-                        Download BeliBeli App
+                        Download Ariana App
                       </a>
                       <a href="#" className="block text-sm text-gray-600 hover:text-gray-900 py-1">
-                        Mitra BeliBeli
+                        About Ariana
                       </a>
                       <a href="#" className="block text-sm text-gray-600 hover:text-gray-900 py-1">
-                        About BeliBeli
-                      </a>
-                      <a href="#" className="block text-sm text-gray-600 hover:text-gray-900 py-1">
-                        BeliBeli Care
+                        Ariana Plus
                       </a>
                       <a href="#" className="block text-sm text-gray-600 hover:text-gray-900 py-1">
                         Promo
                       </a>
                     </div>
                     
-                    {/* Auth links */}
-                    <div className="space-y-2">
-                      <button onClick={() => { setIsMobileMenuOpen(false); navigate('/register'); }} className="block w-full text-left text-sm font-semibold text-gray-900 hover:text-gray-700 py-1 bg-transparent border-none cursor-pointer">
-                        Sign Up
-                      </button>
-                      <button onClick={() => { setIsMobileMenuOpen(false); navigate('/login'); }} className="block w-full text-left text-sm font-semibold text-gray-900 hover:text-gray-700 py-1 bg-transparent border-none cursor-pointer">
-                        Login
-                      </button>
-                    </div>
+                    {/* Auth links - only show if user is NOT signed in */}
+                    {!user && (
+                      <div className="space-y-2 pb-3 border-b border-gray-100">
+                        <button onClick={() => { setIsMobileMenuOpen(false); navigate('/register'); }} className="block w-full text-left text-sm font-semibold text-gray-900 hover:text-gray-700 py-2 bg-transparent border-none cursor-pointer">
+                          Sign Up
+                        </button>
+                        <button onClick={() => { setIsMobileMenuOpen(false); navigate('/login'); }} className="block w-full text-left text-sm font-semibold text-gray-900 hover:text-gray-700 py-2 bg-transparent border-none cursor-pointer">
+                          Login
+                        </button>
+                      </div>
+                    )}
+
+                    {/* User menu items - only show if user IS signed in */}
+                    {user && (
+                      <div className="space-y-2 pb-3 border-b border-gray-100">
+                        {/* User info */}
+                        <div className="flex items-center gap-3 py-2">
+                          <Avatar className="w-8 h-8">
+                            <AvatarFallback className="text-sm">{user.name ? user.name[0] : <UserCircle className="w-4 h-4" />}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="text-sm font-semibold text-gray-900">{user.name || 'User'}</p>
+                            <p className="text-xs text-gray-500">{user.email}</p>
+                          </div>
+                        </div>
+                        
+                        {/* User menu items */}
+                        <button onClick={() => { setIsMobileMenuOpen(false); navigate('/account'); }} className="flex items-center gap-3 w-full text-left text-sm text-gray-900 hover:text-gray-700 py-2 bg-transparent border-none cursor-pointer">
+                          <User className="w-4 h-4" />
+                          Account
+                        </button>
+                        <button onClick={() => { setIsMobileMenuOpen(false); navigate('/orders'); }} className="flex items-center gap-3 w-full text-left text-sm text-gray-900 hover:text-gray-700 py-2 bg-transparent border-none cursor-pointer">
+                          <List className="w-4 h-4" />
+                          Orders
+                        </button>
+                        <button onClick={() => { setIsMobileMenuOpen(false); navigate('/wishlist'); }} className="flex items-center gap-3 w-full text-left text-sm text-gray-900 hover:text-gray-700 py-2 bg-transparent border-none cursor-pointer">
+                          <Heart className="w-4 h-4" />
+                          Wishlist
+                        </button>
+                        <button onClick={() => { setIsMobileMenuOpen(false); navigate('/settings'); }} className="flex items-center gap-3 w-full text-left text-sm text-gray-900 hover:text-gray-700 py-2 bg-transparent border-none cursor-pointer">
+                          <Settings className="w-4 h-4" />
+                          Settings
+                        </button>
+                        <button 
+                          onClick={() => { 
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('user');
+                            setUser(null);
+                            window.dispatchEvent(new Event('logout'));
+                            setIsMobileMenuOpen(false);
+                            navigate('/login');
+                          }} 
+                          className="flex items-center gap-3 w-full text-left text-sm text-red-600 hover:text-red-700 py-2 bg-transparent border-none cursor-pointer"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Logout
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

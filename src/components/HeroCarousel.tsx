@@ -7,6 +7,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HeroCarouselSkeleton } from "@/components/ui/skeletons";
 import { ChevronLeft, ChevronRight, Play, ArrowRight, Pause } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 
 // Extend the Window interface to include __carouselTouchStartX
 declare global {
@@ -37,6 +38,36 @@ export function HeroCarousel() {
   // Video play state for media section
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const videoPlayerRef = useRef<any>(null);
+  const navigate = useNavigate();
+
+  // CTA handlers for banner buttons
+  const handlePrimaryCTA = () => {
+    const slide = slides[current] as any;
+    const url = slide?.ctaUrl || slide?.url || slide?.link || slide?.target;
+    if (url) {
+      if (/^https?:\/\//.test(url)) {
+        window.location.href = url;
+      } else {
+        navigate(url);
+      }
+    } else {
+      navigate('/products');
+    }
+  };
+
+  const handleSecondaryCTA = () => {
+    const slide = slides[current] as any;
+    const url = slide?.secondaryUrl || slide?.learnMoreUrl || slide?.url || slide?.link;
+    if (url) {
+      if (/^https?:\/\//.test(url)) {
+        window.location.href = url;
+      } else {
+        navigate(url);
+      }
+    } else {
+      navigate('/about');
+    }
+  };
 
   useEffect(() => {
     if (slides.length <= 1 || isHovered) return;
@@ -157,10 +188,12 @@ console.log('HeroCarousel rendered with slides:', banners);
               )}
               
               {/* CTA Button */}
-              <div className="flex gap-4 animate-fade-in-delay-2">
+              <div className="flex gap-4 animate-fade-in-delay-2 relative z-[600]">
                 <Button 
                   size="lg" 
-                  className="bg-primary max-sm:px-6 max-sm:py-4 hover:bg-primary/90 text-primary-foreground  font-semibold text-sm md:text-lg shadow-2xl shadow-primary/25 transition-all duration-300 hover:scale-105 hover:shadow-primary/40"
+                  type="button"
+                  className="bg-primary max-sm:px-6 relative z-10 max-sm:py-4 hover:bg-primary/90 text-primary-foreground  font-semibold text-sm md:text-lg shadow-2xl shadow-primary/25 transition-all duration-300 hover:scale-105 hover:shadow-primary/40 pointer-events-auto"
+                  onClick={handlePrimaryCTA}
                 >
                   Shop Now
                   <ArrowRight className="ml-2 w-5 h-5" />
@@ -168,7 +201,9 @@ console.log('HeroCarousel rendered with slides:', banners);
                 <Button 
                   variant="outline" 
                   size="lg"
-                  className="border-white/30 text-primary hover:bg-white/10  font-semibold text-sm md:text-lg backdrop-blur-sm transition-all duration-300 hover:scale-105"
+                  type="button"
+                  className="border-white/30 text-primary hover:bg-white/10  font-semibold text-sm md:text-lg backdrop-blur-sm transition-all duration-300 hover:scale-105 pointer-events-auto"
+                  onClick={handleSecondaryCTA}
                 >
                   Learn More
                 </Button>
@@ -179,7 +214,7 @@ console.log('HeroCarousel rendered with slides:', banners);
             <div className="flex justify-center lg:justify-end">
               <div className="relative group/media">
                 {/* Glow Effect */}
-                <div className="absolute -inset-4 bg-gradient-to-r from-primary to-accent blur-2xl opacity-20 group-hover/media:opacity-30 transition-opacity duration-500" />
+                <div className="absolute -inset-4 bg-gradient-to-r from-primary to-accent blur-2xl opacity-20 group-hover/media:opacity-30 transition-opacity duration-500 pointer-events-none" />
                 
                 <AspectRatio ratio={16 / 9} className="relative max-w-[500px] w-full bg-black/20 backdrop-blur-sm overflow-hidden border border-white/10 shadow-2xl">
                   {currentSlide.type === "image" ? (
@@ -248,6 +283,7 @@ console.log('HeroCarousel rendered with slides:', banners);
             <Button
               variant="outline"
               size="icon"
+              type="button"
               className="bg-white/10 hover:bg-white/20 border-white/20 text-white backdrop-blur-sm rounded-full w-9 h-9 md:w-12 md:h-12 opacity-80 hover:opacity-100 transition-all duration-300 hover:scale-110"
               onClick={() => setCurrent((prev) => (prev - 1 + slides.length) % slides.length)}
               aria-label="Previous slide"
@@ -257,6 +293,7 @@ console.log('HeroCarousel rendered with slides:', banners);
             <Button
               variant="outline"
               size="icon"
+              type="button"
               className="bg-white/10 hover:bg-white/20 border-white/20 text-white backdrop-blur-sm rounded-full w-9 h-9 md:w-12 md:h-12 opacity-80 hover:opacity-100 transition-all duration-300 hover:scale-110"
               onClick={() => setCurrent((prev) => (prev + 1) % slides.length)}
               aria-label="Next slide"
@@ -270,6 +307,7 @@ console.log('HeroCarousel rendered with slides:', banners);
             {slides.map((_, idx) => (
               <button
                 key={idx}
+                type="button"
                 className={`transition-all duration-300 rounded-full ${
                   idx === current 
                     ? "w-8 h-3 bg-gradient-to-r from-primary to-accent shadow-lg shadow-primary/50" 

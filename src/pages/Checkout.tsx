@@ -4,7 +4,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, AddressElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { addressApi } from "@/lib/addressApi";
 import { stripeApi } from "@/lib/api";
-import { Check, ChevronRight, ShoppingBag } from "lucide-react";
+import { Check, ChevronRight, ShoppingBag, MapPin, CreditCard, Eye } from "lucide-react";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY!);
 
@@ -26,11 +26,20 @@ interface CheckoutStep {
 }
 
 function StepperIndicator({ steps, currentStep }: { steps: CheckoutStep[], currentStep: number }) {
+  const getStepIcon = (stepId: number) => {
+    switch (stepId) {
+      case 1: return <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />;
+      case 2: return <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />;
+      case 3: return <Eye className="w-4 h-4 sm:w-5 sm:h-5" />;
+      default: return <span className="text-xs font-semibold">{stepId}</span>;
+    }
+  };
+
   return (
-    <div className="flex items-center justify-between mb-8">
+    <div className="flex items-center justify-center sm:justify-between mb-6 sm:mb-8 gap-2 sm:gap-0 overflow-x-auto">
       {steps.map((step, index) => (
-        <div key={step.id} className="flex items-center">
-          <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
+        <div key={step.id} className="flex items-center flex-shrink-0">
+          <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 ${
             step.completed 
               ? 'bg-accent border-accent text-accent-foreground' 
               : currentStep === step.id 
@@ -38,13 +47,13 @@ function StepperIndicator({ steps, currentStep }: { steps: CheckoutStep[], curre
                 : 'bg-gray-200 border-gray-300 text-gray-500'
           }`}>
             {step.completed ? (
-              <Check className="w-5 h-5" />
+              <Check className="w-4 h-4 sm:w-5 sm:h-5" />
             ) : (
-              <span className="text-sm font-semibold">{step.id}</span>
+              getStepIcon(step.id)
             )}
           </div>
-          <div className="ml-3">
-            <div className={`text-sm font-medium ${
+          <div className="ml-2 sm:ml-3 min-w-0 hidden sm:block">
+            <div className={`text-sm sm:text-base font-medium ${
               step.completed || currentStep === step.id ? 'text-gray-900' : 'text-gray-500'
             }`}>
               {step.title}
@@ -52,7 +61,9 @@ function StepperIndicator({ steps, currentStep }: { steps: CheckoutStep[], curre
             <div className="text-xs text-gray-500">{step.description}</div>
           </div>
           {index < steps.length - 1 && (
-            <ChevronRight className="w-5 h-5 text-gray-400 mx-4" />
+            <div className="flex items-center px-1 sm:px-4">
+              <div className="w-4 sm:w-8 h-px bg-gray-300"></div>
+            </div>
           )}
         </div>
       ))}
@@ -205,19 +216,18 @@ function CheckoutForm({ cart, currentStep, setCurrentStep, steps, setSteps }: {
   const total = subtotal + tax;
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-6xl mx-auto bg-white p-8 rounded-xl shadow-sm">
+    <form onSubmit={handleSubmit} className="w-full max-w-6xl mx-auto bg-white p-4 sm:p-6 lg:p-8 rounded-xl shadow-sm">
       <StepperIndicator steps={steps} currentStep={currentStep} />
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="lg:col-span-2 min-w-0">
           {/* Step 1: Address */}
           {currentStep === 1 && (
             <div className="space-y-6">
               <h2 className="text-xl font-semibold flex items-center">
-                <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold mr-3 bg-primary text-primary-foreground">
-                  1
-                </span>
-                Shipping Address
+                <MapPin className="w-6 h-6 mr-3 text-primary" />
+                <span className="hidden sm:inline">Shipping Address</span>
+                <span className="sm:hidden">Address</span>
               </h2>
               <AddressElement 
                 options={{ 
@@ -229,12 +239,12 @@ function CheckoutForm({ cart, currentStep, setCurrentStep, steps, setSteps }: {
                   setAddressComplete(event.complete);
                 }}
               />
-              <div className="flex justify-end">
+              <div className="flex flex-col sm:flex-row sm:justify-end gap-3">
                 <button
                   type="button"
                   onClick={handleNextStep}
                   disabled={!addressComplete}
-                  className="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                   Continue to Payment
                 </button>
@@ -246,10 +256,9 @@ function CheckoutForm({ cart, currentStep, setCurrentStep, steps, setSteps }: {
           {currentStep === 2 && (
             <div className="space-y-6">
               <h2 className="text-xl font-semibold flex items-center">
-                <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold mr-3 bg-primary text-primary-foreground">
-                  2
-                </span>
-                Payment Method
+                <CreditCard className="w-6 h-6 mr-3 text-primary" />
+                <span className="hidden sm:inline">Payment Method</span>
+                <span className="sm:hidden">Payment</span>
               </h2>
               <PaymentElement 
                 options={{
@@ -258,18 +267,18 @@ function CheckoutForm({ cart, currentStep, setCurrentStep, steps, setSteps }: {
                   }
                 }}
               />
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-3">
                 <button
                   type="button"
                   onClick={handlePrevStep}
-                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                  className="w-full sm:w-auto px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
                 >
                   Back to Address
                 </button>
                 <button
                   type="button"
                   onClick={handleNextStep}
-                  className="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+                  className="w-full sm:w-auto px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
                 >
                   Review Order
                 </button>
@@ -281,10 +290,9 @@ function CheckoutForm({ cart, currentStep, setCurrentStep, steps, setSteps }: {
           {currentStep === 3 && (
             <div className="space-y-6">
               <h2 className="text-xl font-semibold flex items-center">
-                <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold mr-3 bg-primary text-primary-foreground">
-                  3
-                </span>
-                Review & Place Order
+                <Eye className="w-6 h-6 mr-3 text-primary" />
+                <span className="hidden sm:inline">Review & Place Order</span>
+                <span className="sm:hidden">Review</span>
               </h2>
               
               <div className="bg-gray-50 p-4 rounded-lg">
@@ -316,18 +324,18 @@ function CheckoutForm({ cart, currentStep, setCurrentStep, steps, setSteps }: {
                 </div>
               )}
 
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-3">
                 <button
                   type="button"
                   onClick={handlePrevStep}
-                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                  className="w-full sm:w-auto px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
                 >
                   Back to Payment
                 </button>
                 <button
                   type="submit"
                   disabled={!stripe || loading}
-                  className="px-8 py-2 bg-accent text-accent-foreground rounded-md hover:bg-accent/90 disabled:bg-gray-300 disabled:cursor-not-allowed font-semibold"
+                  className="w-full sm:w-auto px-8 py-2 bg-accent text-accent-foreground rounded-md hover:bg-accent/90 disabled:bg-gray-300 disabled:cursor-not-allowed font-semibold"
                 >
                   {loading ? "Processing..." : `Place Order - €${total.toFixed(2)}`}
                 </button>
@@ -408,7 +416,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-8 px-4 sm:px-6 lg:px-8">
       <Elements 
         stripe={stripePromise} 
         options={{

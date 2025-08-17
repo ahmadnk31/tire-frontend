@@ -165,26 +165,37 @@ export const ProductGrid = ({ sectionTitle = "Products", featuredOnly = false, s
 
   if (productsLoading || wishlistLoading) {
     return (
-      <div className="space-y-8 animate-pulse">
-        <div className="flex items-center justify-between">
+      <div className="space-y-6 sm:space-y-8 animate-pulse">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-2">
-            <div className="h-8 w-48 bg-gray-200 rounded"></div>
-            <div className="h-4 w-72 bg-gray-200 rounded"></div>
+            <div className="h-6 sm:h-8 w-32 sm:w-48 bg-gray-200 rounded"></div>
+            <div className="h-3 sm:h-4 w-48 sm:w-72 bg-gray-200 rounded"></div>
           </div>
-          <div className="h-10 w-32 bg-gray-200 rounded-lg"></div>
+          {showAllButton && (
+            <div className="h-8 sm:h-10 w-24 sm:w-32 bg-gray-200 rounded-lg"></div>
+          )}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(featuredOnly ? 3 : 6)].map((_, index) => (
-            <div key={index} className="bg-white border border-gray-200 rounded-xl p-4">
-              <div className="w-full h-48 bg-gray-200 rounded-lg mb-4"></div>
-              <div className="space-y-3">
-                <div className="h-4 w-3/4 bg-gray-200 rounded"></div>
-                <div className="h-3 w-1/2 bg-gray-200 rounded"></div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-4 gap-2 md:gap-4 xl:gap-6">
+          {/* Responsive skeleton items - show different amounts based on screen size */}
+          {[...Array(12)].map((_, index) => (
+            <div 
+              key={index} 
+              className={`bg-white border border-gray-200 rounded-xl p-3 sm:p-4 ${
+                // Hide excess items on smaller screens to match grid layout
+                index >= 4 ? 'hidden xxl:block' : 
+                index >= 3 ? 'hidden lg:block' : 
+                index >= 2 ? 'hidden sm:block' : ''
+              }`}
+            >
+              <div className="w-full h-32 sm:h-40 md:h-48 bg-gray-200 rounded-lg mb-3 sm:mb-4"></div>
+              <div className="space-y-2 sm:space-y-3">
+                <div className="h-3 sm:h-4 w-3/4 bg-gray-200 rounded"></div>
+                <div className="h-2 sm:h-3 w-1/2 bg-gray-200 rounded"></div>
                 <div className="flex items-center justify-between">
-                  <div className="h-6 w-20 bg-gray-200 rounded"></div>
-                  <div className="h-4 w-16 bg-gray-200 rounded"></div>
+                  <div className="h-4 sm:h-6 w-16 sm:w-20 bg-gray-200 rounded"></div>
+                  <div className="h-3 sm:h-4 w-12 sm:w-16 bg-gray-200 rounded"></div>
                 </div>
-                <div className="w-full h-10 bg-gray-200 rounded-lg"></div>
+                <div className="w-full h-8 sm:h-10 bg-gray-200 rounded-lg"></div>
               </div>
             </div>
           ))}
