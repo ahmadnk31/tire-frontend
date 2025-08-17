@@ -19,8 +19,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     proxy: {
-      '/api': 'tire-backend.netlify.app/api', // Updated to match backend API URL
-      // '/api': 'http://localhost:3001', // Uncomment for local development
+      '/api': 'http://localhost:3001', // Keep local for development
     },
   },
   plugins: [
