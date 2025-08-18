@@ -6,7 +6,9 @@ import {
   deleteCampaign, 
   getCampaign,
   NewsletterCampaign,
-  CreateCampaignData 
+  CreateCampaignData,
+  getNewsletterSubscriptions,
+  NewsletterSubscription
 } from '../../lib/api/dashboard';
 import { productsApi } from '../../lib/api';
 import { 
@@ -73,6 +75,9 @@ const CampaignManagement: React.FC = () => {
   // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showProductSelector, setShowProductSelector] = useState(false);
+  const [showSendModal, setShowSendModal] = useState(false);
+  const [campaignToSend, setCampaignToSend] = useState<NewsletterCampaign | null>(null);
+  const [subscriberFilter, setSubscriberFilter] = useState('all');
   
   // Form states
   const [formData, setFormData] = useState<CreateCampaignData>({
@@ -223,15 +228,19 @@ const CampaignManagement: React.FC = () => {
   };
 
   // Send campaign
-  const handleSendCampaign = async (campaignId: number) => {
-    if (!token) return;
-    
-    if (!confirm('Are you sure you want to send this campaign? This action cannot be undone.')) {
-      return;
-    }
+  const handleSendCampaign = async (campaign: NewsletterCampaign) => {
+    setCampaignToSend(campaign);
+    setSubscriberFilter('all');
+    setShowSendModal(true);
+  };
+
+  const confirmSendCampaign = async () => {
+    if (!token || !campaignToSend) return;
     
     try {
-      await sendCampaign(token, campaignId);
+      await sendCampaign(token, campaignToSend.id, subscriberFilter);
+      setShowSendModal(false);
+      setCampaignToSend(null);
       loadCampaigns(); // Reload to see updated status
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to send campaign');
@@ -445,7 +454,7 @@ const CampaignManagement: React.FC = () => {
                       {campaign.status === 'draft' && (
                         <Button
                           size="sm"
-                          onClick={() => handleSendCampaign(campaign.id)}
+                          onClick={() => handleSendCampaign(campaign)}
                         >
                           <Send className="h-4 w-4" />
                         </Button>
@@ -661,6 +670,62 @@ const CampaignManagement: React.FC = () => {
             <div className="flex justify-end">
               <Button onClick={() => setShowProductSelector(false)}>
                 Done ({selectedProducts.length} selected)
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Send Campaign Modal */}
+      <Dialog open={showSendModal} onOpenChange={setShowSendModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Send Campaign</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {campaignToSend && (
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <h3 className="font-medium">{campaignToSend.title}</h3>
+                <p className="text-sm text-gray-600">{campaignToSend.subject}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Type: {campaignToSend.type === 'product_catalog' ? 'Product Catalog' : 'General'}
+                </p>
+              </div>
+            )}
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Select Recipients
+              </label>
+              <Select value={subscriberFilter} onValueChange={setSubscriberFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose recipient group" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Active Subscribers</SelectItem>
+                  <SelectItem value="website">Website Subscribers</SelectItem>
+                  <SelectItem value="newsletter">Newsletter Subscribers</SelectItem>
+                  <SelectItem value="contact">Contact Form Subscribers</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-gray-500 mt-1">
+                Choose which group of subscribers should receive this campaign
+              </p>
+            </div>
+
+            <div className="flex justify-end space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowSendModal(false);
+                  setCampaignToSend(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button onClick={confirmSendCampaign}>
+                <Send className="h-4 w-4 mr-2" />
+                Send Campaign
               </Button>
             </div>
           </div>
