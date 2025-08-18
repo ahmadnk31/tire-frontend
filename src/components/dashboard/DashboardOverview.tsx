@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, ShoppingCart, Package, Users, DollarSign, AlertTriangle, Loader2 } from "lucide-react";
-import { dashboardApi } from "@/lib/api";
+import { TrendingUp, ShoppingCart, Package, Users, DollarSign, AlertTriangle, Loader2, Mail, MessageSquare } from "lucide-react";
+import { getDashboardOverview, getRecentOrders, getLowStockProducts, type DashboardOverview as DashboardOverviewType } from "@/lib/api/dashboard";
 import { useToast } from "@/hooks/use-toast";
 
 interface DashboardStats {
@@ -23,6 +23,18 @@ interface DashboardStats {
   };
   products: {
     inStock: number;
+    change: number;
+    trend: 'up' | 'down';
+  };
+  contacts: {
+    total: number;
+    pending: number;
+    change: number;
+    trend: 'up' | 'down';
+  };
+  newsletter: {
+    total: number;
+    active: number;
     change: number;
     trend: 'up' | 'down';
   };
@@ -57,46 +69,63 @@ export const DashboardOverview = () => {
       try {
         setLoading(true);
         const token = localStorage.getItem('token');
-        const [overviewData, ordersData, stockData] = await Promise.all([
-          dashboardApi.getOverview(token),
-          dashboardApi.getRecentOrders(token),
-          dashboardApi.getLowStock(token)
+        const [overviewResponse, ordersData, stockData] = await Promise.all([
+          getDashboardOverview(token || ''),
+          getRecentOrders(token || ''),
+          getLowStockProducts(token || '')
         ]);
+        
+        console.log('Dashboard API responses:', { overviewResponse, ordersData, stockData });
         // Defensive: check for error or missing fields
-        if (
-          !overviewData ||
-          typeof overviewData !== 'object' ||
-          overviewData.error ||
-          overviewData.totalRevenue === undefined ||
-          overviewData.totalOrders === undefined ||
-          overviewData.totalUsers === undefined
-        ) {
-          throw new Error(overviewData?.error || 'Invalid dashboard overview data');
+        if (!overviewResponse || typeof overviewResponse !== 'object') {
+          throw new Error('No dashboard overview data received');
+        }
+        
+        if (overviewResponse.totalRevenue === undefined) {
+          console.warn('Missing totalRevenue in overview response');
+        }
+        if (overviewResponse.totalOrders === undefined) {
+          console.warn('Missing totalOrders in overview response');  
+        }
+        if (overviewResponse.totalUsers === undefined) {
+          console.warn('Missing totalUsers in overview response');
         }
         setStats({
           revenue: {
-            total: overviewData.totalRevenue || 0,
-            change: 0,
-            trend: 'up',
+            total: overviewResponse.totalRevenue || 0,
+            change: overviewResponse.newRevenue || 0,
+            trend: (overviewResponse.newRevenue || 0) > 0 ? 'up' : 'down',
           },
           orders: {
-            today: overviewData.newOrders || 0,
-            change: 0,
-            trend: 'up',
+            today: overviewResponse.totalOrders || 0,
+            change: overviewResponse.newOrders || 0,
+            trend: (overviewResponse.newOrders || 0) > 0 ? 'up' : 'down',
           },
           customers: {
-            total: overviewData.totalUsers || 0,
-            change: 0,
-            trend: 'up',
+            total: overviewResponse.totalUsers || 0,
+            change: overviewResponse.newUsers || 0,
+            trend: (overviewResponse.newUsers || 0) > 0 ? 'up' : 'down',
           },
           products: {
-            inStock: 0,
+            inStock: overviewResponse.totalProducts || 0,
             change: 0,
             trend: 'up',
           },
+          contacts: {
+            total: overviewResponse.totalContacts || 0,
+            pending: overviewResponse.pendingContacts || 0,
+            change: overviewResponse.newContacts || 0,
+            trend: (overviewResponse.newContacts || 0) > 0 ? 'up' : 'down',
+          },
+          newsletter: {
+            total: overviewResponse.totalSubscriptions || 0,
+            active: overviewResponse.activeSubscriptions || 0,
+            change: overviewResponse.newSubscriptions || 0,
+            trend: (overviewResponse.newSubscriptions || 0) > 0 ? 'up' : 'down',
+          },
         });
-        setRecentOrders(Array.isArray(ordersData) ? ordersData : []);
-        setLowStockItems(stockData && stockData.products ? stockData.products : []);
+        setRecentOrders(Array.isArray(ordersData?.orders) ? ordersData.orders : []);
+        setLowStockItems(Array.isArray(stockData?.products) ? stockData.products : []);
       } catch (error: any) {
         console.error('Error fetching dashboard data:', error);
         toast({
@@ -136,37 +165,53 @@ export const DashboardOverview = () => {
   const statsArray = [
     {
       title: "Total Revenue",
-      value: `$${stats.revenue.total.toLocaleString()}`,
-      change: `${stats.revenue.change > 0 ? '+' : ''}${stats.revenue.change}%`,
+      value: `$${stats.revenue.total.toFixed(2)}`,
+      change: `+$${stats.revenue.change.toFixed(2)} this week`,
       icon: DollarSign,
       trend: stats.revenue.trend
     },
     {
-      title: "Orders Today", 
+      title: "Total Orders", 
       value: stats.orders.today.toString(),
-      change: `${stats.orders.change > 0 ? '+' : ''}${stats.orders.change}%`,
+      change: `+${stats.orders.change} this week`,
       icon: ShoppingCart,
       trend: stats.orders.trend
     },
     {
       title: "Total Customers",
       value: stats.customers.total.toLocaleString(),
-      change: `${stats.customers.change > 0 ? '+' : ''}${stats.customers.change}%`,
+      change: `+${stats.customers.change} new this week`,
       icon: Users,
       trend: stats.customers.trend
     },
     {
-      title: "Products in Stock",
+      title: "Total Products",
       value: stats.products.inStock.toLocaleString(),
       change: `${stats.products.change > 0 ? '+' : ''}${stats.products.change}%`,
       icon: Package,
       trend: stats.products.trend
+    },
+    {
+      title: "Total Contacts",
+      value: stats.contacts.total.toLocaleString(),
+      subtitle: `${stats.contacts.pending} pending`,
+      change: `+${stats.contacts.change} this week`,
+      icon: MessageSquare,
+      trend: stats.contacts.trend
+    },
+    {
+      title: "Newsletter Subscribers",
+      value: stats.newsletter.total.toLocaleString(),
+      subtitle: `${stats.newsletter.active} active`,
+      change: `+${stats.newsletter.change} this week`,
+      icon: Mail,
+      trend: stats.newsletter.trend
     }
   ];
   return (
     <div className="space-y-8">
       {/* Stats Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
         {statsArray.map((stat, index) => (
           <Card key={index}>
             <CardContent className="p-6">
@@ -174,6 +219,9 @@ export const DashboardOverview = () => {
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
                   <p className="text-3xl font-bold">{stat.value}</p>
+                  {(stat as any).subtitle && (
+                    <p className="text-sm text-muted-foreground mt-1">{(stat as any).subtitle}</p>
+                  )}
                   <div className="flex items-center mt-2">
                     <TrendingUp className={`h-4 w-4 mr-1 ${stat.trend === 'up' ? 'text-green-500' : 'text-red-500'}`} />
                     <span className={`text-sm ${stat.trend === 'up' ? 'text-green-500' : 'text-red-500'}`}>

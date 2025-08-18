@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { useToast } from "./ui/use-toast";
+import { subscribeToNewsletter } from '../lib/api/contact';
 import BrandsMarquee from "./BrandsMarquee";
 
 const footerLinks = {
@@ -50,6 +52,45 @@ const trustBadges = [
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
+  const { toast } = useToast();
+  const [email, setEmail] = useState('');
+  const [isSubscribing, setIsSubscribing] = useState(false);
+
+  const handleNewsletterSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email.trim()) {
+      toast({
+        title: "Email required",
+        description: "Please enter your email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setIsSubscribing(true);
+      await subscribeToNewsletter({ 
+        email: email.trim(),
+        source: 'footer'
+      });
+      
+      toast({
+        title: "Subscribed successfully!",
+        description: "Thank you for subscribing to our newsletter",
+      });
+      
+      setEmail(''); // Clear the input
+    } catch (error) {
+      toast({
+        title: "Subscription failed",
+        description: error instanceof Error ? error.message : "Failed to subscribe to newsletter",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
 
   return (
     <footer className="w-full bg-background border-t border-border">
@@ -87,16 +128,24 @@ const Footer: React.FC = () => {
               {/* Newsletter Signup */}
               <div className="mb-8">
                 <h3 className="font-semibold text-lg mb-4 text-foreground">Stay Updated</h3>
-                <div className="flex max-w-md">
+                <form onSubmit={handleNewsletterSubscribe} className="flex max-w-md">
                   <Input
                     type="email"
                     placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="flex-1 rounded-r-none focus:ring-primary focus:border-primary"
+                    disabled={isSubscribing}
+                    required
                   />
-                  <Button className="rounded-l-none bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-6">
-                    Subscribe
+                  <Button 
+                    type="submit" 
+                    disabled={isSubscribing}
+                    className="rounded-l-none bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-6"
+                  >
+                    {isSubscribing ? 'Subscribing...' : 'Subscribe'}
                   </Button>
-                </div>
+                </form>
                 <p className="text-xs text-muted-foreground mt-2">
                   Get exclusive deals and updates. Unsubscribe anytime.
                 </p>

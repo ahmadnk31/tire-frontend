@@ -6,14 +6,17 @@ import { AddProduct } from "./AddProduct";
 import { OrdersManagement } from "./OrdersManagement";
 import { CustomersManagement } from "./CustomersManagement";
 import { SecurityManagement } from "./SecurityManagement";
+import { ContactManagement } from "./ContactManagement";
+import { NewsletterManagement } from "./NewsletterManagement";
+import CampaignManagement from "./CampaignManagement";
 import BulkImport from "./BulkImport";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, Package, Plus, Settings, Users, ShoppingCart, Shield, Upload } from "lucide-react";
+import { BarChart3, Package, Plus, Settings, Users, ShoppingCart, Shield, Upload, Mail, MessageSquare } from "lucide-react";
 
 import { CategoryManagement } from "./CategoryManagement";
 import { BannerManagement } from './BannerManagement';
-type DashboardView = 'overview' | 'products' | 'add-product' | 'orders' | 'customers' | 'security' | 'settings' | 'categories' | 'banners' | 'bulk-import';
+type DashboardView = 'overview' | 'products' | 'add-product' | 'orders' | 'customers' | 'security' | 'settings' | 'categories' | 'banners' | 'bulk-import' | 'contacts' | 'newsletter' | 'campaigns';
 
 const navigation = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -22,6 +25,9 @@ const navigation = [
   { id: 'banners', label: 'Banners', icon: Package },
   { id: 'orders', label: 'Orders', icon: ShoppingCart, badge: '12' },
   { id: 'customers', label: 'Customers', icon: Users },
+  { id: 'contacts', label: 'Contacts', icon: MessageSquare },
+  { id: 'newsletter', label: 'Newsletter', icon: Mail },
+  { id: 'campaigns', label: 'Campaigns', icon: Mail },
   { id: 'security', label: 'Security', icon: Shield },
   { id: 'bulk-import', label: 'Bulk Import', icon: Upload },
   { id: 'settings', label: 'Settings', icon: Settings },
@@ -65,6 +71,12 @@ export const Dashboard = () => {
         return <OrdersManagement />;
       case 'customers':
         return <CustomersManagement />;
+      case 'contacts':
+        return <ContactManagement />;
+      case 'newsletter':
+        return <NewsletterManagement />;
+      case 'campaigns':
+        return <CampaignManagement />;
       case 'security':
         return <SecurityManagement />;
       case 'bulk-import':

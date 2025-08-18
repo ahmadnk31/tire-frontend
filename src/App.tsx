@@ -1,6 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -27,6 +26,8 @@ import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import About from "./pages/About";
 import SizeGuide from "./pages/SizeGuide";
+import Contact from "./pages/Contact";
+import Unsubscribe from "./pages/Unsubscribe";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,7 +51,6 @@ const queryClient = new QueryClient({
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -76,13 +76,14 @@ const App = () => {
             <Route path="/about" element={<About />} />
             <Route path="/not-found" element={<NotFound />} />
             <Route path="/size-guide" element={<SizeGuide />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/unsubscribe" element={<Unsubscribe />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
           
           <Footer />
         </BrowserRouter>
-      </TooltipProvider>
     </QueryClientProvider>
   );
 };
