@@ -35,20 +35,40 @@ class PWAManager {
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
           if (newWorker) {
+            console.log('PWA: New service worker found, installing...');
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                // New version available
+                console.log('PWA: New version available');
                 this.showUpdateAvailable();
               }
             });
           }
         });
+
+        // Listen for messages from service worker
+        navigator.serviceWorker.addEventListener('message', (event) => {
+          if (event.data && event.data.type === 'SW_UPDATED') {
+            console.log('PWA: Service worker updated to version:', event.data.version);
+            this.handleServiceWorkerUpdate(event.data);
+          }
+        });
+
+        // Check for updates periodically
+        setInterval(() => {
+          registration.update();
+        }, 60000); // Check every minute
         
         return registration;
       } catch (error) {
         console.error('PWA: Service Worker registration failed:', error);
       }
     }
+  }
+
+  private handleServiceWorkerUpdate(data: any) {
+    console.log('PWA: Handling service worker update', data);
+    // Force reload to use new version
+    window.location.reload();
   }
 
   private setupEventListeners() {
@@ -186,35 +206,69 @@ class PWAManager {
   }
 
   private showUpdateAvailable() {
+    // Remove any existing update banner
+    const existingBanner = document.getElementById('pwa-update-banner');
+    if (existingBanner) {
+      existingBanner.remove();
+    }
+
     // Show update banner
     const banner = document.createElement('div');
     banner.id = 'pwa-update-banner';
-    banner.className = 'fixed top-4 left-4 right-4 bg-blue-600 text-white p-4 rounded-lg shadow-lg z-50 flex items-center justify-between';
+    banner.className = 'fixed top-4 left-4 right-4 bg-blue-600 text-white p-4 rounded-lg shadow-lg z-50 flex items-center justify-between animate-in slide-in-from-top duration-300';
     banner.innerHTML = `
       <div class="flex items-center space-x-3">
-        <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+        <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center animate-spin">
           🔄
         </div>
         <div>
-          <div class="font-semibold">Update Available</div>
-          <div class="text-sm opacity-90">A new version is ready</div>
+          <div class="font-semibold">New Version Available!</div>
+          <div class="text-sm opacity-90">Update now to get the latest features</div>
         </div>
       </div>
-      <button id="pwa-update-btn" class="bg-white text-blue-600 px-4 py-2 rounded-md text-sm font-medium">
-        Update Now
-      </button>
+      <div class="flex space-x-2">
+        <button id="pwa-update-btn" class="bg-white text-blue-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-100 transition-colors">
+          Update Now
+        </button>
+        <button id="pwa-update-later-btn" class="text-white/80 hover:text-white px-2 text-sm">
+          Later
+        </button>
+      </div>
     `;
 
     document.body.appendChild(banner);
 
     document.getElementById('pwa-update-btn')?.addEventListener('click', () => {
-      window.location.reload();
+      this.showToast('Updating app...', 'success');
+      // Clear all caches first
+      this.clearAllCaches().then(() => {
+        window.location.reload();
+      });
     });
 
-    // Auto-hide after 10 seconds
-    setTimeout(() => {
+    document.getElementById('pwa-update-later-btn')?.addEventListener('click', () => {
       banner.remove();
-    }, 10000);
+    });
+
+    // Auto-hide after 30 seconds if no action
+    setTimeout(() => {
+      if (document.getElementById('pwa-update-banner')) {
+        banner.remove();
+      }
+    }, 30000);
+  }
+
+  private async clearAllCaches() {
+    try {
+      const cacheNames = await caches.keys();
+      console.log('PWA: Clearing caches:', cacheNames);
+      await Promise.all(
+        cacheNames.map(cacheName => caches.delete(cacheName))
+      );
+      console.log('PWA: All caches cleared');
+    } catch (error) {
+      console.error('PWA: Failed to clear caches:', error);
+    }
   }
 
   private handleOnlineStatus() {
@@ -285,6 +339,53 @@ class PWAManager {
 
   public canInstall() {
     return !!this.deferredPrompt;
+  }
+
+  public async forceUpdate() {
+    console.log('PWA: Force updating app...');
+    await this.clearAllCaches();
+    
+    // Unregister service worker and re-register
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map(registration => registration.unregister()));
+    }
+    
+    // Reload the page
+    window.location.reload();
+  }
+
+  public async clearAppData() {
+    console.log('PWA: Clearing all app data...');
+    
+    // Clear caches
+    await this.clearAllCaches();
+    
+    // Clear local storage
+    localStorage.clear();
+    
+    // Clear session storage
+    sessionStorage.clear();
+    
+    // Clear IndexedDB if used
+    if ('indexedDB' in window) {
+      try {
+        const databases = await indexedDB.databases();
+        await Promise.all(
+          databases.map(db => {
+            return new Promise((resolve, reject) => {
+              const deleteRequest = indexedDB.deleteDatabase(db.name!);
+              deleteRequest.onsuccess = () => resolve(true);
+              deleteRequest.onerror = () => reject(deleteRequest.error);
+            });
+          })
+        );
+      } catch (error) {
+        console.error('PWA: Failed to clear IndexedDB:', error);
+      }
+    }
+    
+    this.showToast('App data cleared successfully', 'success');
   }
 }
 

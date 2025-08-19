@@ -1,6 +1,11 @@
-const CACHE_NAME = 'ariana-tires-v1';
-const STATIC_CACHE_NAME = 'ariana-tires-static-v1';
-const DYNAMIC_CACHE_NAME = 'ariana-tires-dynamic-v1';
+// Cache version should be updated with each deployment
+const CACHE_VERSION = '2025-08-19T22-38-16'; // Update this version number with each deployment
+const CACHE_NAME = `ariana-tires-v${CACHE_VERSION}`;
+const STATIC_CACHE_NAME = `ariana-tires-static-v${CACHE_VERSION}`;
+const DYNAMIC_CACHE_NAME = `ariana-tires-dynamic-v${CACHE_VERSION}`;
+
+// Build timestamp for additional cache busting
+const BUILD_TIMESTAMP = 1755643096840;
 
 // Assets to cache on install
 const STATIC_ASSETS = [
@@ -23,9 +28,9 @@ const API_CACHE_PATTERNS = [
   /\/api\/banners/
 ];
 
-// Install event - cache static assets
+// Install event - cache static assets and force update
 self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installing...');
+  console.log(`Service Worker: Installing version ${CACHE_VERSION}...`);
   event.waitUntil(
     caches.open(STATIC_CACHE_NAME)
       .then((cache) => {
@@ -33,7 +38,8 @@ self.addEventListener('install', (event) => {
         return cache.addAll(STATIC_ASSETS);
       })
       .then(() => {
-        return self.skipWaiting();
+        console.log('Service Worker: Skip waiting to activate immediately');
+        return self.skipWaiting(); // Force the waiting service worker to become active
       })
       .catch((error) => {
         console.error('Service Worker: Cache installation failed:', error);
@@ -41,15 +47,17 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate event - clean up old caches
+// Activate event - clean up ALL old caches and take control immediately
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker: Activating...');
+  console.log(`Service Worker: Activating version ${CACHE_VERSION}...`);
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {
+        console.log('Service Worker: Found caches:', cacheNames);
         return Promise.all(
           cacheNames.map((cacheName) => {
-            if (cacheName !== STATIC_CACHE_NAME && cacheName !== DYNAMIC_CACHE_NAME) {
+            // Delete any cache that doesn't match current version
+            if (!cacheName.includes(CACHE_VERSION)) {
               console.log('Service Worker: Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
@@ -57,7 +65,21 @@ self.addEventListener('activate', (event) => {
         );
       })
       .then(() => {
-        return self.clients.claim();
+        console.log('Service Worker: Taking control of all clients');
+        return self.clients.claim(); // Take control of all clients immediately
+      })
+      .then(() => {
+        // Notify all clients about the update
+        return self.clients.matchAll({ includeUncontrolled: true });
+      })
+      .then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({
+            type: 'SW_UPDATED',
+            version: CACHE_VERSION,
+            timestamp: BUILD_TIMESTAMP
+          });
+        });
       })
   );
 });
