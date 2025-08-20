@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 
 import Index from "./pages/Index";
 import BrandsMarquee from "@/components/BrandsMarquee";
@@ -50,41 +51,43 @@ const queryClient = new QueryClient({
 
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Header />
-          <Breadcrumbs />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/products/:id" element={<ProductPage />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/email-not-verified" element={<EmailNotVerified />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/verify" element={<Verify />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/wishlist" element={<Wishlist />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/order-success" element={<OrderSuccess />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/not-found" element={<NotFound />} />
-            <Route path="/size-guide" element={<SizeGuide />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/unsubscribe" element={<Unsubscribe />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          
-          <Footer />
-        </BrowserRouter>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Header />
+            <Breadcrumbs />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/products/:id" element={<ProductPage />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/email-not-verified" element={<EmailNotVerified />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/verify" element={<Verify />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/account" element={<Account />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/order-success" element={<OrderSuccess />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/not-found" element={<NotFound />} />
+              <Route path="/size-guide" element={<SizeGuide />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/unsubscribe" element={<Unsubscribe />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            
+            <Footer />
+          </BrowserRouter>
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 };
 

@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { Search, Info, Ruler, Car, Truck, Bike } from "lucide-react";
+import { SEO } from "@/components/seo/SEO";
+import { usePageSEO } from "@/hooks/useSEO";
 
 const SizeGuide = () => {
+  const seoConfig = usePageSEO();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedVehicleType, setSelectedVehicleType] = useState("car");
 
@@ -34,6 +37,7 @@ const SizeGuide = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
+      <SEO {...seoConfig} />
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">

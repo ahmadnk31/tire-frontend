@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { MapPin, Phone, Mail, Clock, Send, MessageCircle, User, FileText } from "lucide-react";
 import { submitContactForm, ContactFormData } from "../lib/api/contact";
+import { SEO } from "@/components/seo/SEO";
+import { usePageSEO } from "@/hooks/useSEO";
 
 const Contact = () => {
+  const seoConfig = usePageSEO();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -55,6 +58,7 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+      <SEO {...seoConfig} />
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">

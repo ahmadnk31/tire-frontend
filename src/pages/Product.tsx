@@ -9,6 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Star, Heart, ChevronLeft, ChevronRight, X, ShoppingCart, Zap, Plus, Minus } from "lucide-react";
 import { formatEuro } from "@/lib/currency";
 import { ProductCard } from "@/components/store/ProductCard";
+import { SEO } from "@/components/seo/SEO";
+import { createProductSchema, createBreadcrumbSchema } from "@/components/seo/schema";
 
 
 export default function ProductPage() {
@@ -397,6 +399,39 @@ export default function ProductPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4 sm:py-8">
+      {/* SEO for product page */}
+      {product && (
+        <SEO
+          title={product.seo?.metaTitle || product.name}
+          description={product.seo?.metaDescription || product.description}
+          keywords={`${product.name}, ${product.brand || 'Ariana'}, tire, automotive, ${product.category || 'tires'}`}
+          image={productImages[0]}
+          type="product"
+          url={`/products/${product.id}`}
+          schema={[
+            createProductSchema({
+              id: product.id,
+              name: product.name,
+              description: product.description,
+              price: product.price,
+              comparePrice: product.comparePrice || product.compareAtPrice,
+              images: productImages,
+              brand: product.brand,
+              sku: product.sku,
+              stock: product.stock || product.stockQuantity,
+              category: product.category,
+              specifications: product.specifications,
+              rating: rating,
+              reviewCount: reviewCount
+            }),
+            createBreadcrumbSchema([
+              { name: 'Home', url: '/' },
+              { name: 'Products', url: '/products' },
+              { name: product.name, url: `/products/${product.id}` }
+            ])
+          ]}
+        />
+      )}
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Fullscreen Modal rendered at root level, outside main grid */}
         {fullscreen && (
