@@ -378,7 +378,7 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
                       <SelectItem value="goodyear">Goodyear</SelectItem>
                       <SelectItem value="dunlop">Dunlop</SelectItem>
                       <SelectItem value="yokohama">Yokohama</SelectItem>
-                      <SelectItem value="hankook">Hankook</SelectItem>
+                      <SelectItem value="hankook">Double Star</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
