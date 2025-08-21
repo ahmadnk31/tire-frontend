@@ -6,9 +6,7 @@ import {
   deleteCampaign, 
   getCampaign,
   NewsletterCampaign,
-  CreateCampaignData,
-  getNewsletterSubscriptions,
-  NewsletterSubscription
+  CreateCampaignData 
 } from '../../lib/api/dashboard';
 import { productsApi } from '../../lib/api';
 import { 

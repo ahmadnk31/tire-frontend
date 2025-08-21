@@ -36,11 +36,9 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { href: "https://facebook.com/tyrevision", label: "Facebook", icon: "📘" },
-  { href: "https://twitter.com/tyrevision", label: "Twitter", icon: "🐦" },
-  { href: "https://instagram.com/tyrevision", label: "Instagram", icon: "📷" },
-  { href: "https://youtube.com/tyrevision", label: "YouTube", icon: "📺" },
-  { href: "https://linkedin.com/company/tyrevision", label: "LinkedIn", icon: "💼" },
+  { href: "https://facebook.com/bandenledegembandenledegem", label: "Facebook", icon: "📘" },
+  { href: "https://instagram.com/arianabandenservice", label: "Instagram", icon: "📷" },
+  { href: "https://tiktok.com/@arianabanden", label: "TikTok", icon: "📺" },
 ];
 
 const trustBadges = [
@@ -118,7 +116,7 @@ const Footer: React.FC = () => {
           <div className="lg:col-span-2">
             <div className="mb-8">
               <h2 className="font-bold text-3xl mb-4 text-primary">
-                Ariana Tires
+                Ariana Banden
               </h2>
               <p className="text-muted-foreground text-base leading-relaxed mb-6">
                 Your trusted partner for premium tyres, wheels, and automotive accessories. 
@@ -263,11 +261,13 @@ const Footer: React.FC = () => {
                 </p>
                 <p className="flex items-center gap-2 ">
                   <span>📱</span>
-                  <a href="tel:+1234567890" className="hover:underline">+1 (234) 567-8900</a>
+                  <a href="tel:+1234567890" className="hover:underline">+32 467 66 21 97</a>
                 </p>
                 <p className="flex items-center gap-2">
                   <span>📍</span>
-                  <span>123 Tyre Street, Auto City, AC 12345</span>
+                  <span>
+                    Provinciebaan 192A, Ledegem
+                  </span>
                 </p>
               </div>
             </div>
@@ -282,15 +282,17 @@ const Footer: React.FC = () => {
               <div className="space-y-2 text-sm text-muted-foreground ml-8">
                 <div className="flex justify-between">
                   <span>Monday - Friday:</span>
-                  <span className="font-medium">10:00 AM - 6:00 PM</span>
+                  <span className="font-medium">9:00 AM - 6:00 PM</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Saturday:</span>
-                  <span className="font-medium">10:00 AM - 6:00 PM</span>
+                  <span className="font-medium">9:00 AM - 6:00 PM</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Sunday:</span>
-                  <span className="font-medium">10:00 AM - 5:00 PM</span>
+                  <span className="font-medium">
+                    With appointment only
+                  </span>
                 </div>
               </div>
             </div>
@@ -326,7 +328,7 @@ const Footer: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex flex-col md:flex-row items-center gap-4 text-sm text-muted-foreground">
-              <p>© {currentYear} Ariana Tires. All rights reserved.</p>
+              <p>© {currentYear} Ariana Banden. All rights reserved.</p>
               <div className="hidden md:block w-1 h-1 bg-muted-foreground/50 rounded-full"></div>
               <p className="flex items-center gap-1">
                 Built with <span className="text-red-500 animate-pulse">❤️</span> for automotive enthusiasts
