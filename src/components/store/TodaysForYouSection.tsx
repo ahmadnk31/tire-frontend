@@ -42,7 +42,7 @@ export const TodaysForYouSection = ({
       return productsApi.getAll(params);
     },
     enabled: !!selectedCategorySlug || categories.length === 0,
-    staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
+    staleTime: 0, // Force fresh data for testing images
     gcTime: 10 * 60 * 1000, // Cache for 10 minutes
   });
   const products = productsData.products || [];

@@ -76,7 +76,7 @@ export const ProductGrid = ({ sectionTitle = "Products", featuredOnly = false, s
       }
       return response.products || [];
     },
-    staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
+    staleTime: 0, // Force fresh data for testing images
     gcTime: 10 * 60 * 1000, // Cache for 10 minutes (was cacheTime in v4)
   });
 
