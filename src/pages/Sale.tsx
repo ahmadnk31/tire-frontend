@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Star, ShoppingCart, Heart, Filter, Grid, List, Percent, Clock, TrendingDown, Flame } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { Link, useNavigate } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productsApi } from '@/lib/api';
+import { wishlistApi } from '@/lib/wishlistApi';
+import { useToast } from '@/hooks/use-toast';
 
 interface Product {
-  id: string;
+  id: number;
   name: string;
   brand: string;
   price: number;
@@ -20,15 +22,25 @@ interface Product {
   saleEndDate?: string;
   features: string[];
   stockLevel: 'high' | 'medium' | 'low';
+  size?: string;
 }
 
 const Sale: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterDiscount, setFilterDiscount] = useState('all');
   const [sortBy, setSortBy] = useState('discount');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [cart, setCart] = useState<any[]>(() => {
+    if (typeof window === 'undefined') return [];
+    const stored = localStorage.getItem('cart');
+    return stored ? JSON.parse(stored) : [];
+  });
 
   // Fetch real sale products
   const { data: saleData, isLoading, error } = useQuery({
@@ -38,7 +50,7 @@ const Sale: React.FC = () => {
   });
 
   const products: Product[] = saleData?.products?.map((product: any) => ({
-    id: product.id.toString(),
+    id: product.id,
     name: product.name,
     brand: product.brand,
     price: Number(product.price),
@@ -50,9 +62,114 @@ const Sale: React.FC = () => {
     discount: product.comparePrice ? Math.round(((Number(product.comparePrice) - Number(product.price)) / Number(product.comparePrice)) * 100) : 0,
     isOnSale: true,
     saleEndDate: undefined, // Not available in current schema
-    features: product.features || [],
-    stockLevel: product.stock > 10 ? 'high' : product.stock > 5 ? 'medium' : 'low'
+    features: typeof product.features === 'string' ? product.features.split(',').map(f => f.trim()) : (Array.isArray(product.features) ? product.features : []),
+    stockLevel: product.stock > 10 ? 'high' : product.stock > 5 ? 'medium' : 'low',
+    size: product.size
   })) || [];
+
+  // Wishlist query
+  const {
+    data: wishlistData,
+    isLoading: wishlistLoading,
+  } = useQuery({
+    queryKey: ['wishlist', token],
+    queryFn: async () => {
+      if (!token) return [];
+      const res = await wishlistApi.getWishlist(token);
+      return res.wishlist ? res.wishlist.map((w: any) => w.productId) : [];
+    },
+    enabled: !!token,
+    staleTime: 2 * 60 * 1000, // Wishlist stays fresh for 2 minutes
+    gcTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
+  const wishlist = wishlistData || [];
+
+  // Wishlist mutation
+  const wishlistMutation = useMutation({
+    mutationFn: async ({ productId, isWishlisted }: { productId: number, isWishlisted: boolean }) => {
+      if (!token) return;
+      if (isWishlisted) {
+        await wishlistApi.removeFromWishlist(productId, token);
+      } else {
+        await wishlistApi.addToWishlist(productId, token);
+      }
+      return { productId, isWishlisted };
+    },
+    onSuccess: (data) => {
+      // Invalidate both wishlist queries to ensure all wishlist pages update
+      queryClient.invalidateQueries({ queryKey: ['wishlist', token] });
+      queryClient.invalidateQueries({ queryKey: ['wishlist-products'] });
+      
+      // Show success toast
+      if (data?.isWishlisted) {
+        toast({ 
+          title: t('wishlist.itemRemoved'), 
+          description: t('wishlist.itemRemoved') 
+        });
+      } else {
+        toast({ 
+          title: t('wishlist.itemAdded'), 
+          description: t('wishlist.itemAdded') 
+        });
+      }
+    },
+    onError: () => {
+      toast({ title: t('common.error'), description: t('errors.wishlistError'), variant: 'destructive' });
+    },
+  });
+
+  // Sync cart state with localStorage changes
+  useEffect(() => {
+    const handler = () => {
+      const stored = localStorage.getItem('cart');
+      setCart(stored ? JSON.parse(stored) : []);
+    };
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+  }, []);
+
+  // Add to cart functionality
+  const addToCart = (product: Product) => {
+    const newCart = [...cart];
+    const existingIdx = newCart.findIndex((item: any) => item.id === product.id && item.size === product.size);
+    if (existingIdx > -1) {
+      newCart[existingIdx].quantity += 1;
+    } else {
+      newCart.push({
+        id: product.id,
+        name: product.name,
+        brand: product.brand,
+        price: parseFloat(product.price.toString()),
+        imageUrl: product.image,
+        size: product.size || 'default',
+        quantity: 1,
+      });
+    }
+    localStorage.setItem('cart', JSON.stringify(newCart));
+    setCart(newCart);
+    window.dispatchEvent(new Event('cart-updated'));
+    toast({
+      title: t('products.addToCart'),
+      description: t('products.productAdded'),
+    });
+  };
+
+  // Wishlist functionality
+  const handleToggleWishlist = (productId: number) => {
+    if (!token) {
+      toast({
+        title: t('auth.loginRequired'),
+        description: t('auth.loginToAddWishlist'),
+        variant: "destructive",
+      });
+      navigate('/login');
+      return;
+    }
+    
+    const isWishlisted = wishlist.includes(productId);
+    wishlistMutation.mutate({ productId, isWishlisted });
+  };
 
   const categories = [
     { id: 'all', name: t('sale.categories.all') },
@@ -298,7 +415,7 @@ const Sale: React.FC = () => {
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
                 <div className="absolute top-2 left-2 flex gap-1">
                   <span className="px-2 py-1 bg-red-500 text-white text-xs font-medium rounded flex items-center gap-1">
@@ -345,12 +462,12 @@ const Sale: React.FC = () => {
                 </div>
                 <div className="mb-3">
                   <div className="flex flex-wrap gap-1">
-                    {product.features.slice(0, 2).map(feature => (
+                    {Array.isArray(product.features) && product.features.slice(0, 2).map(feature => (
                       <span key={feature} className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
                         {feature}
                       </span>
                     ))}
-                    {product.features.length > 2 && (
+                    {Array.isArray(product.features) && product.features.length > 2 && (
                       <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
                         +{product.features.length - 2}
                       </span>
@@ -358,12 +475,22 @@ const Sale: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm">
+                  <button 
+                    onClick={() => addToCart(product)}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                  >
                     <ShoppingCart className="h-4 w-4" />
                     {t('sale.addToCart')}
                   </button>
-                  <button className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                    <Heart className="h-4 w-4 text-gray-600" />
+                  <button 
+                    onClick={() => handleToggleWishlist(product.id)}
+                    className={`p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors ${
+                      wishlist.includes(product.id) ? 'bg-red-50 border-red-200' : ''
+                    }`}
+                  >
+                    <Heart className={`h-4 w-4 ${
+                      wishlist.includes(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'
+                    }`} />
                   </button>
                 </div>
               </div>

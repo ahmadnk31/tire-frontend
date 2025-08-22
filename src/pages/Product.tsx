@@ -686,11 +686,11 @@ export default function ProductPage() {
                   {product.description}
                 </p>
               </div>
-              {product.features && Array.isArray(product.features) && product.features.length > 0 && (
+              {product.features && (
                 <div>
                   <h4 className="font-semibold text-base sm:text-lg mb-3 text-gray-900">{t('products.keyFeatures')}</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {product.features.map((feature: string, i: number) => (
+                    {(Array.isArray(product.features) ? product.features : typeof product.features === 'string' ? product.features.split(',').map(f => f.trim()).filter(f => f) : []).map((feature: string, i: number) => (
                       <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                         <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
                         <span className="text-gray-700 text-sm sm:text-base">{feature}</span>
@@ -731,29 +731,7 @@ export default function ProductPage() {
                     </div>
                   </div>
                   
-                  <div className="space-y-4">
-                    <h4 className="font-semibold text-base text-gray-900 border-b border-gray-200 pb-2">Tire Dimensions</h4>
-                    <div className="space-y-3">
-                      {product.tireWidth && (
-                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                          <span className="text-gray-600 font-medium">{t('products.width')}</span>
-                          <span className="text-gray-900 font-semibold">{product.tireWidth} mm</span>
-                        </div>
-                      )}
-                      {product.aspectRatio && (
-                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                          <span className="text-gray-600 font-medium">{t('products.aspectRatio')}</span>
-                          <span className="text-gray-900 font-semibold">{product.aspectRatio}%</span>
-                        </div>
-                      )}
-                      {product.rimDiameter && (
-                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                          <span className="text-gray-600 font-medium">{t('products.diameter')}</span>
-                          <span className="text-gray-900 font-semibold">{product.rimDiameter} inches</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+
                 </div>
 
                 {/* Performance Specifications */}

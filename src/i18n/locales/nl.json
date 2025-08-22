@@ -252,10 +252,59 @@
   "categories": {
     "allCategory": "Alle Categorieën",
     "scrollLeft": "Scroll links",
+    "productsIn": "Producten in",
+    "browseAll": "Blader alle categorieën",
+    "sort": {
+      "name": "Naam",
+      "newest": "Nieuwste",
+      "oldest": "Oudste",
+      "priceLow": "Prijs: Laag naar hoog",
+      "priceHigh": "Prijs: Hoog naar laag",
+      "rating": "Beoordeling: Hoog naar laag"
+    },
+    "filter": {
+      "brand": "Merk",
+      "model": "Model",
+      "size": "Maat",
+      "color": "Kleur"
+    },
+    "view": {
+      "grid": "Raster",
+      "list": "Lijst"
+    },
+    "sortBy": {
+      "name": "Naam",
+      "newest": "Nieuwste",
+      "oldest": "Oudste",
+      "priceLowToHigh": "Prijs: Laag naar hoog",
+      "priceHighToLow": "Prijs: Hoog naar laag",
+      "ratingHighToLow": "Beoordeling: Hoog naar laag"
+    },
     "scrollRight": "Scroll rechts",
     "previousCategories": "Vorige categorieën",
     "nextCategories": "Volgende categorieën",
-    "goToPage": "Ga naar pagina {{number}}"
+    "goToPage": "Ga naar pagina {{number}}",
+    "noCategories": "Geen categorieën gevonden",
+    "noProducts": "Geen producten gevonden",
+    "noProductsInCategory": "Geen producten in deze categorie",
+    "noProductsInSubcategory": "Geen producten in deze subcategorie",
+    "noProductsInBrand": "Geen producten in dit merk",
+    "noProductsInModel": "Geen producten in dit model",
+    "noProductsInSize": "Geen producten in deze maat",
+    "noProductsInColor": "Geen producten in deze kleur",
+    "title": "Categorieën",
+    "description": "Bekijk alle categorieën en subcategorieën",
+    "searchPlaceholder": "Zoek categorieën...",
+    "noResults": "Geen categorieën gevonden",
+    "noResultsDesc": "Probeer uw zoekopdracht aan te passen of blader door categorieën",
+    "stillNeedHelp": "Nog steeds hulp nodig?",
+    "contactDescription": "Ons supportteam staat klaar om u te helpen",
+    "contactUs": "Contact Opnemen",
+    "contactDesc": "Stuur ons een bericht",
+    "callUs": "Bel Ons",
+    "products": "Producten",
+    "product": "Product",
+    "subcategories": "Subcategorieën"
   },
   "auth": {
     "brandName": "Ariana Bandencentraal",

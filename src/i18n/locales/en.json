@@ -157,7 +157,8 @@
     "newArrivals": "New Arrivals",
     "bestSellers": "Best Sellers",
     "support": "Support",
-    "relatedParts": "Related Parts"
+    "relatedParts": "Related Parts",
+    "noRelatedParts": "No related parts"
   },
   "footer": {
     "shop": {
@@ -251,11 +252,51 @@
   },
   "categories": {
     "allCategory": "All Category",
+    "productsIn": "Products in",
+    "browseAll": "Browse All",
+    
+    "sort": {
+      "name": "Name",
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "priceLow": "Price: Low to High",
+      "priceHigh": "Price: High to Low",
+      "rating": "Rating: High to Low"
+    },
+    "filter": {
+      "brand": "Brand",
+      "model": "Model",
+      "size": "Size",
+      "color": "Color"
+    },
+    "view": {
+      "grid": "Grid",
+      "list": "List"
+    },
+    "sortBy": {
+      "name": "Name",
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "priceLow": "Price: Low to High",
+      "priceHigh": "Price: High to Low",
+      "rating": "Rating: High to Low"
+    },
+    "description": "View all categories and subcategories",
+    "searchPlaceholder": "Search categories...",
+    "noResults": "No categories found",
+    "noResultsDesc": "Try adjusting your search or browse categories",
+    "stillNeedHelp": "Still need help?",
+    "contactDescription": "Our support team is here to help you",
+    "contactUs": "Contact Us",
     "scrollLeft": "Scroll left",
     "scrollRight": "Scroll right",
     "previousCategories": "Previous categories",
     "nextCategories": "Next categories",
-    "goToPage": "Go to page {{number}}"
+    "goToPage": "Go to page {{number}}",
+    "title": "Categories",
+    "products": "Products",
+    "product": "Product",
+    "subcategories": "Subcategories"
   },
   "auth": {
     "brandName": "Ariana Bandencentraal",

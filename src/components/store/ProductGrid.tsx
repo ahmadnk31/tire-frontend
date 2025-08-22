@@ -18,6 +18,7 @@ interface Product {
   model: string;
   size: string;
   price: string;
+  comparePrice?: string;
   rating: string;
   reviews: number;
   stock: number;

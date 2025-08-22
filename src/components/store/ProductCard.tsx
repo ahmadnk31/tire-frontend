@@ -15,7 +15,7 @@ const carouselStyles = `
   .product-image-carousel img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     transition: all 0.5s ease-in-out;
   }
   
@@ -72,6 +72,7 @@ export interface ProductCardProps {
     model: string;
     size: string;
     price: string;
+    comparePrice?: string;
     rating: string;
     reviews: number;
     stock: number;
@@ -217,10 +218,11 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
               <img 
                 src={images[currentImageIndex]} 
                 alt={`${product.name} - Image ${currentImageIndex + 1}`} 
-                className="w-full h-full object-cover transition-all duration-500 ease-in-out hover:scale-105" 
+                className="w-full h-full object-contain transition-all duration-500 ease-in-out hover:scale-105" 
                 loading="lazy"
                 onError={(e) => {
-                  // Fallback to object-contain if image fails to load
+                  // Fallback to placeholder if image fails to load
+                  e.currentTarget.src = '/placeholder.svg';
                   e.currentTarget.className = "w-full h-full object-contain transition-all duration-500 ease-in-out hover:scale-105";
                 }}
               />
@@ -293,6 +295,14 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
           </div>
         )}
         
+        {product.comparePrice && parseFloat(product.comparePrice) > parseFloat(product.price) && (
+          <div className="absolute top-2 sm:top-4 right-2 sm:right-4">
+            <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-red-500 text-white text-xs font-medium shadow-lg">
+              {Math.round(((parseFloat(product.comparePrice) - parseFloat(product.price)) / parseFloat(product.comparePrice)) * 100)}% OFF
+            </span>
+          </div>
+        )}
+        
         {product.stock === 0 && (
           <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center">
             <span className="inline-flex items-center px-3 sm:px-4 py-2 rounded-full bg-red-50 text-red-700 border border-red-200 font-medium text-xs sm:text-sm">
@@ -315,7 +325,17 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
           <span className="text-xs sm:text-sm md:text-base text-gray-500">({product.reviews} {t('products.reviews')})</span>
         </div>
         <div className="flex items-center justify-between gap-2">
-          <span className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-primary">{formatCurrency(product.price)}</span>
+          <div className="flex flex-col">
+            <span className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-primary">{formatCurrency(product.price)}</span>
+            {product.comparePrice && parseFloat(product.comparePrice) > parseFloat(product.price) && (
+              <div className="flex items-center gap-2">
+                <span className="text-xs sm:text-sm text-gray-500 line-through">{formatCurrency(product.comparePrice)}</span>
+                <span className="text-xs sm:text-sm font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded">
+                  {Math.round(((parseFloat(product.comparePrice) - parseFloat(product.price)) / parseFloat(product.comparePrice)) * 100)}% OFF
+                </span>
+              </div>
+            )}
+          </div>
           {cartItem && updateCartQuantity ? (
             <div className="flex items-center gap-1 sm:gap-2" data-add-to-cart>
               <Button size="icon" variant="outline" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 border-gray-300" onClick={e => { e.stopPropagation(); updateCartQuantity(1); }} disabled={product.stock === 0} tabIndex={0}>

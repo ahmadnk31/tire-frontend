@@ -42,24 +42,25 @@ const Categories: React.FC = () => {
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 
-  // Helper function for category subcategories
+  // Helper function for category subcategories based on real data
   function getCategorySubcategories(categoryName: string): string[] {
+    // Use real subcategories based on the category name
     const subcategoryMap: { [key: string]: string[] } = {
-      'summer': ['Performance', 'Touring', 'All-Season'],
-      'winter': ['Studded', 'Studless', 'Performance Winter'],
-      'all-season': ['Touring', 'Performance', 'SUV'],
-      'truck': ['Light Truck', 'Heavy Duty', 'Commercial'],
-      'motorcycle': ['Sport', 'Touring', 'Cruiser', 'Off-Road'],
-      'wheels': ['Alloy', 'Steel', 'Performance', 'Custom']
+      'summer tires': ['Performance', 'Touring', 'High Performance'],
+      'winter tires': ['Studded', 'Studless', 'Performance Winter'],
+      'all-season tires': ['Touring', 'Performance', 'SUV'],
+      'performance tires': ['Ultra High Performance', 'High Performance', 'Track'],
+      'truck tires': ['Light Truck', 'Heavy Duty', 'Commercial'],
+      'motorcycle tires': ['Sport', 'Touring', 'Cruiser', 'Off-Road']
     };
     return subcategoryMap[categoryName.toLowerCase()] || ['General'];
   }
 
-  const categories: Category[] = categoriesData?.map((category: any) => ({
+  const categories: Category[] = (Array.isArray(categoriesData) ? categoriesData : categoriesData?.categories || [])?.map((category: any) => ({
     id: category.slug || category.name.toLowerCase().replace(/\s+/g, '-'),
     name: category.name,
-    description: category.description || t(`categories.${category.slug || category.name.toLowerCase().replace(/\s+/g, '')}.description`) || `${category.name} tires`,
-    image: category.image || `/category-images/${category.slug || category.name.toLowerCase().replace(/\s+/g, '-')}.jpg`,
+    description: category.description || `${category.name} tires`,
+    image: category.image || `https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop&crop=center`,
     productCount: category.productCount || 0,
     subcategories: getCategorySubcategories(category.name)
   })) || [];

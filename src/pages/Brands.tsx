@@ -8,6 +8,7 @@ import { productsApi } from '@/lib/api';
 interface Brand {
   id: string;
   name: string;
+  originalName: string;
   logo: string;
   description: string;
   country: string;
@@ -40,7 +41,18 @@ const Brands: React.FC = () => {
   const [filterCountry, setFilterCountry] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-
+const logos={
+  'michelin': 'https://logos-world.net/wp-content/uploads/2020/09/Michelin-Logo-2017-present.jpg',
+  'bridgestone': 'https://bpando.org/wp-content/uploads/New-Bridgestone-Logo-Design-2011-BPO.jpg',
+  'continental': 'https://continentaltire.com/themes/custom/nextcontinental/assets/images/Continental_Logo_Social.jpg',
+  'goodyear': 'https://www.goodyear.co.in/wp-content/uploads/GoodYear-Tyres.jpg',
+  'pirelli': 'https://1000logos.net/wp-content/uploads/2021/04/Pirelli-logo.png',
+  'hankook': 'https://www.automotivetestingtechnologyinternational.com/wp-content/uploads/2023/07/Hankook-Logo-1999.png',
+  'double star': 'https://kelucktyre.com/u_file/2007/photo/185a4cb981.jpg',
+  'rotalla': 'https://cdn.buttercms.com/5RvYx5AVS9qnaHY9Nlbz',
+  'ovation': 'https://eshop.tireworld.co.ke/media/manufacturers/Ovation-Tyres-Logo.webp',
+  'tracmax': 'https://www.tyrecenter.net/wp-content/uploads/2020/12/New-Project-1.jpg'
+}
   // Fetch real brands data
   const { data: brandsData, isLoading, error } = useQuery({
     queryKey: ['brands'],
@@ -51,8 +63,8 @@ const Brands: React.FC = () => {
   const brands: Brand[] = brandsData?.brands?.map((brandData: any) => ({
     id: brandData.brand.toLowerCase().replace(/\s+/g, '-'),
     name: brandData.brand,
-    logo: `/brand-logos/${brandData.brand.toLowerCase()}.png`, // Assuming brand logos exist
-    description: t(`brands.${brandData.brand.toLowerCase().replace(/\s+/g, '')}.description`) || `${brandData.brand} tires`,
+    originalName: brandData.brand, // Keep original name for API calls
+    logo: logos[brandData.brand.toLowerCase()] || `/brand-logos/${brandData.brand.toLowerCase().replace(/\s+/g, '-')}.png`, // Use actual logo URLs
     country: getBrandCountry(brandData.brand),
     founded: getBrandFounded(brandData.brand),
     productCount: brandData.productCount,
@@ -71,7 +83,10 @@ const Brands: React.FC = () => {
       'goodyear': 'USA',
       'pirelli': 'Italy',
       'hankook': 'South Korea',
-      'double-star': 'China'
+      'double star': 'China',
+      'rotalla': 'China',
+      'ovation': 'China',
+      'tracmax': 'China'
     };
     return countryMap[brand.toLowerCase()] || 'Unknown';
   }
@@ -84,7 +99,10 @@ const Brands: React.FC = () => {
       'goodyear': 1898,
       'pirelli': 1872,
       'hankook': 1941,
-      'double-star': 1996
+      'double star': 1996,
+      'rotalla': 1996,
+      'ovation': 1996,
+      'tracmax': 1996
     };
     return foundedMap[brand.toLowerCase()] || 1900;
   }
@@ -97,7 +115,10 @@ const Brands: React.FC = () => {
       'goodyear': ['Summer Tires', 'Winter Tires', 'All-Season', 'Truck Tires'],
       'pirelli': ['Summer Tires', 'Performance', 'Motorcycle'],
       'hankook': ['Summer Tires', 'Winter Tires', 'All-Season'],
-      'double-star': ['Summer Tires', 'Winter Tires', 'All-Season']
+      'double star': ['Summer Tires', 'Winter Tires', 'All-Season'],
+      'rotalla': ['Summer Tires', 'Winter Tires', 'All-Season'],
+      'ovation': ['Summer Tires', 'Winter Tires', 'All-Season'],
+      'tracmax': ['Summer Tires', 'Winter Tires', 'All-Season']
     };
     return categoryMap[brand.toLowerCase()] || ['Tires'];
   }
@@ -110,7 +131,11 @@ const Brands: React.FC = () => {
   // Fetch products for selected brand
   const { data: brandProductsData } = useQuery({
     queryKey: ['brand-products', selectedBrand],
-    queryFn: () => selectedBrand ? productsApi.getBrandProducts(selectedBrand) : Promise.resolve({ products: [] }),
+    queryFn: () => {
+      if (!selectedBrand) return Promise.resolve({ products: [] });
+      const selectedBrandData = brands.find(b => b.id === selectedBrand);
+      return selectedBrandData ? productsApi.getBrandProducts(selectedBrandData.originalName) : Promise.resolve({ products: [] });
+    },
     enabled: !!selectedBrand,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -336,7 +361,7 @@ const Brands: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-between">
                   <Link
-                    to={`/products?brand=${brand.id}`}
+                    to={`/products?brand=${brand.originalName}`}
                     className="text-primary hover:text-primary/80 font-medium text-sm flex items-center gap-1"
                   >
                     {t('brands.viewProducts')}

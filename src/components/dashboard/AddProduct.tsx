@@ -380,7 +380,11 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
                       <SelectItem value="dunlop">Dunlop</SelectItem>
                       <SelectItem value="yokohama">Yokohama</SelectItem>
                       <SelectItem value="hankook">Hankook</SelectItem>
+                      <SelectItem value="ovation">Ovation</SelectItem>
                       <SelectItem value="double-star">Double Star</SelectItem>
+                      <SelectItem value="tracmax">Tracmax</SelectItem>
+                      <SelectItem value="rotalla">Rotalla</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
