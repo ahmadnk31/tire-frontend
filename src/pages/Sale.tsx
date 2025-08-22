@@ -356,7 +356,7 @@ const Sale: React.FC = () => {
               />
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-x-auto">
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
