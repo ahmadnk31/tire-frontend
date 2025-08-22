@@ -192,7 +192,7 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
 
   return (
     <div
-      className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 overflow-hidden relative w-full max-w-sm mx-auto"
+      className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 overflow-hidden relative w-full max-w-sm mx-auto flex flex-col h-full"
       tabIndex={0}
       aria-label={`Product card for ${product.name}`}
       onClick={onClick}
@@ -312,7 +312,7 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
         )}
       </div>
       
-      <div className="p-4 sm:p-6 lg:p-8">
+      <div className="p-4 sm:p-6 lg:p-8 flex flex-col flex-grow">
         <h3 className="font-semibold text-sm sm:text-base md:text-lg lg:text-xl mb-2 sm:mb-3 line-clamp-2 group-hover:text-primary transition-colors duration-300 cursor-pointer leading-tight">
           {product.name}
         </h3>
@@ -324,7 +324,7 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
           </div>
           <span className="text-xs sm:text-sm md:text-base text-gray-500">({product.reviews} {t('products.reviews')})</span>
         </div>
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-2 mt-auto">
           <div className="flex flex-col">
             <span className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-primary">{formatCurrency(product.price)}</span>
             {product.comparePrice && parseFloat(product.comparePrice) > parseFloat(product.price) && (

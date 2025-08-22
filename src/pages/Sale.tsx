@@ -410,7 +410,7 @@ const Sale: React.FC = () => {
         {/* Products Grid */}
         <div className={`mb-12 ${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-4'}`}>
           {sortedProducts.map(product => (
-            <div key={product.id} className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow ${viewMode === 'list' ? 'flex' : ''}`}>
+            <div key={product.id} className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full ${viewMode === 'list' ? 'flex-row' : ''}`}>
               <div className={`relative ${viewMode === 'list' ? 'w-48 h-32' : 'h-48'}`}>
                 <img
                   src={product.image}
@@ -437,7 +437,7 @@ const Sale: React.FC = () => {
                   </span>
                 </div>
               </div>
-              <div className={`p-4 ${viewMode === 'list' ? 'flex-1' : ''}`}>
+              <div className={`p-4 flex flex-col flex-grow ${viewMode === 'list' ? 'flex-1' : ''}`}>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-sm font-medium text-primary">{product.brand}</span>
                   <div className="flex items-center gap-1">
@@ -474,7 +474,7 @@ const Sale: React.FC = () => {
                     )}
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 mt-auto">
                   <button 
                     onClick={() => addToCart(product)}
                     className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"

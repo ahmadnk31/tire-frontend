@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Star, ShoppingCart, Heart, Filter, Grid, List, Clock, TrendingUp, Sparkles } from 'lucide-react';
+import { Search, Star, ShoppingCart, Heart, Filter, Grid, List, Clock, TrendingUp, Sparkles, Percent } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productsApi } from '@/lib/api';
@@ -367,7 +367,7 @@ const NewArrivals: React.FC = () => {
         {/* Products Grid */}
         <div className={`mb-12 ${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-4'}`}>
           {sortedProducts.map(product => (
-            <div key={product.id} className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow ${viewMode === 'list' ? 'flex' : ''}`}>
+            <div key={product.id} className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full ${viewMode === 'list' ? 'flex-row' : ''}`}>
               <div className={`relative ${viewMode === 'list' ? 'w-48 h-32' : 'h-48'}`}>
                 <img
                   src={product.image}
@@ -379,7 +379,8 @@ const NewArrivals: React.FC = () => {
                     {t('newArrivals.new')}
                   </span>
                   {product.isOnSale && (
-                    <span className="px-2 py-1 bg-red-500 text-white text-xs font-medium rounded">
+                    <span className="px-2 py-1 bg-red-500 text-white text-xs font-medium rounded flex items-center gap-1">
+                      <Percent className="h-3 w-3" />
                       -{product.discount}%
                     </span>
                   )}
@@ -391,7 +392,7 @@ const NewArrivals: React.FC = () => {
                   </span>
                 </div>
               </div>
-              <div className={`p-4 ${viewMode === 'list' ? 'flex-1' : ''}`}>
+              <div className={`p-4 flex flex-col flex-grow ${viewMode === 'list' ? 'flex-1' : ''}`}>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-sm font-medium text-primary">{product.brand}</span>
                   <div className="flex items-center gap-1">
@@ -412,6 +413,11 @@ const NewArrivals: React.FC = () => {
                   <span className="text-lg font-bold text-primary">
                     €{product.price}
                   </span>
+                  {product.originalPrice && (
+                    <span className="text-sm text-green-600 font-medium">
+                      Save €{(product.originalPrice - product.price).toFixed(0)}
+                    </span>
+                  )}
                 </div>
                 <div className="mb-3">
                   <div className="flex flex-wrap gap-1">
@@ -427,7 +433,7 @@ const NewArrivals: React.FC = () => {
                     )}
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 mt-auto">
                   <button 
                     onClick={() => addToCart(product)}
                     className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm"
