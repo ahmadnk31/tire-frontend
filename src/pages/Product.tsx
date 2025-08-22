@@ -666,6 +666,16 @@ export default function ProductPage() {
           >
             {t('products.description')}
           </button>
+          <button
+            className={`flex-1 px-4 sm:px-6 py-3 sm:py-4 font-semibold transition-all duration-200 text-sm sm:text-base ${
+              activeTab === 'specifications'
+                ? 'border-b-3 border-black text-black bg-white' 
+                : 'text-gray-500 hover:text-gray-700 bg-gray-50/50 hover:bg-gray-50'
+            }`}
+            onClick={() => setActiveTab('specifications')}
+          >
+            {t('products.specifications')}
+          </button>
         </div>
         <div className="p-4 sm:p-6 lg:p-8 w-full">
           {activeTab === "description" && (
@@ -689,6 +699,136 @@ export default function ProductPage() {
                   </div>
                 </div>
               )}
+            </div>
+          )}
+          
+          {activeTab === "specifications" && (
+            <div className="space-y-6 w-full">
+              <div>
+                <h3 className="font-bold text-lg sm:text-xl mb-4 text-gray-900">{t('products.specifications')}</h3>
+                
+                {/* Basic Product Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-base text-gray-900 border-b border-gray-200 pb-2">Basic Information</h4>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-gray-600 font-medium">{t('products.brand')}</span>
+                        <span className="text-gray-900 font-semibold capitalize">{product.brand}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-gray-600 font-medium">{t('products.model')}</span>
+                        <span className="text-gray-900 font-semibold">{product.model}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-gray-600 font-medium">{t('products.size')}</span>
+                        <span className="text-gray-900 font-semibold">{product.size}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-gray-600 font-medium">SKU</span>
+                        <span className="text-gray-900 font-semibold">{product.sku}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-base text-gray-900 border-b border-gray-200 pb-2">Tire Dimensions</h4>
+                    <div className="space-y-3">
+                      {product.tireWidth && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">{t('products.width')}</span>
+                          <span className="text-gray-900 font-semibold">{product.tireWidth} mm</span>
+                        </div>
+                      )}
+                      {product.aspectRatio && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">{t('products.aspectRatio')}</span>
+                          <span className="text-gray-900 font-semibold">{product.aspectRatio}%</span>
+                        </div>
+                      )}
+                      {product.rimDiameter && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">{t('products.diameter')}</span>
+                          <span className="text-gray-900 font-semibold">{product.rimDiameter} inches</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Performance Specifications */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-base text-gray-900 border-b border-gray-200 pb-2">Performance Ratings</h4>
+                    <div className="space-y-3">
+                      {product.speedRating && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">{t('products.speedRating')}</span>
+                          <span className="text-gray-900 font-semibold">{product.speedRating}</span>
+                        </div>
+                      )}
+                      {product.loadIndex && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">{t('products.loadIndex')}</span>
+                          <span className="text-gray-900 font-semibold">{product.loadIndex}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-base text-gray-900 border-b border-gray-200 pb-2">Tire Classification</h4>
+                    <div className="space-y-3">
+                      {product.seasonType && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">{t('products.seasonType')}</span>
+                          <span className="text-gray-900 font-semibold capitalize">{product.seasonType}</span>
+                        </div>
+                      )}
+                      {product.tireType && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">{t('products.tireType')}</span>
+                          <span className="text-gray-900 font-semibold capitalize">{product.tireType}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional Specifications */}
+                {product.specifications && typeof product.specifications === 'object' && (
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-base text-gray-900 border-b border-gray-200 pb-2">Additional Specifications</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {Object.entries(product.specifications).map(([key, value]) => {
+                        if (value && typeof value === 'string' && value.trim() !== '') {
+                          return (
+                            <div key={key} className="flex justify-between items-center py-2 border-b border-gray-100">
+                              <span className="text-gray-600 font-medium capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+                              <span className="text-gray-900 font-semibold">{value}</span>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Tags */}
+                {product.tags && Array.isArray(product.tags) && product.tags.length > 0 && (
+                  <div className="space-y-4 mt-8">
+                    <h4 className="font-semibold text-base text-gray-900 border-b border-gray-200 pb-2">Tags</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {product.tags.map((tag: string, index: number) => (
+                        <span key={index} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
