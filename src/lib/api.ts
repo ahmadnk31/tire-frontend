@@ -213,6 +213,13 @@ export const productsApi = {
   }) => apiClient.post('/categories', data),
   updateCategory: (id: number, data: any) => apiClient.put(`/categories/${id}`, data),
   deleteCategory: (id: number) => apiClient.delete(`/categories/${id}`),
+
+  // Specialized endpoints for different pages
+  getOnSale: () => apiClient.get('/products/on-sale'),
+  getNewArrivals: () => apiClient.get('/products/new-arrivals'),
+  getBrands: () => apiClient.get('/products/brands'),
+  getBrandProducts: (brand: string) => apiClient.get(`/products/brands/${brand}`),
+  getCategoryProducts: (category: string) => apiClient.get(`/products/categories/${category}`),
 };
 
 // Orders API

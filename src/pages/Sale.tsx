@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Star, ShoppingCart, Heart, Filter, Grid, List, Percent, Clock, TrendingDown, Flame } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { productsApi } from '@/lib/api';
 
 interface Product {
   id: string;
@@ -28,104 +30,29 @@ const Sale: React.FC = () => {
   const [sortBy, setSortBy] = useState('discount');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
-  const products: Product[] = [
-    {
-      id: '1',
-      name: 'Michelin Pilot Sport 4',
-      brand: 'Michelin',
-      price: 189.99,
-      originalPrice: 289.99,
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop',
-      rating: 4.8,
-      reviewCount: 124,
-      category: 'summer-tires',
-      discount: 35,
-      isOnSale: true,
-      saleEndDate: '2024-12-31',
-      features: ['Ultra High Performance', 'Wet Grip A', 'Fuel Efficiency B'],
-      stockLevel: 'medium'
-    },
-    {
-      id: '2',
-      name: 'Bridgestone Blizzak WS90',
-      brand: 'Bridgestone',
-      price: 145.50,
-      originalPrice: 195.00,
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop',
-      rating: 4.6,
-      reviewCount: 89,
-      category: 'winter-tires',
-      discount: 25,
-      isOnSale: true,
-      saleEndDate: '2024-12-15',
-      features: ['Studless', 'Ice Performance', 'Snow Grip'],
-      stockLevel: 'high'
-    },
-    {
-      id: '3',
-      name: 'Continental CrossContact LX25',
-      brand: 'Continental',
-      price: 125.00,
-      originalPrice: 175.00,
-      image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=300&h=200&fit=crop',
-      rating: 4.7,
-      reviewCount: 156,
-      category: 'all-season-tires',
-      discount: 29,
-      isOnSale: true,
-      saleEndDate: '2024-12-20',
-      features: ['Touring', 'Comfort', 'Long Life'],
-      stockLevel: 'low'
-    },
-    {
-      id: '4',
-      name: 'Goodyear Eagle F1 Asymmetric 6',
-      brand: 'Goodyear',
-      price: 178.50,
-      originalPrice: 220.00,
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop',
-      rating: 4.6,
-      reviewCount: 123,
-      category: 'summer-tires',
-      discount: 19,
-      isOnSale: true,
-      saleEndDate: '2024-12-25',
-      features: ['High Performance', 'Wet Grip A', 'Noise Reduction'],
-      stockLevel: 'medium'
-    },
-    {
-      id: '5',
-      name: 'Pirelli P Zero PZ4',
-      brand: 'Pirelli',
-      price: 298.99,
-      originalPrice: 398.99,
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop',
-      rating: 4.9,
-      reviewCount: 67,
-      category: 'summer-tires',
-      discount: 25,
-      isOnSale: true,
-      saleEndDate: '2024-12-10',
-      features: ['Ultra High Performance', 'Track Ready', 'Premium Compound'],
-      stockLevel: 'high'
-    },
-    {
-      id: '6',
-      name: 'Hankook Ventus V12 evo3',
-      brand: 'Hankook',
-      price: 115.00,
-      originalPrice: 165.00,
-      image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=300&h=200&fit=crop',
-      rating: 4.5,
-      reviewCount: 98,
-      category: 'summer-tires',
-      discount: 30,
-      isOnSale: true,
-      saleEndDate: '2024-12-30',
-      features: ['Performance', 'Value', 'Durability'],
-      stockLevel: 'high'
-    }
-  ];
+  // Fetch real sale products
+  const { data: saleData, isLoading, error } = useQuery({
+    queryKey: ['sale-products'],
+    queryFn: () => productsApi.getOnSale(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const products: Product[] = saleData?.products?.map((product: any) => ({
+    id: product.id.toString(),
+    name: product.name,
+    brand: product.brand,
+    price: Number(product.price),
+    originalPrice: product.comparePrice ? Number(product.comparePrice) : Number(product.price),
+    image: product.images?.[0]?.imageUrl || product.productImages?.[0]?.imageUrl || '/placeholder.svg',
+    rating: Number(product.rating) || 0,
+    reviewCount: 0, // Not available in current schema
+    category: product.seasonType || 'tires',
+    discount: product.comparePrice ? Math.round(((Number(product.comparePrice) - Number(product.price)) / Number(product.comparePrice)) * 100) : 0,
+    isOnSale: true,
+    saleEndDate: undefined, // Not available in current schema
+    features: product.features || [],
+    stockLevel: product.stock > 10 ? 'high' : product.stock > 5 ? 'medium' : 'low'
+  })) || [];
 
   const categories = [
     { id: 'all', name: t('sale.categories.all') },
@@ -202,6 +129,59 @@ const Sale: React.FC = () => {
 
   const totalSavings = products.reduce((sum, product) => sum + (product.originalPrice - product.price), 0);
   const averageDiscount = Math.round(products.reduce((sum, product) => sum + product.discount, 0) / products.length);
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              {t('sale.title')}
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              {t('sale.description')}
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="bg-white rounded-lg shadow-md p-4 animate-pulse">
+                <div className="bg-gray-200 h-48 rounded-lg mb-4"></div>
+                <div className="space-y-2">
+                  <div className="bg-gray-200 h-4 rounded"></div>
+                  <div className="bg-gray-200 h-4 rounded w-3/4"></div>
+                  <div className="bg-gray-200 h-6 rounded w-1/2"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              {t('sale.title')}
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              {t('sale.description')}
+            </p>
+          </div>
+          <div className="text-center py-12">
+            <p className="text-gray-600 text-lg">
+              {t('common.errorLoading')}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">

@@ -218,11 +218,11 @@ const Shipping: React.FC = () => {
               {t('shipping.contact.button')}
             </a>
             <a
-              href="tel:+32 56 51 28 29"
+              href="tel:+32 467 66 21 97"
               className="flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <Clock className="h-5 w-5" />
-              +32 56 51 28 29
+              +32 467 66 21 97
             </a>
           </div>
         </div>

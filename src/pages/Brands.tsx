@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Star, ShoppingCart, Heart, Filter, Grid, List, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { productsApi } from '@/lib/api';
 
 interface Brand {
   id: string;
@@ -39,122 +41,93 @@ const Brands: React.FC = () => {
   const [sortBy, setSortBy] = useState('name');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
-  const brands: Brand[] = [
-    {
-      id: 'michelin',
-      name: 'Michelin',
-      logo: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=100&fit=crop',
-      description: t('brands.michelin.description'),
-      country: 'France',
-      founded: 1889,
-      productCount: 156,
-      rating: 4.8,
-      reviewCount: 2847,
-      categories: ['Summer Tires', 'Winter Tires', 'All-Season', 'Truck Tires'],
-      isPremium: true
-    },
-    {
-      id: 'bridgestone',
-      name: 'Bridgestone',
-      logo: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=100&fit=crop',
-      description: t('brands.bridgestone.description'),
-      country: 'Japan',
-      founded: 1931,
-      productCount: 142,
-      rating: 4.7,
-      reviewCount: 2156,
-      categories: ['Summer Tires', 'Winter Tires', 'All-Season', 'Motorcycle'],
-      isPremium: true
-    },
-    {
-      id: 'continental',
-      name: 'Continental',
-      logo: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=200&h=100&fit=crop',
-      description: t('brands.continental.description'),
-      country: 'Germany',
-      founded: 1871,
-      productCount: 98,
-      rating: 4.6,
-      reviewCount: 1893,
-      categories: ['Summer Tires', 'Winter Tires', 'All-Season'],
-      isPremium: true
-    },
-    {
-      id: 'goodyear',
-      name: 'Goodyear',
-      logo: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=100&fit=crop',
-      description: t('brands.goodyear.description'),
-      country: 'USA',
-      founded: 1898,
-      productCount: 87,
-      rating: 4.5,
-      reviewCount: 1654,
-      categories: ['Summer Tires', 'Winter Tires', 'All-Season', 'Truck Tires'],
-      isPremium: true
-    },
-    {
-      id: 'pirelli',
-      name: 'Pirelli',
-      logo: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=100&fit=crop',
-      description: t('brands.pirelli.description'),
-      country: 'Italy',
-      founded: 1872,
-      productCount: 76,
-      rating: 4.7,
-      reviewCount: 1432,
-      categories: ['Summer Tires', 'Performance', 'Motorcycle'],
-      isPremium: true
-    },
-    {
-      id: 'hankook',
-      name: 'Hankook',
-      logo: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=200&h=100&fit=crop',
-      description: t('brands.hankook.description'),
-      country: 'South Korea',
-      founded: 1941,
-      productCount: 65,
-      rating: 4.4,
-      reviewCount: 987,
-      categories: ['Summer Tires', 'Winter Tires', 'All-Season'],
-      isPremium: false
-    }
-  ];
+  // Fetch real brands data
+  const { data: brandsData, isLoading, error } = useQuery({
+    queryKey: ['brands'],
+    queryFn: () => productsApi.getBrands(),
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  });
 
-  const products: Product[] = [
-    {
-      id: '1',
-      name: 'Michelin Pilot Sport 4',
-      brand: 'Michelin',
-      price: 189.99,
-      originalPrice: 229.99,
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop',
-      rating: 4.8,
-      reviewCount: 124,
-      category: 'summer-tires',
-      isOnSale: true
-    },
-    {
-      id: '2',
-      name: 'Bridgestone Blizzak WS90',
-      brand: 'Bridgestone',
-      price: 165.50,
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop',
-      rating: 4.6,
-      reviewCount: 89,
-      category: 'winter-tires',
-      isNew: true
-    },
-    {
-      id: '3',
-      name: 'Continental CrossContact LX25',
-      brand: 'Continental',
-      price: 145.00,
-      image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=300&h=200&fit=crop',
-      rating: 4.7,
-      reviewCount: 156,
-      category: 'all-season-tires'
-    }
-  ];
+  const brands: Brand[] = brandsData?.brands?.map((brandData: any) => ({
+    id: brandData.brand.toLowerCase().replace(/\s+/g, '-'),
+    name: brandData.brand,
+    logo: `/brand-logos/${brandData.brand.toLowerCase()}.png`, // Assuming brand logos exist
+    description: t(`brands.${brandData.brand.toLowerCase().replace(/\s+/g, '')}.description`) || `${brandData.brand} tires`,
+    country: getBrandCountry(brandData.brand),
+    founded: getBrandFounded(brandData.brand),
+    productCount: brandData.productCount,
+    rating: 4.5, // Default rating since not available in current schema
+    reviewCount: 0, // Not available in current schema
+    categories: getBrandCategories(brandData.brand),
+    isPremium: isPremiumBrand(brandData.brand)
+  })) || [];
+
+  // Helper functions for brand data
+  function getBrandCountry(brand: string): string {
+    const countryMap: { [key: string]: string } = {
+      'michelin': 'France',
+      'bridgestone': 'Japan',
+      'continental': 'Germany',
+      'goodyear': 'USA',
+      'pirelli': 'Italy',
+      'hankook': 'South Korea',
+      'double-star': 'China'
+    };
+    return countryMap[brand.toLowerCase()] || 'Unknown';
+  }
+
+  function getBrandFounded(brand: string): number {
+    const foundedMap: { [key: string]: number } = {
+      'michelin': 1889,
+      'bridgestone': 1931,
+      'continental': 1871,
+      'goodyear': 1898,
+      'pirelli': 1872,
+      'hankook': 1941,
+      'double-star': 1996
+    };
+    return foundedMap[brand.toLowerCase()] || 1900;
+  }
+
+  function getBrandCategories(brand: string): string[] {
+    const categoryMap: { [key: string]: string[] } = {
+      'michelin': ['Summer Tires', 'Winter Tires', 'All-Season', 'Truck Tires'],
+      'bridgestone': ['Summer Tires', 'Winter Tires', 'All-Season', 'Motorcycle'],
+      'continental': ['Summer Tires', 'Winter Tires', 'All-Season'],
+      'goodyear': ['Summer Tires', 'Winter Tires', 'All-Season', 'Truck Tires'],
+      'pirelli': ['Summer Tires', 'Performance', 'Motorcycle'],
+      'hankook': ['Summer Tires', 'Winter Tires', 'All-Season'],
+      'double-star': ['Summer Tires', 'Winter Tires', 'All-Season']
+    };
+    return categoryMap[brand.toLowerCase()] || ['Tires'];
+  }
+
+  function isPremiumBrand(brand: string): boolean {
+    const premiumBrands = ['michelin', 'bridgestone', 'continental', 'goodyear', 'pirelli'];
+    return premiumBrands.includes(brand.toLowerCase());
+  }
+
+  // Fetch products for selected brand
+  const { data: brandProductsData } = useQuery({
+    queryKey: ['brand-products', selectedBrand],
+    queryFn: () => selectedBrand ? productsApi.getBrandProducts(selectedBrand) : Promise.resolve({ products: [] }),
+    enabled: !!selectedBrand,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const products: Product[] = brandProductsData?.products?.map((product: any) => ({
+    id: product.id.toString(),
+    name: product.name,
+    brand: product.brand,
+    price: Number(product.price),
+    originalPrice: product.comparePrice ? Number(product.comparePrice) : undefined,
+    image: product.images?.[0]?.imageUrl || product.productImages?.[0]?.imageUrl || '/placeholder.svg',
+    rating: Number(product.rating) || 0,
+    reviewCount: 0, // Not available in current schema
+    category: product.seasonType || 'tires',
+    isOnSale: product.comparePrice ? Number(product.comparePrice) > Number(product.price) : false,
+    isNew: false // Would need to check creation date
+  })) || [];
 
   const filteredBrands = brands.filter(brand => {
     const matchesSearch = brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -182,6 +155,59 @@ const Brands: React.FC = () => {
   });
 
   const countries = Array.from(new Set(brands.map(brand => brand.country)));
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              {t('brands.title')}
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              {t('brands.description')}
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white rounded-lg shadow-md p-6 animate-pulse">
+                <div className="bg-gray-200 h-32 rounded-lg mb-4"></div>
+                <div className="space-y-2">
+                  <div className="bg-gray-200 h-6 rounded"></div>
+                  <div className="bg-gray-200 h-4 rounded w-3/4"></div>
+                  <div className="bg-gray-200 h-4 rounded w-1/2"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              {t('brands.title')}
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              {t('brands.description')}
+            </p>
+          </div>
+          <div className="text-center py-12">
+            <p className="text-gray-600 text-lg">
+              {t('common.errorLoading')}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">

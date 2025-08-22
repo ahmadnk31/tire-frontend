@@ -2,6 +2,7 @@
   "common": {
     "loading": "Loading...",
     "error": "Error",
+    "errorLoading": "Error loading products",
     "success": "Success",
     "cancel": "Cancel",
     "save": "Save",
@@ -156,9 +157,80 @@
     "newArrivals": "New Arrivals",
     "bestSellers": "Best Sellers",
     "support": "Support",
-    "relatedParts": "Related Parts",
-    "noRelatedParts": "No related parts"
+    "relatedParts": "Related Parts"
   },
+  "footer": {
+    "shop": {
+      "title": "Shop",
+      "allProducts": "All Products",
+      "categories": "Categories",
+      "brands": "Brands",
+      "newArrivals": "New Arrivals",
+      "saleItems": "Sale Items"
+    },
+    "support": {
+      "title": "Support",
+      "contactUs": "Contact Us",
+      "faq": "FAQ",
+      "returnsWarranty": "Returns & Warranty",
+      "shippingInfo": "Shipping Info",
+      "tyreSizeGuide": "Tyre Size Guide"
+    },
+    "company": {
+      "title": "Company",
+      "aboutUs": "About Us",
+      "blog": "Blog",
+      "careers": "Careers",
+      "press": "Press",
+      "sustainability": "Sustainability"
+    },
+    "legal": {
+      "title": "Legal",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "cookiePolicy": "Cookie Policy",
+      "accessibility": "Accessibility"
+    },
+    "trustBadges": {
+      "sslSecured": "SSL Secured",
+      "freeShipping": "Free Shipping",
+      "easyReturns": "Easy Returns",
+      "support247": "24/7 Support"
+    },
+    "newsletter": {
+      "stayUpdated": "Stay Updated",
+      "emailPlaceholder": "Enter your email",
+      "subscribe": "Subscribe",
+      "subscribing": "Subscribing...",
+      "description": "Get exclusive deals and updates. Unsubscribe anytime.",
+      "emailRequired": "Email required",
+      "emailRequiredDesc": "Please enter your email address",
+      "subscribedSuccess": "Subscribed successfully!",
+      "subscribedDesc": "Thank you for subscribing to our newsletter",
+      "subscriptionFailed": "Subscription failed"
+    },
+    "social": {
+      "followUs": "Follow Us"
+    },
+    "contact": {
+      "contactInfo": "Contact Info",
+      "businessHours": "Business Hours",
+      "paymentMethods": "Payment Methods",
+      "mondayFriday": "Monday - Friday:",
+      "saturday": "Saturday:",
+      "sunday": "Sunday:",
+      "withAppointmentOnly": "With appointment only",
+      "hours": "9:00 AM - 6:00 PM"
+    },
+    "bottom": {
+      "allRightsReserved": "All rights reserved.",
+      "builtWithLove": "Built with",
+      "forAutomotiveEnthusiasts": "for automotive enthusiasts",
+      "sitemap": "Sitemap"
+    },
+    "description": "Your trusted partner for premium tyres, wheels, and automotive accessories. We deliver quality, expertise, and exceptional service to keep you moving safely."
+  },
+  
   "searchBar": {
     "placeholder": "Search products...",
     "filterByBrand": "Filter by Brand",
@@ -1243,28 +1315,28 @@
     "location": {
       "title": "Visit Our Store",
       "businessName": "Ariana Banden Service",
-      "street": "Industrielaan 12",
-      "cityPostal": "8930 Menen",
+      "street": "Provinciebaan 192A",
+      "cityPostal": "8880 Ledegem",
       "country": "Belgium",
       "directions": "Get Directions"
     },
     "details": {
       "title": "Contact Details",
       "phone": "Phone",
-      "phoneNumber": "+32 56 51 28 29",
+      "phoneNumber": "+32 467 66 21 97",
       "email": "Email",
-      "emailAddress": "info@arianabanden.be",
+      "emailAddress": "info@arianabandencentralebv.be",
       "whatsapp": "WhatsApp",
-      "whatsappNumber": "+32 475 12 34 56"
+      "whatsappNumber": "+32 467 66 21 97"
     },
     "hours": {
       "title": "Business Hours",
       "weekdays": "Monday - Friday",
-      "weekdayTime": "8:00 AM - 6:00 PM",
+      "weekdayTime": "9:00 AM - 6:00 PM",
       "saturday": "Saturday",
-      "saturdayTime": "8:00 AM - 4:00 PM",
+      "saturdayTime": "9:00 AM - 6:00 PM",
       "sunday": "Sunday",
-      "closed": "Closed",
+      "closed": "Open on appointment",
       "emergency": "Emergency Service",
       "emergencyDesc": "Available 24/7 for roadside assistance"
     },
@@ -1311,7 +1383,7 @@
     "emergency": {
       "title": "Emergency Roadside Assistance",
       "description": "Flat tire or tire emergency? We provide 24/7 roadside assistance.",
-      "callButton": "Call Emergency: +32 470 12 34 56"
+      "callButton": "Call Emergency: +32 467 66 21 97"
     }
   },
   "cart": {
@@ -1411,24 +1483,7 @@
     "deleteAccountWarning": "This action cannot be undone",
     "confirmDelete": "Are you sure you want to delete your account?"
   },
-  "footer": {
-    "about": "About Us",
-    "contact": "Contact",
-    "support": "Support",
-    "terms": "Terms of Service",
-    "privacy": "Privacy Policy",
-    "cookies": "Cookie Policy",
-    "shipping": "Shipping Information",
-    "returns": "Returns & Exchanges",
-    "warranty": "Warranty Information",
-    "newsletter": "Newsletter",
-    "subscribe": "Subscribe",
-    "emailPlaceholder": "Enter your email",
-    "followUs": "Follow Us",
-    "copyright": "© 2024 Tire Store. All rights reserved.",
-    "poweredBy": "Powered by",
-    "madeWith": "Made with ❤️"
-  },
+  
   "errors": {
     "general": "Something went wrong",
     "network": "Network error",

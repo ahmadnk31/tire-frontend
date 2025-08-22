@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronRight, Filter, Grid, List, Search, Star, ShoppingCart, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { productsApi } from '@/lib/api';
 
 interface Category {
   id: string;
@@ -33,92 +35,56 @@ const Categories: React.FC = () => {
   const [sortBy, setSortBy] = useState('name');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const categories: Category[] = [
-    {
-      id: 'summer-tires',
-      name: t('categories.summer.name'),
-      description: t('categories.summer.description'),
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
-      productCount: 45,
-      subcategories: ['Performance', 'Touring', 'All-Season']
-    },
-    {
-      id: 'winter-tires',
-      name: t('categories.winter.name'),
-      description: t('categories.winter.description'),
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop',
-      productCount: 32,
-      subcategories: ['Studded', 'Studless', 'Performance Winter']
-    },
-    {
-      id: 'all-season-tires',
-      name: t('categories.allSeason.name'),
-      description: t('categories.allSeason.description'),
-      image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400&h=300&fit=crop',
-      productCount: 28,
-      subcategories: ['Touring', 'Performance', 'SUV']
-    },
-    {
-      id: 'truck-tires',
-      name: t('categories.truck.name'),
-      description: t('categories.truck.description'),
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
-      productCount: 18,
-      subcategories: ['Light Truck', 'Heavy Duty', 'Commercial']
-    },
-    {
-      id: 'motorcycle-tires',
-      name: t('categories.motorcycle.name'),
-      description: t('categories.motorcycle.description'),
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
-      productCount: 24,
-      subcategories: ['Sport', 'Touring', 'Cruiser', 'Off-Road']
-    },
-    {
-      id: 'wheels',
-      name: t('categories.wheels.name'),
-      description: t('categories.wheels.description'),
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
-      productCount: 56,
-      subcategories: ['Alloy', 'Steel', 'Performance', 'Custom']
-    }
-  ];
+  // Fetch real categories data
+  const { data: categoriesData, isLoading, error } = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => productsApi.getCategories(),
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  });
 
-  const products: Product[] = [
-    {
-      id: '1',
-      name: 'Michelin Pilot Sport 4',
-      brand: 'Michelin',
-      price: 189.99,
-      originalPrice: 229.99,
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop',
-      rating: 4.8,
-      reviewCount: 124,
-      category: 'summer-tires',
-      isOnSale: true
-    },
-    {
-      id: '2',
-      name: 'Bridgestone Blizzak WS90',
-      brand: 'Bridgestone',
-      price: 165.50,
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop',
-      rating: 4.6,
-      reviewCount: 89,
-      category: 'winter-tires',
-      isNew: true
-    },
-    {
-      id: '3',
-      name: 'Continental CrossContact LX25',
-      brand: 'Continental',
-      price: 145.00,
-      image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=300&h=200&fit=crop',
-      rating: 4.7,
-      reviewCount: 156,
-      category: 'all-season-tires'
-    }
-  ];
+  // Helper function for category subcategories
+  function getCategorySubcategories(categoryName: string): string[] {
+    const subcategoryMap: { [key: string]: string[] } = {
+      'summer': ['Performance', 'Touring', 'All-Season'],
+      'winter': ['Studded', 'Studless', 'Performance Winter'],
+      'all-season': ['Touring', 'Performance', 'SUV'],
+      'truck': ['Light Truck', 'Heavy Duty', 'Commercial'],
+      'motorcycle': ['Sport', 'Touring', 'Cruiser', 'Off-Road'],
+      'wheels': ['Alloy', 'Steel', 'Performance', 'Custom']
+    };
+    return subcategoryMap[categoryName.toLowerCase()] || ['General'];
+  }
+
+  const categories: Category[] = categoriesData?.map((category: any) => ({
+    id: category.slug || category.name.toLowerCase().replace(/\s+/g, '-'),
+    name: category.name,
+    description: category.description || t(`categories.${category.slug || category.name.toLowerCase().replace(/\s+/g, '')}.description`) || `${category.name} tires`,
+    image: category.image || `/category-images/${category.slug || category.name.toLowerCase().replace(/\s+/g, '-')}.jpg`,
+    productCount: category.productCount || 0,
+    subcategories: getCategorySubcategories(category.name)
+  })) || [];
+
+  // Fetch products for selected category
+  const { data: categoryProductsData } = useQuery({
+    queryKey: ['category-products', selectedCategory],
+    queryFn: () => selectedCategory ? productsApi.getCategoryProducts(selectedCategory) : Promise.resolve({ products: [] }),
+    enabled: !!selectedCategory,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const products: Product[] = categoryProductsData?.products?.map((product: any) => ({
+    id: product.id.toString(),
+    name: product.name,
+    brand: product.brand,
+    price: Number(product.price),
+    originalPrice: product.comparePrice ? Number(product.comparePrice) : undefined,
+    image: product.images?.[0]?.imageUrl || product.productImages?.[0]?.imageUrl || '/placeholder.svg',
+    rating: Number(product.rating) || 0,
+    reviewCount: 0, // Not available in current schema
+    category: product.seasonType || 'tires',
+    isOnSale: product.comparePrice ? Number(product.comparePrice) > Number(product.price) : false,
+    isNew: false // Would need to check creation date
+  })) || [];
 
   const filteredProducts = products.filter(product => {
     const matchesCategory = !selectedCategory || product.category === selectedCategory;
@@ -140,6 +106,59 @@ const Categories: React.FC = () => {
         return a.name.localeCompare(b.name);
     }
   });
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              {t('categories.title')}
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              {t('categories.description')}
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse">
+                <div className="bg-gray-200 h-48"></div>
+                <div className="p-6 space-y-2">
+                  <div className="bg-gray-200 h-6 rounded"></div>
+                  <div className="bg-gray-200 h-4 rounded w-3/4"></div>
+                  <div className="bg-gray-200 h-4 rounded w-1/2"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              {t('categories.title')}
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              {t('categories.description')}
+            </p>
+          </div>
+          <div className="text-center py-12">
+            <p className="text-gray-600 text-lg">
+              {t('common.errorLoading')}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">

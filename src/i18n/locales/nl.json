@@ -2,6 +2,7 @@
   "common": {
     "loading": "Laden...",
     "error": "Fout",
+    "errorLoading": "Kan producten niet laden",
     "success": "Succes",
     "cancel": "Annuleren",
     "save": "Opslaan",
@@ -158,6 +159,78 @@
     "relatedParts": "Gerelateerde Onderdelen",
     "noRelatedParts": "Geen gerelateerde onderdelen"
   },
+  "footer": {
+    
+    "shop": {
+      "title": "Winkel",
+      "allProducts": "Alle Producten",
+      "categories": "Categorieën",
+      "brands": "Merken",
+      "newArrivals": "Nieuwe Aankomsten",
+      "saleItems": "Aanbiedingen"
+    },
+    "support": {
+      "title": "Ondersteuning",
+      "contactUs": "Contact",
+      "faq": "FAQ",
+      "returnsWarranty": "Retour & Garantie",
+      "shippingInfo": "Verzendinformatie",
+      "tyreSizeGuide": "Bandmaat Gids"
+    },
+    "company": {
+      "title": "Bedrijf",
+      "aboutUs": "Over Ons",
+      "blog": "Blog",
+      "careers": "Carrières",
+      "press": "Pers",
+      "sustainability": "Duurzaamheid"
+    },
+    "legal": {
+      "title": "Juridisch",
+      "privacyPolicy": "Privacybeleid",
+      "termsOfService": "Gebruiksvoorwaarden",
+      "cookiePolicy": "Cookiebeleid",
+      "accessibility": "Toegankelijkheid"
+    },
+    "trustBadges": {
+      "sslSecured": "SSL Beveiligd",
+      "freeShipping": "Gratis Verzending",
+      "easyReturns": "Eenvoudig Retour",
+      "support247": "24/7 Ondersteuning"
+    },
+    "newsletter": {
+      "stayUpdated": "Blijf Op De Hoogte",
+      "emailPlaceholder": "Voer je e-mail in",
+      "subscribe": "Abonneren",
+      "subscribing": "Abonneren...",
+      "description": "Ontvang exclusieve aanbiedingen en updates. Altijd afmelden mogelijk.",
+      "emailRequired": "E-mail vereist",
+      "emailRequiredDesc": "Voer je e-mailadres in",
+      "subscribedSuccess": "Succesvol geabonneerd!",
+      "subscribedDesc": "Bedankt voor je aanmelding voor onze nieuwsbrief",
+      "subscriptionFailed": "Abonnement mislukt"
+    },
+    "social": {
+      "followUs": "Volg Ons"
+    },
+    "contact": {
+      "contactInfo": "Contactgegevens",
+      "businessHours": "Openingstijden",
+      "paymentMethods": "Betaalmethoden",
+      "mondayFriday": "Maandag - Vrijdag:",
+      "saturday": "Zaterdag:",
+      "sunday": "Zondag:",
+      "withAppointmentOnly": "Alleen op afspraak",
+      "hours": "9:00 - 18:00"
+    },
+    "bottom": {
+      "allRightsReserved": "Alle rechten voorbehouden.",
+      "builtWithLove": "Gebouwd met",
+      "forAutomotiveEnthusiasts": "voor auto-enthousiastelingen",
+      "sitemap": "Sitemap"
+    },
+    "description": "Je vertrouwde partner voor premium banden, wielen en auto-accessoires. We leveren kwaliteit, expertise en uitzonderlijke service om je veilig in beweging te houden."
+  },
   "searchBar": {
     "placeholder": "Zoek producten...",
     "filterByBrand": "Filter op merk",
@@ -281,27 +354,27 @@
       "title": "Bezoek Onze Winkel",
       "businessName": "Ariana Banden Service",
       "street": "Provinciebaan 192A",
-      "cityPostal": "8930 Menen",
+      "cityPostal": "8880 Ledegem",
       "country": "België",
       "directions": "Routebeschrijving"
     },
     "details": {
       "title": "Contactgegevens",
       "phone": "Telefoon",
-      "phoneNumber": "+32 56 51 28 29",
+      "phoneNumber": "+32 467 66 21 97",
       "email": "E-mail",
-      "emailAddress": "info@arianabanden.be",
+      "emailAddress": "info@arianabandencentralebv.be",
       "whatsapp": "WhatsApp",
-      "whatsappNumber": "+32 475 12 34 56"
+      "whatsappNumber": "+32 467 66 21 97"
     },
     "hours": {
       "title": "Openingstijden",
       "weekdays": "Maandag - Vrijdag",
-      "weekdayTime": "8:00 - 18:00",
+      "weekdayTime": "9:00 - 18:00",
       "saturday": "Zaterdag",
-      "saturdayTime": "8:00 - 16:00",
+      "saturdayTime": "9:00 - 18:00",
       "sunday": "Zondag",
-      "closed": "Gesloten",
+      "closed": "Open op afspraak",
       "emergency": "Nooddienst",
       "emergencyDesc": "24/7 beschikbaar voor pechhulp"
     },
@@ -330,7 +403,7 @@
       "placeholders": {
         "fullName": "Je volledige naam",
         "email": "jouw.email@voorbeeld.be",
-        "phone": "+32 475 12 34 56",
+        "phone": "+32 467 66 21 97",
         "subject": "Kort onderwerp van je vraag",
         "message": "Geef details over je vraag, inclusief voertuiginformatie indien relevant..."
       }
@@ -348,7 +421,7 @@
     "emergency": {
       "title": "Nood Pechhulp",
       "description": "Lekke band of bandennood? We bieden 24/7 pechhulp.",
-      "callButton": "Bel Nood: +32 470 12 34 56"
+      "callButton": "Bel Nood: +32 467 66 21 97"
     }
   },
   "cart": {
@@ -396,7 +469,6 @@
   },
   "checkout": {
     "title": "Afrekenen",
-    "billingAddress": "Factuuradres",
     "shippingAddress": "Verzendadres",
     "paymentMethod": "Betaalmethode",
     "orderSummary": "Besteloverzicht",
@@ -449,24 +521,7 @@
     "deleteAccountWarning": "Deze actie kan niet ongedaan worden gemaakt",
     "confirmDelete": "Weet je zeker dat je je account wilt verwijderen?"
   },
-  "footer": {
-    "about": "Over ons",
-    "contact": "Contact",
-    "support": "Ondersteuning",
-    "terms": "Servicevoorwaarden",
-    "privacy": "Privacybeleid",
-    "cookies": "Cookiebeleid",
-    "shipping": "Verzendinformatie",
-    "returns": "Retourneren & Omruilen",
-    "warranty": "Garantie-informatie",
-    "newsletter": "Nieuwsbrief",
-    "subscribe": "Abonneren",
-    "emailPlaceholder": "Voer je e-mail in",
-    "followUs": "Volg ons",
-    "copyright": "© 2024 Tire Store. Alle rechten voorbehouden.",
-    "poweredBy": "Aangedreven door",
-    "madeWith": "Gemaakt met ❤️"
-  },
+ 
   "errors": {
     "general": "Er is iets misgegaan",
     "network": "Netwerkfout",
@@ -671,5 +726,63 @@
       "averageDiscount": "Gem. Korting",
       "totalSavings": "Totale Besparing"
     }
+  },
+  "support": {
+    "faq": {
+      "title": "Veelgestelde Vragen",
+      "description": "Vind antwoorden op veelgestelde vragen over onze producten en diensten"
+    },
+    "returns": {
+      "title": "Retour & Garantie",
+      "description": "Onze retour- en garantiebeleid voor uw gemoedsrust"
+    },
+    "shipping": {
+      "title": "Verzendinformatie",
+      "description": "Informatie over verzending, levering en tracking"
+    }
+  },
+  "company": {
+    "about": {
+      "title": "Over Ons",
+      "description": "Leer meer over Ariana Banden Service en onze missie"
+    },
+    "blog": {
+      "title": "Blog",
+      "description": "Nieuws, tips en inzichten over banden en automotive"
+    },
+    "careers": {
+      "title": "Carrières",
+      "description": "Word deel van ons team en groei met ons mee"
+    },
+    "press": {
+      "title": "Pers",
+      "description": "Persberichten en media-informatie over Ariana Banden Service"
+    },
+    "sustainability": {
+      "title": "Duurzaamheid",
+      "description": "Onze toewijding aan duurzame praktijken en milieubescherming"
+    }
+  },
+  "legal": {
+    "privacy": {
+      "title": "Privacybeleid",
+      "description": "Hoe we uw persoonlijke gegevens beschermen en gebruiken"
+    },
+    "terms": {
+      "title": "Gebruiksvoorwaarden",
+      "description": "Algemene voorwaarden voor het gebruik van onze diensten"
+    },
+    "cookies": {
+      "title": "Cookiebeleid",
+      "description": "Informatie over hoe we cookies gebruiken op onze website"
+    },
+    "accessibility": {
+      "title": "Toegankelijkheid",
+      "description": "Onze toewijding aan het toegankelijk maken van onze website voor iedereen"
+    }
+  },
+  "sitemap": {
+    "title": "Sitemap",
+    "description": "Overzicht van alle pagina's op onze website"
   }
 }

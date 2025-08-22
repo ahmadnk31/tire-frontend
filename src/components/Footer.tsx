@@ -4,36 +4,44 @@ import { Input } from "./ui/input";
 import { useToast } from "./ui/use-toast";
 import { subscribeToNewsletter } from '../lib/api/contact';
 import BrandsMarquee from "./BrandsMarquee";
+import { useTranslation } from 'react-i18next';
 
-const footerLinks = {
-  shop: [
-    { href: "/products", label: "All Products" },
-    { href: "/categories", label: "Categories" },
-    { href: "/brands", label: "Brands" },
-    { href: "/new-arrivals", label: "New Arrivals" },
-    { href: "/sale", label: "Sale Items" },
-  ],
-  support: [
-    { href: "/contact", label: "Contact Us" },
-    { href: "/faq", label: "FAQ" },
-    { href: "/returns", label: "Returns & Warranty" },
-    { href: "/shipping", label: "Shipping Info" },
-    { href: "/size-guide", label: "Tyre Size Guide" },
-  ],
-  company: [
-    { href: "/about", label: "About Us" },
-    { href: "/blog", label: "Blog" },
-    { href: "/careers", label: "Careers" },
-    { href: "/press", label: "Press" },
-    { href: "/sustainability", label: "Sustainability" },
-  ],
-  legal: [
-    { href: "/privacy", label: "Privacy Policy" },
-    { href: "/terms", label: "Terms of Service" },
-    { href: "/cookies", label: "Cookie Policy" },
-    { href: "/accessibility", label: "Accessibility" },
-  ],
-};
+const Footer: React.FC = () => {
+  const { t } = useTranslation();
+  const currentYear = new Date().getFullYear();
+  const { toast } = useToast();
+  const [email, setEmail] = useState('');
+  const [isSubscribing, setIsSubscribing] = useState(false);
+
+  const footerLinks = {
+    shop: [
+      { href: "/products", label: t('footer.shop.allProducts') },
+      { href: "/categories", label: t('footer.shop.categories') },
+      { href: "/brands", label: t('footer.shop.brands') },
+      { href: "/new-arrivals", label: t('footer.shop.newArrivals') },
+      { href: "/sale", label: t('footer.shop.saleItems') },
+    ],
+    support: [
+      { href: "/contact", label: t('footer.support.contactUs') },
+      { href: "/faq", label: t('footer.support.faq') },
+      { href: "/returns", label: t('footer.support.returnsWarranty') },
+      { href: "/shipping", label: t('footer.support.shippingInfo') },
+      { href: "/size-guide", label: t('footer.support.tyreSizeGuide') },
+    ],
+    company: [
+      { href: "/about", label: t('footer.company.aboutUs') },
+      { href: "/blog", label: t('footer.company.blog') },
+      { href: "/careers", label: t('footer.company.careers') },
+      { href: "/press", label: t('footer.company.press') },
+      { href: "/sustainability", label: t('footer.company.sustainability') },
+    ],
+    legal: [
+      { href: "/privacy", label: t('footer.legal.privacyPolicy') },
+      { href: "/terms", label: t('footer.legal.termsOfService') },
+      { href: "/cookies", label: t('footer.legal.cookiePolicy') },
+      { href: "/accessibility", label: t('footer.legal.accessibility') },
+    ],
+  };
 
 const socialLinks = [
   { href: "https://facebook.com/bandenledegembandenledegem", label: "Facebook", icon: "📘" },
@@ -41,26 +49,20 @@ const socialLinks = [
   { href: "https://tiktok.com/@arianabanden", label: "TikTok", icon: "📺" },
 ];
 
-const trustBadges = [
-  { icon: "🔒", text: "SSL Secured" },
-  { icon: "🚚", text: "Free Shipping" },
-  { icon: "↩️", text: "Easy Returns" },
-  { icon: "💬", text: "24/7 Support" },
-];
-
-const Footer: React.FC = () => {
-  const currentYear = new Date().getFullYear();
-  const { toast } = useToast();
-  const [email, setEmail] = useState('');
-  const [isSubscribing, setIsSubscribing] = useState(false);
+  const trustBadges = [
+    { icon: "🔒", text: t('footer.trustBadges.sslSecured') },
+    { icon: "🚚", text: t('footer.trustBadges.freeShipping') },
+    { icon: "↩️", text: t('footer.trustBadges.easyReturns') },
+    { icon: "💬", text: t('footer.trustBadges.support247') },
+  ];
 
   const handleNewsletterSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email.trim()) {
       toast({
-        title: "Email required",
-        description: "Please enter your email address",
+        title: t('footer.newsletter.emailRequired'),
+        description: t('footer.newsletter.emailRequiredDesc'),
         variant: "destructive",
       });
       return;
@@ -74,14 +76,14 @@ const Footer: React.FC = () => {
       });
       
       toast({
-        title: "Subscribed successfully!",
-        description: "Thank you for subscribing to our newsletter",
+        title: t('footer.newsletter.subscribedSuccess'),
+        description: t('footer.newsletter.subscribedDesc'),
       });
       
       setEmail(''); // Clear the input
     } catch (error) {
       toast({
-        title: "Subscription failed",
+        title: t('footer.newsletter.subscriptionFailed'),
         description: error instanceof Error ? error.message : "Failed to subscribe to newsletter",
         variant: "destructive",
       });
@@ -119,17 +121,16 @@ const Footer: React.FC = () => {
                 Ariana Banden
               </h2>
               <p className="text-muted-foreground text-base leading-relaxed mb-6">
-                Your trusted partner for premium tyres, wheels, and automotive accessories. 
-                We deliver quality, expertise, and exceptional service to keep you moving safely.
+                {t('footer.description')}
               </p>
               
               {/* Newsletter Signup */}
               <div className="mb-8">
-                <h3 className="font-semibold text-lg mb-4 text-foreground">Stay Updated</h3>
+                <h3 className="font-semibold text-lg mb-4 text-foreground">{t('footer.newsletter.stayUpdated')}</h3>
                 <form onSubmit={handleNewsletterSubscribe} className="flex max-w-md">
                   <Input
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder={t('footer.newsletter.emailPlaceholder')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="flex-1 rounded-r-none focus:ring-primary focus:border-primary"
@@ -141,17 +142,17 @@ const Footer: React.FC = () => {
                     disabled={isSubscribing}
                     className="rounded-l-none bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-6"
                   >
-                    {isSubscribing ? 'Subscribing...' : 'Subscribe'}
+                    {isSubscribing ? t('footer.newsletter.subscribing') : t('footer.newsletter.subscribe')}
                   </Button>
                 </form>
                 <p className="text-xs text-muted-foreground mt-2">
-                  Get exclusive deals and updates. Unsubscribe anytime.
+                  {t('footer.newsletter.description')}
                 </p>
               </div>
 
               {/* Social Links */}
               <div>
-                <h3 className="font-semibold text-lg mb-4 text-foreground">Follow Us</h3>
+                <h3 className="font-semibold text-lg mb-4 text-foreground">{t('footer.social.followUs')}</h3>
                 <div className="flex space-x-3">
                   {socialLinks.map((social) => (
                     <a
@@ -172,7 +173,7 @@ const Footer: React.FC = () => {
 
           {/* Link Sections */}
           <div className="space-y-6">
-            <h3 className="font-semibold text-lg text-primary border-b border-primary/20 pb-2">Shop</h3>
+            <h3 className="font-semibold text-lg text-primary border-b border-primary/20 pb-2">{t('footer.shop.title')}</h3>
             <nav aria-label="Shop Links">
               <ul className="space-y-3">
                 {footerLinks.shop.map((link) => (
@@ -190,7 +191,7 @@ const Footer: React.FC = () => {
           </div>
 
           <div className="space-y-6">
-            <h3 className="font-semibold text-lg text-primary border-b border-primary/20 pb-2">Support</h3>
+            <h3 className="font-semibold text-lg text-primary border-b border-primary/20 pb-2">{t('footer.support.title')}</h3>
             <nav aria-label="Support Links">
               <ul className="space-y-3">
                 {footerLinks.support.map((link) => (
@@ -208,7 +209,7 @@ const Footer: React.FC = () => {
           </div>
 
           <div className="space-y-6">
-            <h3 className="font-semibold text-lg text-primary border-b border-primary/20 pb-2">Company</h3>
+            <h3 className="font-semibold text-lg text-primary border-b border-primary/20 pb-2">{t('footer.company.title')}</h3>
             <nav aria-label="Company Links">
               <ul className="space-y-3">
                 {footerLinks.company.map((link) => (
@@ -226,7 +227,7 @@ const Footer: React.FC = () => {
           </div>
 
           <div className="space-y-6">
-            <h3 className="font-semibold text-lg text-primary border-b border-primary/20 pb-2">Legal</h3>
+            <h3 className="font-semibold text-lg text-primary border-b border-primary/20 pb-2">{t('footer.legal.title')}</h3>
             <nav aria-label="Legal Links">
               <ul className="space-y-3">
                 {footerLinks.legal.map((link) => (
@@ -252,7 +253,7 @@ const Footer: React.FC = () => {
                 <span className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center">
                   📞
                 </span>
-                Contact Info
+                {t('footer.contact.contactInfo')}
               </h3>
               <div className="space-y-3 text-sm text-muted-foreground ml-8">
                 <p className="flex items-center gap-2  transition-colors">
@@ -277,21 +278,21 @@ const Footer: React.FC = () => {
                 <span className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center">
                   🕒
                 </span>
-                Business Hours
+                {t('footer.contact.businessHours')}
               </h3>
               <div className="space-y-2 text-sm text-muted-foreground ml-8">
                 <div className="flex justify-between">
-                  <span>Monday - Friday:</span>
-                  <span className="font-medium">9:00 AM - 6:00 PM</span>
+                  <span>{t('footer.contact.mondayFriday')}</span>
+                  <span className="font-medium">{t('footer.contact.hours')}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Saturday:</span>
-                  <span className="font-medium">9:00 AM - 6:00 PM</span>
+                  <span>{t('footer.contact.saturday')}</span>
+                  <span className="font-medium">{t('footer.contact.hours')}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Sunday:</span>
+                  <span>{t('footer.contact.sunday')}</span>
                   <span className="font-medium">
-                    With appointment only
+                    {t('footer.contact.withAppointmentOnly')}
                   </span>
                 </div>
               </div>
@@ -302,7 +303,7 @@ const Footer: React.FC = () => {
                 <span className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center">
                   💳
                 </span>
-                Payment Methods
+                {t('footer.contact.paymentMethods')}
               </h3>
               <div className="flex flex-wrap gap-3 ml-8">
                 <div className="px-3 py-2 bg-card border border-border rounded-lg text-xs font-medium hover:shadow-md transition-shadow duration-300 flex items-center gap-1">
@@ -328,10 +329,10 @@ const Footer: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex flex-col md:flex-row items-center gap-4 text-sm text-muted-foreground">
-              <p>© {currentYear} Ariana Banden. All rights reserved.</p>
+              <p>© {currentYear} Ariana Banden. {t('footer.bottom.allRightsReserved')}</p>
               <div className="hidden md:block w-1 h-1 bg-muted-foreground/50 rounded-full"></div>
               <p className="flex items-center gap-1">
-                Built with <span className="text-red-500 animate-pulse">❤️</span> for automotive enthusiasts
+                {t('footer.bottom.builtWithLove')} <span className="text-red-500 animate-pulse">❤️</span> {t('footer.bottom.forAutomotiveEnthusiasts')}
               </p>
             </div>
             <div className="flex items-center gap-4 text-sm">
@@ -339,14 +340,14 @@ const Footer: React.FC = () => {
                 href="/sitemap" 
                 className="text-muted-foreground hover:text-accent transition-colors duration-300 hover:underline"
               >
-                Sitemap
+                {t('footer.bottom.sitemap')}
               </a>
               <div className="w-1 h-1 bg-muted-foreground/50 rounded-full"></div>
               <a 
                 href="/accessibility" 
                 className="text-muted-foreground hover:text-accent transition-colors duration-300 hover:underline"
               >
-                Accessibility
+                {t('footer.legal.accessibility')}
               </a>
             </div>
           </div>
