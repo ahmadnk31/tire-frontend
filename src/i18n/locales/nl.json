@@ -312,6 +312,7 @@
     "password": "Wachtwoord",
     "name": "Naam",
     "signUp": "Aanmelden",
+    "signIn": "Inloggen",
     "loginButton": "Inloggen",
     "login": {
       "title": "Log in op je account",

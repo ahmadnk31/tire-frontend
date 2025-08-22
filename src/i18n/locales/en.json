@@ -304,6 +304,7 @@
     "password": "Password",
     "name": "Name",
     "signUp": "Sign Up",
+    "signIn": "Sign In",
     "loginButton": "Login",
     "login": {
       "title": "Sign in to your account",
