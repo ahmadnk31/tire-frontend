@@ -93,59 +93,59 @@ export const HeroCarouselSkeleton = () => {
       <Skeleton variant="shimmer" className="w-full h-full" />
       
       {/* Content overlay skeleton */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex items-center">
+      <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent flex items-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
             {/* Text content skeleton */}
-            <div className="max-w-lg space-y-4 sm:space-y-6">
+            <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl space-y-3 sm:space-y-4 lg:space-y-6">
               {/* Badge skeleton */}
-              <Skeleton variant="wave" className="h-6 sm:h-8 w-32 sm:w-40 rounded-full" />
+              <Skeleton variant="wave" className="h-5 sm:h-6 lg:h-8 w-24 sm:w-32 lg:w-40 rounded-full" />
               
               {/* Headline skeleton */}
               <div className="space-y-2 sm:space-y-3">
-                <Skeleton variant="wave" className="h-8 sm:h-10 lg:h-12 w-full" />
-                <Skeleton variant="wave" className="h-6 sm:h-8 lg:h-10 w-3/4 skeleton-delay-1" />
+                <Skeleton variant="wave" className="h-6 sm:h-8 lg:h-10 xl:h-12 w-full" />
+                <Skeleton variant="wave" className="h-5 sm:h-6 lg:h-8 xl:h-10 w-4/5 sm:w-3/4 skeleton-delay-1" />
               </div>
               
               {/* Description skeleton */}
-              <div className="space-y-2">
-                <Skeleton variant="shimmer" className="h-3 sm:h-4 w-full skeleton-delay-2" />
-                <Skeleton variant="shimmer" className="h-3 sm:h-4 w-5/6 skeleton-delay-3" />
-                <Skeleton variant="shimmer" className="h-3 sm:h-4 w-4/6 skeleton-delay-4" />
+              <div className="space-y-1.5 sm:space-y-2">
+                <Skeleton variant="shimmer" className="h-2.5 sm:h-3 lg:h-4 w-full skeleton-delay-2" />
+                <Skeleton variant="shimmer" className="h-2.5 sm:h-3 lg:h-4 w-11/12 sm:w-5/6 skeleton-delay-3" />
+                <Skeleton variant="shimmer" className="h-2.5 sm:h-3 lg:h-4 w-10/12 sm:w-4/6 skeleton-delay-4" />
               </div>
               
               {/* CTA buttons skeleton */}
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <Skeleton variant="wave" className="h-10 sm:h-12 w-full sm:w-36 rounded-lg skeleton-delay-5" />
-                <Skeleton variant="pulse" className="h-10 sm:h-12 w-full sm:w-32 rounded-lg skeleton-delay-5" />
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 lg:gap-4 pt-2 sm:pt-4">
+                <Skeleton variant="wave" className="h-8 sm:h-10 lg:h-12 w-full sm:w-32 lg:w-36 rounded-lg skeleton-delay-5" />
+                <Skeleton variant="pulse" className="h-8 sm:h-10 lg:h-12 w-full sm:w-28 lg:w-32 rounded-lg skeleton-delay-5" />
               </div>
             </div>
             
-            {/* Media content skeleton - only visible on larger screens */}
-            <div className="hidden lg:flex justify-center lg:justify-end">
-              <div className="relative">
-                <Skeleton variant="shimmer" className="w-full max-w-[400px] lg:max-w-[500px] aspect-video rounded-lg" />
+            {/* Media content skeleton - responsive visibility */}
+            <div className="hidden md:flex justify-center lg:justify-end">
+              <div className="relative w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl">
+                <Skeleton variant="shimmer" className="w-full aspect-video rounded-lg" />
               </div>
             </div>
           </div>
         </div>
       </div>
       
-      {/* Navigation controls skeleton */}
-      <div className="absolute bottom-6 sm:bottom-8 right-6 sm:right-8 flex flex-col md:flex-row gap-2 sm:gap-4">
-        <Skeleton variant="pulse" className="w-9 h-9 sm:w-12 sm:h-12 rounded-full" />
-        <Skeleton variant="pulse" className="w-9 h-9 sm:w-12 sm:h-12 rounded-full" />
+      {/* Navigation controls skeleton - responsive positioning */}
+      <div className="absolute bottom-4 sm:bottom-6 lg:bottom-8 right-4 sm:right-6 lg:right-8 flex flex-col sm:flex-row gap-2 sm:gap-3 lg:gap-4">
+        <Skeleton variant="pulse" className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full" />
+        <Skeleton variant="pulse" className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full" />
       </div>
       
-      {/* Dots indicator skeleton */}
-      <div className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3">
+      {/* Dots indicator skeleton - responsive positioning */}
+      <div className="absolute bottom-4 sm:bottom-6 lg:bottom-8 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 lg:gap-3">
         {[...Array(3)].map((_, i) => (
-          <Skeleton key={i} variant="pulse" className={`w-3 h-3 rounded-full skeleton-delay-${i + 1}`} />
+          <Skeleton key={i} variant="pulse" className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full skeleton-delay-${i + 1}`} />
         ))}
       </div>
       
       {/* Progress bar skeleton */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10">
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 sm:h-1 bg-white/10">
         <Skeleton variant="shimmer" className="h-full w-1/3" />
       </div>
     </div>

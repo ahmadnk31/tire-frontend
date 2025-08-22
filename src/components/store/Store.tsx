@@ -38,7 +38,64 @@ export const Store = () => {
         </div>
         
         {/* Hero section skeleton */}
-        <div className="w-full h-64 sm:h-80 md:h-96 bg-gray-200 mb-6 sm:mb-8"></div>
+        <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[500px] xl:h-[600px] bg-gray-200 mb-6 sm:mb-8 overflow-hidden">
+          {/* Content overlay skeleton */}
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-300/60 via-gray-300/40 to-transparent flex items-center">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+              <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
+                {/* Text content skeleton */}
+                <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl space-y-3 sm:space-y-4 lg:space-y-6">
+                  {/* Badge skeleton */}
+                  <div className="h-5 sm:h-6 lg:h-8 w-24 sm:w-32 lg:w-40 bg-gray-300 rounded-full"></div>
+                  
+                  {/* Headline skeleton */}
+                  <div className="space-y-2 sm:space-y-3">
+                    <div className="h-6 sm:h-8 lg:h-10 xl:h-12 w-full bg-gray-300 rounded"></div>
+                    <div className="h-5 sm:h-6 lg:h-8 xl:h-10 w-4/5 sm:w-3/4 bg-gray-300 rounded"></div>
+                  </div>
+                  
+                  {/* Description skeleton */}
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <div className="h-2.5 sm:h-3 lg:h-4 w-full bg-gray-300 rounded"></div>
+                    <div className="h-2.5 sm:h-3 lg:h-4 w-11/12 sm:w-5/6 bg-gray-300 rounded"></div>
+                    <div className="h-2.5 sm:h-3 lg:h-4 w-10/12 sm:w-4/6 bg-gray-300 rounded"></div>
+                  </div>
+                  
+                  {/* CTA buttons skeleton */}
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 lg:gap-4 pt-2 sm:pt-4">
+                    <div className="h-8 sm:h-10 lg:h-12 w-full sm:w-32 lg:w-36 bg-gray-300 rounded-lg"></div>
+                    <div className="h-8 sm:h-10 lg:h-12 w-full sm:w-28 lg:w-32 bg-gray-300 rounded-lg"></div>
+                  </div>
+                </div>
+                
+                {/* Media content skeleton - responsive visibility */}
+                <div className="hidden md:flex justify-center lg:justify-end">
+                  <div className="relative w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl">
+                    <div className="w-full aspect-video bg-gray-300 rounded-lg"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Navigation controls skeleton - responsive positioning */}
+          <div className="absolute bottom-4 sm:bottom-6 lg:bottom-8 right-4 sm:right-6 lg:right-8 flex flex-col sm:flex-row gap-2 sm:gap-3 lg:gap-4">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gray-300 rounded-full"></div>
+            <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gray-300 rounded-full"></div>
+          </div>
+          
+          {/* Dots indicator skeleton - responsive positioning */}
+          <div className="absolute bottom-4 sm:bottom-6 lg:bottom-8 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 lg:gap-3">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="w-2 h-2 sm:w-3 sm:h-3 bg-gray-300 rounded-full"></div>
+            ))}
+          </div>
+          
+          {/* Progress bar skeleton */}
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 sm:h-1 bg-gray-300/20">
+            <div className="h-full w-1/3 bg-gray-300"></div>
+          </div>
+        </div>
         
         {/* Categories skeleton */}
         <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
