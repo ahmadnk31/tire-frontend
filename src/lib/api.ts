@@ -25,7 +25,7 @@ export const authApi = {
     apiClient.post('/auth/resend-verification', { email }),
 };
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 // Helper function to get auth headers
 const getAuthHeaders = (token?: string) => {
@@ -50,7 +50,27 @@ const apiClient = {
 
     const response = await fetch(url.toString(), { headers });
     if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      const errorText = await response.text();
+      let errorMessage = `API Error: ${response.status} ${response.statusText}`;
+      
+      try {
+        const errorData = JSON.parse(errorText);
+        if (errorData.details && Array.isArray(errorData.details)) {
+          const validationErrors = errorData.details.map((err: any) => 
+            `${err.field}: ${err.message}`
+          ).join(', ');
+          errorMessage = `Validation Error: ${validationErrors}`;
+        } else if (errorData.message) {
+          errorMessage = errorData.message;
+        }
+      } catch (e) {
+        // If JSON parsing fails, use the raw error text
+        if (errorText) {
+          errorMessage = errorText;
+        }
+      }
+      
+      throw new Error(errorMessage);
     }
     return response.json();
   },
@@ -95,7 +115,27 @@ const apiClient = {
     });
 
     if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      const errorText = await response.text();
+      let errorMessage = `API Error: ${response.status} ${response.statusText}`;
+      
+      try {
+        const errorData = JSON.parse(errorText);
+        if (errorData.details && Array.isArray(errorData.details)) {
+          const validationErrors = errorData.details.map((err: any) => 
+            `${err.field}: ${err.message}`
+          ).join(', ');
+          errorMessage = `Validation Error: ${validationErrors}`;
+        } else if (errorData.message) {
+          errorMessage = errorData.message;
+        }
+      } catch (e) {
+        // If JSON parsing fails, use the raw error text
+        if (errorText) {
+          errorMessage = errorText;
+        }
+      }
+      
+      throw new Error(errorMessage);
     }
     return response.json();
   },

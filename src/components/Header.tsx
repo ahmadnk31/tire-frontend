@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ShoppingCart, User, Search, Menu, Bell, X, LogOut, Settings, Heart, UserCircle, List } from "lucide-react";
+import { ShoppingCart, User, Search, Menu, Bell, X, LogOut, Settings, Heart, UserCircle, List, BarChart3 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -173,6 +173,15 @@ export const Header = () => {
                       <DropdownMenuItem onClick={() => navigate('/settings')}>
                         <Settings className="w-4 h-4 mr-2" /> Settings
                       </DropdownMenuItem>
+                      {/* Dashboard - only for admin users */}
+                      {user && user.role === 'admin' && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+                            <BarChart3 className="w-4 h-4 mr-2" /> Dashboard
+                          </DropdownMenuItem>
+                        </>
+                      )}
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={() => {
@@ -326,6 +335,13 @@ export const Header = () => {
                           <Settings className="w-4 h-4" />
                           Settings
                         </button>
+                        {/* Dashboard - only for admin users */}
+                        {user && user.role === 'admin' && (
+                          <button onClick={() => { setIsMobileMenuOpen(false); navigate('/dashboard'); }} className="flex items-center gap-3 w-full text-left text-sm text-gray-900 hover:text-gray-700 py-2 bg-transparent border-none cursor-pointer">
+                            <BarChart3 className="w-4 h-4" />
+                            Dashboard
+                          </button>
+                        )}
                         <button 
                           onClick={() => { 
                             localStorage.removeItem('token');

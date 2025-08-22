@@ -28,6 +28,12 @@ function getBreadcrumbs(pathname: string) {
 
 export function Breadcrumbs() {
   const location = useLocation();
+  
+  // Don't show breadcrumbs on the home page
+  if (location.pathname === "/") {
+    return null;
+  }
+  
   const breadcrumbs = getBreadcrumbs(location.pathname);
   return (
     <div className="max-w-7xl mx-auto px-2 sm:px-6">

@@ -1,11 +1,50 @@
+import { useState } from 'react';
 import { ProductGrid } from "@/components/store/ProductGrid";
+import { FilterSidebar } from "@/components/store/FilterSidebar";
+import { Button } from "@/components/ui/button";
+import { Filter, X } from "lucide-react";
 
 const Products = () => {
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-background">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <ProductGrid />
-      </main>
+      <div className="flex">
+        {/* Filter Sidebar */}
+        <FilterSidebar 
+          isOpen={isFilterOpen} 
+          onClose={() => setIsFilterOpen(false)} 
+        />
+        
+        {/* Main Content */}
+        <div className="flex-1">
+          {/* Mobile Filter Toggle */}
+          <div className="lg:hidden p-4 border-b border-gray-200 bg-white">
+            <Button
+              variant="outline"
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className="w-full flex items-center justify-center gap-2"
+            >
+              {isFilterOpen ? (
+                <>
+                  <X className="h-4 w-4" />
+                  Hide Filters
+                </>
+              ) : (
+                <>
+                  <Filter className="h-4 w-4" />
+                  Show Filters
+                </>
+              )}
+            </Button>
+          </div>
+          
+          {/* Products Grid */}
+          <main className="p-4 sm:p-6 lg:p-8">
+            <ProductGrid sectionTitle="All Products" />
+          </main>
+        </div>
+      </div>
     </div>
   );
 };

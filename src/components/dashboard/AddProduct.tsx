@@ -211,29 +211,29 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
         price: parseFloat(formData.price) || 0,
         comparePrice: formData.comparePrice ? parseFloat(formData.comparePrice) : null,
         description: formData.description,
-        specifications: {
-          speedRating: formData.speedRating,
-          loadIndex: formData.loadIndex,
-          seasonType: formData.seasonType,
-          vehicleType: formData.vehicleType,
-          treadDepth: formData.treadDepth ? parseFloat(formData.treadDepth) : null,
-          construction: formData.construction
-        },
-        features: features.filter(f => f.trim()),
-        images: uploadedImages,
+        // Flatten specifications to top-level fields
+        speedRating: formData.speedRating,
+        loadIndex: formData.loadIndex,
+        seasonType: formData.seasonType,
+        tireType: formData.vehicleType, // Map vehicleType to tireType
+        // Flatten SEO fields
+        seoTitle: formData.metaTitle,
+        seoDescription: formData.metaDescription,
+        // Keep features as an array but join for storage
+        features: features.filter(f => f.trim()).join(','),
+        images: (uploadedImages.length > 0
+          ? uploadedImages
+          : (editingProduct?.productImages || editingProduct?.images || [])),
         sku: formData.sku || undefined,
         stock: parseInt(formData.stock) || 0,
         lowStockThreshold: parseInt(formData.lowStockThreshold) || 10,
         status: isDraft ? 'draft' : formData.visibility,
         featured: formData.featured === 'yes',
-        tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
-        seo: {
-          metaTitle: formData.metaTitle,
-          metaDescription: formData.metaDescription
-        },
+        tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean).join(','),
         categoryIds: formData.categoryIds
       };
 
+      console.log('Submitting images:', productData.images);
       let response;
       if (editingProduct) {
         response = await productsApi.update(editingProduct.id.toString(), productData);
@@ -285,9 +285,10 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
 
     } catch (error) {
       console.error('Submit error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save product. Please try again.';
       toast({
         title: "Error",
-        description: "Failed to save product. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
