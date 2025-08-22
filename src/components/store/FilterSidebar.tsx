@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { productsApi } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 interface FilterSidebarProps {
   isOpen: boolean;
@@ -47,6 +48,7 @@ const SEASON_TYPES = ['summer', 'winter', 'all-season', 'all-weather'];
 const LOAD_INDEXES = ['91', '95', '99', '103', '107', '111', '115', '119'];
 
 export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     brands: true,
@@ -241,7 +243,30 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
       params.set('search', updatedFilters.search);
     }
 
-    setSearchParams(params);
+    console.log('🔍 FilterSidebar - Updated filters:', updatedFilters);
+    console.log('🔍 FilterSidebar - URLSearchParams string:', params.toString());
+    console.log('🔍 FilterSidebar - Brands array:', updatedFilters.brands);
+
+    // Convert URLSearchParams to a plain object for React Router compatibility
+    const searchParamsObj: Record<string, string | string[]> = {};
+    
+    // Handle multiple values for the same parameter
+    for (const [key, value] of params.entries()) {
+      if (searchParamsObj[key]) {
+        // If key already exists, convert to array
+        if (Array.isArray(searchParamsObj[key])) {
+          (searchParamsObj[key] as string[]).push(value);
+        } else {
+          searchParamsObj[key] = [searchParamsObj[key] as string, value];
+        }
+      } else {
+        searchParamsObj[key] = value;
+      }
+    }
+    
+    console.log('🔍 FilterSidebar - Search params object:', searchParamsObj);
+    
+    setSearchParams(searchParamsObj);
     setFilters(updatedFilters);
   };
 
@@ -302,8 +327,8 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
 
       {/* Sidebar */}
       <div className={`
-        fixed lg:static inset-y-0 left-0 z-50 w-80 bg-white border-r border-gray-200 
-        transform transition-transform duration-300 ease-in-out
+        fixed lg:sticky lg:top-0 inset-y-0 left-0 z-50 w-80 bg-white border-r border-gray-200 
+        transform transition-transform duration-300 ease-in-out h-screen
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         lg:block
       `}>
@@ -327,7 +352,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
                   onClick={clearAllFilters}
                   className="text-sm text-gray-600 hover:text-gray-900"
                 >
-                  Clear all
+                  {t('common.clearAll')}
                 </Button>
               )}
               <Button
@@ -342,16 +367,16 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
           </div>
 
           {/* Filter Content */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-6">
+          <div className="flex-1 overflow-y-auto p-4 space-y-6 max-h-[calc(100vh-80px)] sticky top-0">
 
 
             {/* Search */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-sm font-medium text-gray-900">Search</Label>
+                <Label className="text-sm font-medium text-gray-900">{t('common.search')}</Label>
               </div>
               <Input
-                placeholder="Search products..."
+                placeholder={t('common.search')}
                 value={filters.search}
                 onChange={(e) => updateURL({ search: e.target.value })}
                 className="w-full"
@@ -366,7 +391,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
                 onClick={() => toggleSection('brands')}
                 className="flex items-center justify-between w-full text-left"
               >
-                <Label className="text-sm font-medium text-gray-900">Brands</Label>
+                <Label className="text-sm font-medium text-gray-900">{t('products.brand')}</Label>
                 {expandedSections.brands ? (
                   <ChevronUp className="h-4 w-4 text-gray-500" />
                 ) : (
@@ -376,7 +401,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
               {expandedSections.brands && (
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   {filterOptionsLoading ? (
-                    <div className="text-sm text-gray-500">Loading brands...</div>
+                    <div className="text-sm text-gray-500">{t('common.loading')}</div>
                   ) : filterOptions?.brands && filterOptions.brands.length > 0 ? (
                     filterOptions.brands.map((brand) => (
                       <div key={brand} className="flex items-center space-x-2">
@@ -399,7 +424,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
                       </div>
                     ))
                   ) : (
-                    <div className="text-sm text-gray-500">No brands available</div>
+                    <div className="text-sm text-gray-500">{t('products.noBrands')}</div>
                   )}
                 </div>
               )}
@@ -413,7 +438,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
                 onClick={() => toggleSection('categories')}
                 className="flex items-center justify-between w-full text-left"
               >
-                <Label className="text-sm font-medium text-gray-900">Categories</Label>
+                <Label className="text-sm font-medium text-gray-900">{t('navigation.categories')}</Label>
                 {expandedSections.categories ? (
                   <ChevronUp className="h-4 w-4 text-gray-500" />
                 ) : (
@@ -460,7 +485,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
                 onClick={() => toggleSection('sizes')}
                 className="flex items-center justify-between w-full text-left"
               >
-                <Label className="text-sm font-medium text-gray-900">Sizes</Label>
+                <Label className="text-sm font-medium text-gray-900">{t('products.size')}</Label>
                 {expandedSections.sizes ? (
                   <ChevronUp className="h-4 w-4 text-gray-500" />
                 ) : (
@@ -470,7 +495,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
               {expandedSections.sizes && (
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   {filterOptionsLoading ? (
-                    <div className="text-sm text-gray-500">Loading sizes...</div>
+                    <div className="text-sm text-gray-500">{t('common.loading')}</div>
                   ) : filterOptions?.sizes && filterOptions.sizes.length > 0 ? (
                     filterOptions.sizes.map((size) => (
                       <div key={size} className="flex items-center space-x-2">
@@ -493,7 +518,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
                       </div>
                     ))
                   ) : (
-                    <div className="text-sm text-gray-500">No sizes available</div>
+                    <div className="text-sm text-gray-500">{t('products.noSizes')}</div>
                   )}
                 </div>
               )}
@@ -614,7 +639,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
               >
                 <Label className="text-sm font-medium text-gray-900 flex items-center gap-1">
                   <DollarSign className="h-4 w-4" />
-                  Price Range
+                  {t('products.priceRange')}
                 </Label>
                 {expandedSections.price ? (
                   <ChevronUp className="h-4 w-4 text-gray-500" />
@@ -633,8 +658,8 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
                     className="w-full"
                   />
                   <div className="flex items-center justify-between text-sm text-gray-600">
-                    <span>${filters.priceRange[0]}</span>
-                    <span>${filters.priceRange[1]}</span>
+                                    <span>€{filters.priceRange[0]}</span>
+                <span>€{filters.priceRange[1]}</span>
                   </div>
                 </div>
               )}
@@ -650,7 +675,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
               >
                 <Label className="text-sm font-medium text-gray-900 flex items-center gap-1">
                   <Star className="h-4 w-4" />
-                  Minimum Rating
+                  {t('products.minRating')}
                 </Label>
                 {expandedSections.rating ? (
                   <ChevronUp className="h-4 w-4 text-gray-500" />
@@ -669,8 +694,8 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
                     className="w-full"
                   />
                   <div className="flex items-center justify-between text-sm text-gray-600">
-                    <span>Any rating</span>
-                    <span>{filters.rating}★ & up</span>
+                    <span>{t('products.anyRating')}</span>
+                    <span>{filters.rating}★ {t('products.andUp')}</span>
                   </div>
                 </div>
               )}
@@ -686,7 +711,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
               >
                 <Label className="text-sm font-medium text-gray-900 flex items-center gap-1">
                   <Car className="h-4 w-4" />
-                  Availability
+                  {t('products.availability')}
                 </Label>
                 {expandedSections.availability ? (
                   <ChevronUp className="h-4 w-4 text-gray-500" />
@@ -703,7 +728,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
                       onCheckedChange={(checked) => updateURL({ inStock: checked as boolean })}
                     />
                     <Label htmlFor="inStock" className="text-sm text-gray-700 cursor-pointer">
-                      In Stock Only
+                      {t('products.inStockOnly')}
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -713,7 +738,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
                       onCheckedChange={(checked) => updateURL({ featured: checked as boolean })}
                     />
                     <Label htmlFor="featured" className="text-sm text-gray-700 cursor-pointer">
-                      Featured Products Only
+                      {t('products.featuredOnly')}
                     </Label>
                   </div>
                 </div>

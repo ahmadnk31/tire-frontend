@@ -11,9 +11,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SearchBar } from "@/components/store/SearchBar";
 import { MegaMenu } from "@/components/MegaMenu";
+import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
+import { useTranslation } from 'react-i18next';
 
 
 export const Header = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const currentView = location.pathname.startsWith('/dashboard') ? 'dashboard' : 'store';
@@ -99,17 +102,16 @@ export const Header = () => {
         {/* Top bar (Download app, links) - Hidden on mobile */}
         <div className="w-full border-b border-gray-100 bg-white hidden md:block">
           <div className="max-w-7xl mx-auto flex items-center justify-end text-xs text-gray-500 py-1 gap-4">
-            <span>Download Ariana App</span>
+            <span>{t('header.downloadApp')}</span>
             <div className="flex-1" />
-            <a href="#" className="hover:underline"></a>
-            <a href="#" className="hover:underline">About Ariana</a>
-            <a href="#" className="hover:underline">Ariana Plus</a>
-            <a href="#" className="hover:underline">Promo</a>
+            <a href="#" className="hover:underline">{t('header.about')}</a>
+            <a href="#" className="hover:underline">{t('header.plus')}</a>
+            <a href="#" className="hover:underline">{t('header.promo')}</a>
             {!user && (
               <>
                 <span className="mx-2">|</span>
-                <button onClick={() => navigate('/register')} className="font-semibold text-gray-900 hover:underline bg-transparent border-none cursor-pointer">Sign Up</button>
-                <button onClick={() => navigate('/login')} className="font-semibold text-gray-900 hover:underline bg-transparent border-none cursor-pointer">Login</button>
+                <button onClick={() => navigate('/register')} className="font-semibold text-gray-900 hover:underline bg-transparent border-none cursor-pointer">{t('auth.signUp')}</button>
+                <button onClick={() => navigate('/login')} className="font-semibold text-gray-900 hover:underline bg-transparent border-none cursor-pointer">{t('auth.loginButton')}</button>
               </>
             ) }
           </div>
@@ -151,6 +153,7 @@ export const Header = () => {
                 <button className="relative p-2 rounded-full hover:bg-gray-100 transition" aria-label="Notifications">
                   <Bell className="h-6 w-6 text-gray-400" />
                 </button>
+                <LanguageSwitcher />
                 {user && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -162,23 +165,23 @@ export const Header = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuItem onClick={() => navigate('/account')}>
-                        <User className="w-4 h-4 mr-2" /> Account
+                        <User className="w-4 h-4 mr-2" /> {t('navigation.account')}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => navigate('/orders')}>
-                        <List className="w-4 h-4 mr-2" /> Orders
+                        <List className="w-4 h-4 mr-2" /> {t('navigation.orders')}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => navigate('/wishlist')}>
-                        <Heart className="w-4 h-4 mr-2" /> Wishlist
+                        <Heart className="w-4 h-4 mr-2" /> {t('navigation.wishlist')}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => navigate('/settings')}>
-                        <Settings className="w-4 h-4 mr-2" /> Settings
+                        <Settings className="w-4 h-4 mr-2" /> {t('navigation.settings')}
                       </DropdownMenuItem>
                       {/* Dashboard - only for admin users */}
                       {user && user.role === 'admin' && (
                         <>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => navigate('/dashboard')}>
-                            <BarChart3 className="w-4 h-4 mr-2" /> Dashboard
+                            <BarChart3 className="w-4 h-4 mr-2" /> {t('navigation.dashboard')}
                           </DropdownMenuItem>
                         </>
                       )}
@@ -192,7 +195,7 @@ export const Header = () => {
                           navigate('/login');
                         }}
                       >
-                        <LogOut className="w-4 h-4 mr-2" /> Logout
+                        <LogOut className="w-4 h-4 mr-2" /> {t('navigation.logout')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -247,6 +250,7 @@ export const Header = () => {
                   <button className="p-2 rounded-full hover:bg-gray-100 transition" aria-label="Notifications">
                     <Bell className="h-5 w-5 text-gray-400" />
                   </button>
+                  <LanguageSwitcher />
 
                   {/* Mobile Menu Toggle */}
                   <button
@@ -296,10 +300,10 @@ export const Header = () => {
                     {!user && (
                       <div className="space-y-2 pb-3 border-b border-gray-100">
                         <button onClick={() => { setIsMobileMenuOpen(false); navigate('/register'); }} className="block w-full text-left text-sm font-semibold text-gray-900 hover:text-gray-700 py-2 bg-transparent border-none cursor-pointer">
-                          Sign Up
+                          {t('auth.signUp')}
                         </button>
                         <button onClick={() => { setIsMobileMenuOpen(false); navigate('/login'); }} className="block w-full text-left text-sm font-semibold text-gray-900 hover:text-gray-700 py-2 bg-transparent border-none cursor-pointer">
-                          Login
+                          {t('auth.signIn')}
                         </button>
                       </div>
                     )}

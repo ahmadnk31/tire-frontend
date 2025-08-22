@@ -6,8 +6,10 @@ import { HeroCarousel } from "../HeroCarousel";
 
 import { useState, useEffect } from "react";
 import BrandsMarquee from "../BrandsMarquee";
+import { useTranslation } from 'react-i18next';
 
 export const Store = () => {
+  const { t } = useTranslation();
   const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {

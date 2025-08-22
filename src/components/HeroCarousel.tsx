@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { HeroCarouselSkeleton } from "@/components/ui/skeletons";
 import { ChevronLeft, ChevronRight, Play, ArrowRight, Pause } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 // Extend the Window interface to include __carouselTouchStartX
 declare global {
@@ -25,6 +26,7 @@ const defaultBanner = {
 };
 
 export function HeroCarousel() {
+  const { t } = useTranslation();
   const { data, isLoading, error } = useQuery({
     queryKey: ["banners"],
     queryFn: () => bannersApi.getAll(),
@@ -87,8 +89,8 @@ console.log('HeroCarousel rendered with slides:', banners);
     return (
   <div className="relative w-full h-[600px] bg-gradient-to-br from-destructive to-destructive/70 flex items-center justify-center text-white">
         <div className="text-center">
-          <div className="text-xl font-semibold mb-2">Failed to load banners</div>
-          <div className="text-destructive-foreground/80">Please try again later</div>
+          <div className="text-xl font-semibold mb-2">{t('banner.loadError')}</div>
+          <div className="text-destructive-foreground/80">{t('banner.tryAgain')}</div>
         </div>
       </div>
     );
@@ -195,7 +197,7 @@ console.log('HeroCarousel rendered with slides:', banners);
                   className="bg-primary max-sm:px-6 relative z-10 max-sm:py-4 hover:bg-primary/90 text-primary-foreground  font-semibold text-sm md:text-lg shadow-2xl shadow-primary/25 transition-all duration-300 hover:scale-105 hover:shadow-primary/40 pointer-events-auto"
                   onClick={handlePrimaryCTA}
                 >
-                  Shop Now
+                  {t('banner.shopNow')}
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
                 <Button 
@@ -205,7 +207,7 @@ console.log('HeroCarousel rendered with slides:', banners);
                   className="border-white/30 text-primary hover:bg-white/10  font-semibold text-sm md:text-lg backdrop-blur-sm transition-all duration-300 hover:scale-105 pointer-events-auto"
                   onClick={handleSecondaryCTA}
                 >
-                  Learn More
+                  {t('banner.learnMore')}
                 </Button>
               </div>
             </div>
@@ -269,7 +271,7 @@ console.log('HeroCarousel rendered with slides:', banners);
           }
         }
       }}
-      aria-label={isVideoPlaying ? "Pause video" : "Play video"}
+      aria-label={isVideoPlaying ? t('banner.pauseVideo') : t('banner.playVideo')}
       type="button"
     >
       {isVideoPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
@@ -286,7 +288,7 @@ console.log('HeroCarousel rendered with slides:', banners);
               type="button"
               className="bg-white/10 hover:bg-white/20 border-white/20 text-white backdrop-blur-sm rounded-full w-9 h-9 md:w-12 md:h-12 opacity-80 hover:opacity-100 transition-all duration-300 hover:scale-110"
               onClick={() => setCurrent((prev) => (prev - 1 + slides.length) % slides.length)}
-              aria-label="Previous slide"
+              aria-label={t('banner.previousSlide')}
             >
               <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
             </Button>
@@ -296,7 +298,7 @@ console.log('HeroCarousel rendered with slides:', banners);
               type="button"
               className="bg-white/10 hover:bg-white/20 border-white/20 text-white backdrop-blur-sm rounded-full w-9 h-9 md:w-12 md:h-12 opacity-80 hover:opacity-100 transition-all duration-300 hover:scale-110"
               onClick={() => setCurrent((prev) => (prev + 1) % slides.length)}
-              aria-label="Next slide"
+              aria-label={t('banner.nextSlide')}
             >
               <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
             </Button>
@@ -314,7 +316,7 @@ console.log('HeroCarousel rendered with slides:', banners);
                     : "w-3 h-3 bg-white/30 hover:bg-white/50 hover:scale-110"
                 }`}
                 onClick={() => setCurrent(idx)}
-                aria-label={`Go to slide ${idx + 1}`}
+                aria-label={t('banner.goToSlide', { number: idx + 1 })}
               />
             ))}
           </div>

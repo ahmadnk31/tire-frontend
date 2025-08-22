@@ -25,19 +25,19 @@ const BrandsMarquee: React.FC = () => {
   }
 
   return (
-    <div className="relative overflow-hidden w-full py-6 bg-gradient-to-r from-gray-50 via-white to-gray-50">
-      {/* Left blur overlay */}
-      <div className="absolute left-0 top-0 w-24 md:w-96 h-full bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
+    <div className="relative overflow-hidden w-full py-4 sm:py-6 bg-gradient-to-r from-gray-50 via-white to-gray-50">
+      {/* Left blur overlay - responsive widths */}
+      <div className="absolute left-0 top-0 w-8 sm:w-16 md:w-24 lg:w-32 h-full bg-gradient-to-r from-white via-white/90 to-transparent z-10 pointer-events-none"></div>
       
-      {/* Right blur overlay */}
-      <div className="absolute right-0 top-0 w-24 md:w-96 h-full bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
+      {/* Right blur overlay - responsive widths */}
+      <div className="absolute right-0 top-0 w-8 sm:w-16 md:w-24 lg:w-32 h-full bg-gradient-to-l from-white via-white/90 to-transparent z-10 pointer-events-none"></div>
       
-      {/* Marquee content */}
-      <div className="whitespace-nowrap animate-marquee flex items-center gap-8 md:gap-12 text-base md:text-lg font-semibold">
+      {/* Marquee content - improved mobile responsiveness */}
+      <div className="whitespace-nowrap animate-marquee flex items-center gap-4 sm:gap-6 md:gap-8 lg:gap-12 text-sm sm:text-base md:text-lg font-semibold">
         {brands.concat(brands).map((brand, i) => (
           <span 
             key={i} 
-            className="inline-flex items-center px-3 md:px-4 py-2 text-gray-700 hover:text-primary transition-colors duration-300 cursor-pointer select-none"
+            className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-gray-700 hover:text-primary transition-colors duration-300 cursor-pointer select-none whitespace-nowrap"
           >
             {brand}
           </span>

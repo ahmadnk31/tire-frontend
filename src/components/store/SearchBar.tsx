@@ -3,8 +3,10 @@ import { productsApi } from "@/lib/api";
 import { Search, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { useTranslation } from 'react-i18next';
 
 export function SearchBar() {
+  const { t } = useTranslation();
   const [brands, setBrands] = useState<string[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<string>("");
   const [query, setQuery] = useState("");
@@ -74,7 +76,7 @@ export function SearchBar() {
             type="text"
             value={query}
             onChange={handleInput}
-            placeholder="Search by brand..."
+            placeholder={t('searchBar.placeholder')}
             className="w-full bg-transparent outline-none text-gray-700 placeholder-gray-400 text-sm"
             onFocus={() => query && setShowDropdown(true)}
             onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
@@ -93,7 +95,7 @@ export function SearchBar() {
         {showMobileFilter && brands.length > 0 && (
           <div className="mt-2 bg-white border border-gray-300 rounded-md shadow-lg z-40">
             <div className="p-3 border-b border-gray-100">
-              <span className="text-sm font-medium text-gray-700">Filter by Brand</span>
+              <span className="text-sm font-medium text-gray-700">{t('searchBar.filterByBrand')}</span>
             </div>
             <div className="max-h-48 overflow-y-auto">
               {brands.map(brand => (
@@ -108,7 +110,7 @@ export function SearchBar() {
                     selectedBrand === brand ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
                   }`}
                 >
-                  {brand === 'all' ? 'All Brands' : brand}
+                  {brand === 'all' ? t('searchBar.allBrands') : brand}
                 </button>
               ))}
             </div>
@@ -122,12 +124,12 @@ export function SearchBar() {
           {/* Brand Selector */}
           <Select value={selectedBrand} onValueChange={value => { setSelectedBrand(value); triggerSearch(query); }}>
             <SelectTrigger className="w-[130px] h-9 text-sm border-none bg-transparent px-2">
-              <SelectValue placeholder="Select brand" />
+              <SelectValue placeholder={t('searchBar.selectBrand')} />
             </SelectTrigger>
             <SelectContent>
               {brands.map(brand => (
                 <SelectItem key={brand} value={brand}>
-                  {brand === 'all' ? 'All Brands' : brand}
+                  {brand === 'all' ? t('searchBar.allBrands') : brand}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -144,7 +146,7 @@ export function SearchBar() {
             type="text"
             value={query}
             onChange={handleInput}
-            placeholder="Search by brand..."
+            placeholder={t('searchBar.placeholder')}
             className="flex-1 bg-transparent outline-none text-gray-700 placeholder-gray-400 px-2"
             onFocus={() => query && setShowDropdown(true)}
             onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
@@ -189,7 +191,7 @@ export function SearchBar() {
             );
           })}
           {loading && (
-            <div className="px-3 py-3 md:px-4 text-sm text-gray-500">Loading...</div>
+            <div className="px-3 py-3 md:px-4 text-sm text-gray-500">{t('common.loading')}</div>
           )}
         </div>
       )}
@@ -197,7 +199,7 @@ export function SearchBar() {
       {/* No Results - Responsive */}
       {showDropdown && !loading && results.length === 0 && (
         <div className="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-50 px-3 py-3 md:px-4 text-sm text-gray-500">
-          No results found.
+          {t('searchBar.noResults')}
         </div>
       )}
     </div>

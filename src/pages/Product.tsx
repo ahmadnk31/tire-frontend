@@ -1,29 +1,30 @@
 
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { productsApi } from "@/lib/api";
 import { wishlistApi } from "@/lib/wishlistApi";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from 'react-i18next';
 import { Star, Heart, ChevronLeft, ChevronRight, X, ShoppingCart, Zap, Plus, Minus } from "lucide-react";
 import { formatEuro } from "@/lib/currency";
 import { ProductCard } from "@/components/store/ProductCard";
 
 
 export default function ProductPage() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
   const [fullscreen, setFullscreen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
   const [imageTransition, setImageTransition] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string>("M");
-  const [activeTab, setActiveTab] = useState("Description");
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [activeTab, setActiveTab] = useState("description");
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
-  const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
   const thumbnailsRef = useRef<HTMLDivElement>(null);
   // Touch state for swipe
   const touchStartX = useRef<number | null>(null);
@@ -60,19 +61,18 @@ export default function ProductPage() {
 
   // Check if product is in wishlist
   const { data: wishlistData } = useQuery({
-    queryKey: ["wishlist"],
+    queryKey: ["wishlist", token],
     queryFn: () => wishlistApi.getWishlist(token!),
     enabled: isLoggedIn,
     staleTime: 2 * 60 * 1000, // Wishlist stays fresh for 2 minutes
     gcTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
-  useEffect(() => {
-    if (wishlistData?.items && product) {
-      const isInWishlist = wishlistData.items.some((item: any) => item.productId === product.id);
-      setIsWishlisted(isInWishlist);
-    }
-  }, [wishlistData, product]);
+  // Derive wishlist state directly from query data
+  const isWishlisted = useMemo(() => {
+    if (!wishlistData?.wishlist || !product) return false;
+    return wishlistData.wishlist.some((item: any) => item.productId === product.id);
+  }, [wishlistData?.wishlist, product?.id]);
 
   // Support both array of image URLs and array of image objects, and productImages from API
   let productImages: string[] = [];
@@ -118,13 +118,13 @@ export default function ProductPage() {
       window.dispatchEvent(new Event('cart-updated'));
       
       toast({
-        title: "Added to Cart",
-        description: `${quantity} x ${product.name} has been added to your cart.`,
+        title: t('products.addToCart'),
+        description: t('products.productAdded'),
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to add item to cart. Please try again.",
+        title: t('common.error'),
+        description: t('errors.cartError'),
         variant: "destructive",
       });
     } finally {
@@ -162,12 +162,46 @@ export default function ProductPage() {
       navigate('/checkout');
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to proceed to checkout. Please try again.",
+        title: t('common.error'),
+        description: t('errors.checkoutError'),
         variant: "destructive",
       });
     }
   };
+
+  // Wishlist mutation
+  const wishlistMutation = useMutation({
+    mutationFn: async ({ productId, isWishlisted }: { productId: number, isWishlisted: boolean }) => {
+      if (!token) throw new Error('Not authenticated');
+      if (isWishlisted) {
+        await wishlistApi.removeFromWishlist(productId, token);
+      } else {
+        await wishlistApi.addToWishlist(productId, token);
+      }
+      return { productId, isWishlisted };
+    },
+    onSuccess: (data) => {
+      // Invalidate both wishlist queries to ensure all wishlist pages update
+      queryClient.invalidateQueries({ queryKey: ['wishlist'] });
+      queryClient.invalidateQueries({ queryKey: ['wishlist-products'] });
+      
+      // Show success toast
+      if (data?.isWishlisted) {
+        toast({ 
+          title: t('wishlist.itemRemoved'), 
+          description: t('wishlist.itemRemoved') 
+        });
+      } else {
+        toast({ 
+          title: t('wishlist.itemAdded'), 
+          description: t('wishlist.itemAdded') 
+        });
+      }
+    },
+    onError: () => {
+      toast({ title: t('common.error'), description: t('errors.wishlistError'), variant: 'destructive' });
+    },
+  });
 
   // Wishlist functionality
   const toggleWishlist = async () => {
@@ -175,40 +209,15 @@ export default function ProductPage() {
     
     if (!isLoggedIn) {
       toast({
-        title: "Login Required",
-        description: "Please log in to add items to your wishlist.",
+        title: t('auth.loginRequired'),
+        description: t('auth.loginToAddWishlist'),
         variant: "destructive",
       });
       navigate('/login');
       return;
     }
 
-    setIsAddingToWishlist(true);
-    try {
-      if (isWishlisted) {
-        await wishlistApi.removeFromWishlist(product.id, token!);
-        setIsWishlisted(false);
-        toast({
-          title: "Removed from Wishlist",
-          description: `${product.name} has been removed from your wishlist.`,
-        });
-      } else {
-        await wishlistApi.addToWishlist(product.id, token!);
-        setIsWishlisted(true);
-        toast({
-          title: "Added to Wishlist",
-          description: `${product.name} has been added to your wishlist.`,
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update wishlist. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsAddingToWishlist(false);
-    }
+    wishlistMutation.mutate({ productId: product.id, isWishlisted });
   };
   const rating = Number(product?.rating) || 0;
   const reviewCount = product?.reviews || 0;
@@ -391,7 +400,7 @@ export default function ProductPage() {
   }
   if (error || !product) {
     return (
-      <div className="flex items-center justify-center min-h-screen text-red-500">{(error as any)?.message || "Product not found"}</div>
+      <div className="flex items-center justify-center min-h-screen text-red-500">{(error as any)?.message || t('errors.productNotFound')}</div>
     );
   }
 
@@ -510,19 +519,19 @@ export default function ProductPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-600 mb-3">
                   <span className="flex items-center gap-1">
                     <div className={`w-2 h-2 rounded-full ${product.stock && product.stock > 0 ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                    {product.stock && product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                    {product.stock && product.stock > 0 ? `${product.stock} ${t('products.inStock')}` : t('products.outOfStock')}
                   </span>
                   <div className="flex items-center gap-1">
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} className={`w-4 h-4 ${i < Math.floor(rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
                     ))}
                     <span className="font-medium ml-1">{rating.toFixed(1)}</span>
-                    <span className="text-gray-500">({reviewCount} reviews)</span>
+                    <span className="text-gray-500">({reviewCount} {t('products.reviews')})</span>
                   </div>
                 </div>
                 {product.brand && (
                   <div className="text-sm text-gray-600">
-                    Brand: <span className="font-medium text-gray-800">{product.brand}</span>
+                    {t('products.brand')}: <span className="font-medium text-gray-800">{product.brand}</span>
                   </div>
                 )}
               </div>
@@ -547,8 +556,8 @@ export default function ProductPage() {
               {product.sizes && product.sizes.length > 0 && (
                 <div className="mb-6 sm:mb-8">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="font-semibold text-base sm:text-lg">Select Size</span>
-                    <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">Size Guide</button>
+                    <span className="font-semibold text-base sm:text-lg">{t('products.selectSize')}</span>
+                    <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">{t('products.sizeGuide')}</button>
                   </div>
                   <div className="flex gap-2 sm:gap-3 flex-wrap">
                     {product.sizes.map((size: string) => (
@@ -571,7 +580,7 @@ export default function ProductPage() {
               {/* Quantity Selection */}
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="font-semibold text-base sm:text-lg">Quantity</span>
+                  <span className="font-semibold text-base sm:text-lg">{t('products.quantity')}</span>
                   <div className="flex items-center border border-gray-300 rounded-lg">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -596,8 +605,8 @@ export default function ProductPage() {
               <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                 {(!product.stock || product.stock === 0) && (
                   <div className="w-full py-3 sm:py-4 bg-red-50 border border-red-200 rounded-xl text-center">
-                    <span className="text-red-600 font-semibold text-sm sm:text-base">Currently Out of Stock</span>
-                    <p className="text-xs sm:text-sm text-red-500 mt-1">This item is temporarily unavailable</p>
+                    <span className="text-red-600 font-semibold text-sm sm:text-base">{t('products.currentlyOutOfStock')}</span>
+                    <p className="text-xs sm:text-sm text-red-500 mt-1">{t('products.temporarilyUnavailable')}</p>
                   </div>
                 )}
                 <button 
@@ -606,7 +615,7 @@ export default function ProductPage() {
                   disabled={!product.stock || product.stock === 0}
                 >
                   <Zap className="w-4 h-4 sm:w-5 sm:h-5" />
-                  Buy Now - {formatEuro(product.price * quantity)}
+                  {t('products.buyNow')} - {formatEuro(product.price * quantity)}
                 </button>
                 <button
                   className="w-full py-3 sm:py-4 border-2 border-primary text-primary rounded-xl font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-200 transform hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
@@ -614,7 +623,7 @@ export default function ProductPage() {
                   disabled={isAddingToCart || !product.stock || product.stock === 0}
                 >
                   <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
-                  {isAddingToCart ? 'Adding...' : 'Add to Cart'}
+                  {isAddingToCart ? t('common.loading') : t('products.addToCart')}
                 </button>
               </div>
 
@@ -623,14 +632,14 @@ export default function ProductPage() {
                 <button 
                   className="flex items-center gap-2 text-gray-600 hover:text-red-500 transition-colors duration-200 group disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                   onClick={toggleWishlist}
-                  disabled={isAddingToWishlist}
+                  disabled={wishlistMutation.isPending}
                 >
                   <Heart className={`w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform duration-200 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
                   <span className="font-medium hidden sm:inline">
-                    {isAddingToWishlist ? 'Updating...' : isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                    {wishlistMutation.isPending ? t('common.loading') : isWishlisted ? t('products.removeFromWishlist') : t('products.addToWishlist')}
                   </span>
                   <span className="font-medium sm:hidden">
-                    {isAddingToWishlist ? 'Updating...' : isWishlisted ? 'Remove' : 'Wishlist'}
+                    {wishlistMutation.isPending ? t('common.loading') : isWishlisted ? t('common.remove') : t('navigation.wishlist')}
                   </span>
                 </button>
               </div>
@@ -647,32 +656,29 @@ export default function ProductPage() {
     <div className="w-full mt-8 sm:mt-12">
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden max-w-screen-2xl mx-auto">
         <div className="flex border-b border-gray-100">
-          {["Description"].map((tab) => (
-            <button
-              key={tab}
-              className={`flex-1 px-4 sm:px-6 py-3 sm:py-4 font-semibold transition-all duration-200 text-sm sm:text-base ${
-                activeTab === tab 
-                  ? 'border-b-3 border-black text-black bg-white' 
-                  : 'text-gray-500 hover:text-gray-700 bg-gray-50/50 hover:bg-gray-50'
-              }`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
+          <button
+            className={`flex-1 px-4 sm:px-6 py-3 sm:py-4 font-semibold transition-all duration-200 text-sm sm:text-base ${
+              activeTab === 'description'
+                ? 'border-b-3 border-black text-black bg-white' 
+                : 'text-gray-500 hover:text-gray-700 bg-gray-50/50 hover:bg-gray-50'
+            }`}
+            onClick={() => setActiveTab('description')}
+          >
+            {t('products.description')}
+          </button>
         </div>
         <div className="p-4 sm:p-6 lg:p-8 w-full">
-          {activeTab === "Description" && (
+          {activeTab === "description" && (
             <div className="space-y-4 sm:space-y-6 w-full">
               <div>
-                <h3 className="font-bold text-lg sm:text-xl mb-3 sm:mb-4 text-gray-900">Product Details</h3>
+                <h3 className="font-bold text-lg sm:text-xl mb-3 sm:mb-4 text-gray-900">{t('products.productDetails')}</h3>
                 <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
                   {product.description}
                 </p>
               </div>
               {product.features && Array.isArray(product.features) && product.features.length > 0 && (
                 <div>
-                  <h4 className="font-semibold text-base sm:text-lg mb-3 text-gray-900">Key Features</h4>
+                  <h4 className="font-semibold text-base sm:text-lg mb-3 text-gray-900">{t('products.keyFeatures')}</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {product.features.map((feature: string, i: number) => (
                       <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
@@ -692,7 +698,7 @@ export default function ProductPage() {
        
       {relatedProducts.length > 0 && (
         <div className="mt-12 sm:mt-16">
-          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Related Products</h2>
+          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">{t('products.relatedProducts')}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {relatedProducts.map((related) => {
                 // Cart logic for related products
@@ -736,8 +742,8 @@ export default function ProductPage() {
                       localStorage.setItem('cart', JSON.stringify(newCart));
                       window.dispatchEvent(new Event('cart-updated'));
                       toast({
-                        title: 'Added to Cart',
-                        description: `${related.name} has been added to your cart.`,
+                        title: t('products.addToCart'),
+                        description: t('products.productAdded'),
                       });
                     }}
                     updateCartQuantity={(delta) => {
@@ -748,8 +754,8 @@ export default function ProductPage() {
                         localStorage.setItem('cart', JSON.stringify(newCart));
                         window.dispatchEvent(new Event('cart-updated'));
                         toast({
-                          title: 'Cart Updated',
-                          description: `${related.name} quantity updated.`,
+                          title: t('cart.cartUpdated'),
+                          description: t('cart.cartUpdated'),
                         });
                       }
                     }}

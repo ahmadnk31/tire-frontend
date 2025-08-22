@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { authApi } from '@/lib/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import AuthLayout from '@/components/AuthLayout';
 export default function EmailNotVerified() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const { email = '' } = location.state || {};
   const [resent, setResent] = useState(false);
   const [error, setError] = useState('');
@@ -16,7 +18,7 @@ export default function EmailNotVerified() {
     setError('');
     setResent(false);
     try {
-      await authApi.resendVerification(email);
+      await authApi.resendVerification(email, i18n.language);
       setResent(true);
     } catch (err: any) {
       setError(err.error || err.message || 'Failed to resend verification email');

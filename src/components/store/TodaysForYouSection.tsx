@@ -5,6 +5,8 @@ import { ProductCard } from "./ProductCard";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ProductGridSkeleton } from "@/components/ui/skeletons";
+import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 
 interface TodaysForYouSectionProps {
   sectionTitle?: string;
@@ -13,6 +15,8 @@ interface TodaysForYouSectionProps {
 export const TodaysForYouSection = ({
   sectionTitle = "Today's For You!",
 }: TodaysForYouSectionProps) => {
+  const { t } = useTranslation();
+  const { toast } = useToast();
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedCategorySlug, setSelectedCategorySlug] = useState<string>("");
   const [cart, setCart] = useState<any[]>([]);
@@ -66,9 +70,28 @@ export const TodaysForYouSection = ({
       } else {
         await wishlistApi.addToWishlist(productId, token);
       }
+      return { productId, isWishlisted };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Invalidate both wishlist queries to ensure all wishlist pages update
       queryClient.invalidateQueries({ queryKey: ['wishlist', token] });
+      queryClient.invalidateQueries({ queryKey: ['wishlist-products'] });
+      
+      // Show success toast
+      if (data?.isWishlisted) {
+        toast({ 
+          title: t('wishlist.itemRemoved'), 
+          description: t('wishlist.itemRemoved') 
+        });
+      } else {
+        toast({ 
+          title: t('wishlist.itemAdded'), 
+          description: t('wishlist.itemAdded') 
+        });
+      }
+    },
+    onError: () => {
+      toast({ title: 'Error', description: 'Failed to update wishlist', variant: 'destructive' });
     },
   });
 

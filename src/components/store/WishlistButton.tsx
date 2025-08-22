@@ -20,7 +20,7 @@ export const WishlistButton: React.FC<WishlistButtonProps> = ({ isWishlisted, on
       className="absolute top-4 right-4 z-10 bg-white/80 rounded-full p-2 shadow hover:bg-primary/10 transition-colors"
       onClick={e => { e.stopPropagation(); onToggle(); }}
     >
-      <Heart className={isWishlisted ? 'fill-primary text-primary' : 'text-gray-400'} />
+      <Heart className={isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'} />
     </Button>
   );
 };

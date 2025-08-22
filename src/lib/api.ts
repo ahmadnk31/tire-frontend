@@ -1,9 +1,9 @@
 // Auth API
 export const authApi = {
-  register: (data: { name: string; email: string; password: string; role?: string }) =>
+  register: (data: { name: string; email: string; password: string; role?: string; language?: string }) =>
     apiClient.post('/auth/register', data),
 
-  login: (data: { email: string; password: string; resendVerification?: boolean }) =>
+  login: (data: { email: string; password: string; resendVerification?: boolean; language?: string }) =>
     apiClient.post('/auth/login', data),
 
   verify: (email: string, token: string) =>
@@ -15,14 +15,14 @@ export const authApi = {
   socialLogin: (provider: string, token: string) =>
     apiClient.post('/auth/social-login', { provider, token }),
 
-  forgotPassword: (email: string) =>
-    apiClient.post('/auth/forgot-password', { email }),
+  forgotPassword: (email: string, language?: string) =>
+    apiClient.post('/auth/forgot-password', { email, language }),
 
-  resetPassword: (data: { email: string; token: string; password: string }) =>
+  resetPassword: (data: { email: string; token: string; password: string; language?: string }) =>
     apiClient.post('/auth/reset-password', data),
 
-  resendVerification: (email: string) =>
-    apiClient.post('/auth/resend-verification', { email }),
+  resendVerification: (email: string, language?: string) =>
+    apiClient.post('/auth/resend-verification', { email, language }),
 };
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';

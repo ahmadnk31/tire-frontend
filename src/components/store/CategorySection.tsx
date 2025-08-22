@@ -3,8 +3,10 @@ import { ChevronLeft, ChevronRight, ImageIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CategoriesSkeleton } from "@/components/ui/skeletons";
+import { useTranslation } from 'react-i18next';
 
 export const CategorySection = () => {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -80,7 +82,7 @@ export const CategorySection = () => {
     }
   };
 
-  const allCategories = [...categories, { id: null, name: "All Category", image: null }];
+  const allCategories = [...categories, { id: null, name: t('categories.allCategory'), image: null }];
   const visibleCategories = allCategories.slice(currentIndex, currentIndex + itemsPerPage);
   const canGoPrevious = currentIndex > 0;
   const canGoNext = currentIndex + itemsPerPage < allCategories.length;
@@ -100,7 +102,7 @@ export const CategorySection = () => {
             <button
               onClick={scrollLeft}
               className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md border border-gray-200 hover:bg-gray-50 transition-colors"
-              aria-label="Scroll left"
+              aria-label={t('categories.scrollLeft')}
             >
               <ChevronLeft className="w-4 h-4 text-gray-600" />
             </button>
@@ -109,7 +111,7 @@ export const CategorySection = () => {
             <button
               onClick={scrollRight}
               className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md border border-gray-200 hover:bg-gray-50 transition-colors"
-              aria-label="Scroll right"
+              aria-label={t('categories.scrollRight')}
             >
               <ChevronRight className="w-4 h-4 text-gray-600" />
             </button>
@@ -137,7 +139,7 @@ export const CategorySection = () => {
             <button
               onClick={goToPrevious}
               className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
-              aria-label="Previous categories"
+              aria-label={t('categories.previousCategories')}
             >
               <ChevronLeft className="w-5 h-5 text-gray-600" />
             </button>
@@ -146,7 +148,7 @@ export const CategorySection = () => {
             <button
               onClick={goToNext}
               className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
-              aria-label="Next categories"
+              aria-label={t('categories.nextCategories')}
             >
               <ChevronRight className="w-5 h-5 text-gray-600" />
             </button>
@@ -173,7 +175,7 @@ export const CategorySection = () => {
                     ? 'bg-blue-500'
                     : 'bg-gray-300 hover:bg-gray-400'
                 }`}
-                aria-label={`Go to page ${idx + 1}`}
+                aria-label={t('categories.goToPage', { number: idx + 1 })}
               />
             ))}
           </div>

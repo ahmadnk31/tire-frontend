@@ -1,0 +1,1637 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "remove": "Remove",
+    "clearAll": "Clear all",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "view": "View",
+    "select": "Select",
+    "all": "All",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "submit": "Submit",
+    "reset": "Reset",
+    "clear": "Clear",
+    "apply": "Apply",
+    "confirm": "Confirm",
+    "retry": "Retry",
+    "refresh": "Refresh",
+    "download": "Download",
+    "upload": "Upload",
+    "copy": "Copy",
+    "share": "Share",
+    "print": "Print",
+    "export": "Export",
+    "import": "Import"
+  },
+  "navigation": {
+    "home": "Home",
+    "products": "Products",
+    "categories": "Categories",
+    "cart": "Cart",
+    "wishlist": "Wishlist",
+    "account": "Account",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "dashboard": "Dashboard",
+    "orders": "Orders",
+    "settings": "Settings",
+    "profile": "Profile",
+    "about": "About",
+    "contact": "Contact",
+    "help": "Help",
+    "support": "Support",
+    "faq": "FAQ",
+    "terms": "Terms",
+    "privacy": "Privacy"
+  },
+
+  "products": {
+    "title": "Products",
+    "allProducts": "All Products",
+    "featured": "Featured",
+    "new": "New",
+    "sale": "Sale",
+    "outOfStock": "Out of Stock",
+    "inStock": "In Stock",
+    "addToCart": "Add to Cart",
+    "addCart": "Add Cart",
+    "removeFromCart": "Remove from Cart",
+    "addToWishlist": "Add to Wishlist",
+    "removeFromWishlist": "Remove from Wishlist",
+    "buyNow": "Buy Now",
+    "viewDetails": "View Details",
+    "size": "Size",
+    "brand": "Brand",
+    "model": "Model",
+    "price": "Price",
+    "originalPrice": "Original Price",
+    "discount": "Discount",
+    "rating": "Rating",
+    "reviews": "reviews",
+    "description": "Description",
+    "specifications": "Specifications",
+    "features": "Features",
+    "relatedProducts": "Related Products",
+    "similarProducts": "Similar Products",
+    "tireType": "Tire Type",
+    "seasonType": "Season Type",
+    "speedRating": "Speed Rating",
+    "loadIndex": "Load Index",
+    "width": "Width",
+    "aspectRatio": "Aspect Ratio",
+    "diameter": "Diameter",
+    "treadDepth": "Tread Depth",
+    "weight": "Weight",
+    "warranty": "Warranty",
+   
+    "shipping": "Shipping",
+    "returns": "Returns",
+    "quantity": "Quantity",
+    
+    "selectQuantity": "Select Quantity",
+    "productAdded": "Product added to cart",
+    "productRemoved": "Product removed from cart",
+    "productAddedToWishlist": "Product added to wishlist",
+    "productRemovedFromWishlist": "Product removed from wishlist",
+    "noProductsFound": "No products found",
+    "loadingProducts": "Loading products...",
+    "filterBy": "Filter by",
+    "sortBy": "Sort by",
+    "name": "Name",
+    "newest": "Newest",
+    "oldest": "Oldest",
+    "priceLowToHigh": "Price: Low to High",
+    "priceHighToLow": "Price: High to Low",
+    "ratingHighToLow": "Rating: High to Low",
+    "brandAZ": "Brand: A-Z",
+    "brandZA": "Brand: Z-A",
+    "viewAll": "View All Products",
+    
+    "priceRange": "Price Range",
+    "minRating": "Minimum Rating",
+    "anyRating": "Any rating",
+    "andUp": "& up",
+    "availability": "Availability",
+    "inStockOnly": "In Stock Only",
+    "featuredOnly": "Featured Products Only",
+    "noBrands": "No brands available",
+    "noSizes": "No sizes available",
+    "selectSize": "Select Size",
+    "sizeGuide": "Size Guide",
+    "productDetails": "Product Details",
+    "keyFeatures": "Key Features",
+    "currentlyOutOfStock": "Currently Out of Stock",
+    "temporarilyUnavailable": "This item is temporarily unavailable"
+  },
+  "header": {
+    "downloadApp": "Download Ariana App",
+    "about": "About Ariana",
+    "plus": "Ariana Plus",
+    "promo": "Promo"
+  },
+  "megaMenu": {
+    "brands": "Brands",
+    "models": "Models",
+    "sizes": "Sizes",
+    "categories": "Categories",
+    "important": "Important",
+    "offers": "Offers",
+    "newArrivals": "New Arrivals",
+    "bestSellers": "Best Sellers",
+    "support": "Support",
+    "relatedParts": "Related Parts",
+    "noRelatedParts": "No related parts"
+  },
+  "searchBar": {
+    "placeholder": "Search products...",
+    "filterByBrand": "Filter by Brand",
+    "selectBrand": "Select brand",
+    "allBrands": "All Brands",
+    "noResults": "No results found"
+  },
+  "banner": {
+    "loadError": "Failed to load banners",
+    "tryAgain": "Please try again later",
+    "shopNow": "Shop Now",
+    "learnMore": "Learn More",
+    "pauseVideo": "Pause video",
+    "playVideo": "Play video",
+    "previousSlide": "Previous slide",
+    "nextSlide": "Next slide",
+    "goToSlide": "Go to slide {{number}}"
+  },
+  "categories": {
+    "allCategory": "All Category",
+    "scrollLeft": "Scroll left",
+    "scrollRight": "Scroll right",
+    "previousCategories": "Previous categories",
+    "nextCategories": "Next categories",
+    "goToPage": "Go to page {{number}}"
+  },
+  "auth": {
+    "brandName": "Ariana Bandencentraal",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "signUp": "Sign Up",
+    "loginButton": "Login",
+    "login": {
+      "title": "Sign in to your account",
+      "button": "Login",
+      "failed": "Login failed",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "register": "Register"
+    },
+    "register": {
+      "title": "Create your account",
+      "button": "Register",
+      "failed": "Registration failed",
+      "checkEmail": "Check your email to verify your account.",
+      "haveAccount": "Already have an account?",
+      "login": "Login"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "button": "Send Reset Link",
+      "success": "If your email exists, a reset link has been sent.",
+      "failed": "Failed to send reset link",
+      "backToLogin": "Back to Login"
+    },
+    "loginRequired": "Login Required",
+    "loginToAddWishlist": "Please log in to add items to your wishlist",
+    "testimonials": {
+      "title": "What our customers say",
+      "googleReviews": "Google Reviews",
+      "rating": "4.8/5"
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "description": "Find answers to common questions about our products and services",
+    "searchPlaceholder": "Search FAQ...",
+    "categories": {
+      "all": "All Questions",
+      "orders": "Orders",
+      "shipping": "Shipping",
+      "returns": "Returns",
+      "products": "Products",
+      "payment": "Payment",
+      "technical": "Technical"
+    },
+    "items": {
+      "deliveryTime": {
+        "question": "How long does delivery take?",
+        "answer": "Standard delivery takes 2-5 business days within Belgium. Express delivery is available for next-day delivery."
+      },
+      "returnPolicy": {
+        "question": "What is your return policy?",
+        "answer": "You can return unused products within 30 days of purchase with original packaging and receipt."
+      },
+      "paymentMethods": {
+        "question": "What payment methods do you accept?",
+        "answer": "We accept Visa, Mastercard, PayPal, Apple Pay, and bank transfers."
+      },
+      "installation": {
+        "question": "Do you offer tire installation?",
+        "answer": "Yes, we provide professional tire installation at our service center in Ledegem."
+      },
+      "warranty": {
+        "question": "Do your tires come with warranty?",
+        "answer": "All our tires come with manufacturer warranty. Warranty period varies by brand and product."
+      },
+      "orderTracking": {
+        "question": "How can I track my order?",
+        "answer": "You will receive a tracking number via email once your order ships. You can also track orders in your account."
+      }
+    },
+    "noResults": "No questions found",
+    "noResultsDesc": "Try adjusting your search or browse categories",
+    "stillNeedHelp": "Still need help?",
+    "contactDescription": "Our support team is here to help you",
+    "contactUs": "Contact Us",
+    "contactDesc": "Send us a message",
+    "callUs": "Call Us"
+  },
+  "returns": {
+    "title": "Returns & Warranty",
+    "description": "Easy returns and comprehensive warranty coverage for your peace of mind",
+    "policy": {
+      "title": "Return Policy Overview",
+      "timeframe": {
+        "title": "30-Day Returns",
+        "description": "Return unused products within 30 days"
+      },
+      "process": {
+        "title": "Easy Process",
+        "description": "Simple online return requests"
+      },
+      "refund": {
+        "title": "Fast Refunds",
+        "description": "Refunds processed within 5-7 business days"
+      }
+    },
+    "process": {
+      "title": "How to Return an Item"
+    },
+    "steps": {
+      "initiate": {
+        "title": "Initiate Return",
+        "description": "Contact us or use our online return form to start the process"
+      },
+      "package": {
+        "title": "Package Item",
+        "description": "Pack the item securely in original packaging with all accessories"
+      },
+      "ship": {
+        "title": "Ship Back",
+        "description": "Use our prepaid return label or drop off at our location"
+      },
+      "refund": {
+        "title": "Receive Refund",
+        "description": "Get your refund within 5-7 business days after we receive the item"
+      }
+    },
+    "conditions": {
+      "title": "Return Conditions",
+      "unused": "Items must be unused and in original condition",
+      "original": "Original packaging and accessories must be included",
+      "within30": "Return initiated within 30 days of purchase",
+      "receipt": "Proof of purchase required"
+    },
+    "nonReturnable": {
+      "title": "Non-Returnable Items",
+      "installed": "Tires that have been mounted or installed",
+      "damaged": "Items damaged by customer use",
+      "custom": "Custom or special-order items"
+    },
+    "warranty": {
+      "title": "Warranty Information",
+      "description": "All products come with manufacturer warranty covering defects in materials and workmanship.",
+      "coverage": {
+        "manufacturing": "Manufacturing defects",
+        "materials": "Material defects",
+        "workmanship": "Workmanship issues"
+      },
+      "exclusions": "Warranty does not cover normal wear, damage from misuse, or road hazards."
+    },
+    "contact": {
+      "title": "Need to Return Something?",
+      "description": "Contact our returns team for assistance",
+      "button": "Start Return",
+      "email": "Email Returns Team"
+    }
+  },
+  "shipping": {
+    "title": "Shipping Information",
+    "description": "Fast, reliable delivery options to get your tires and accessories when you need them",
+    "options": {
+      "title": "Shipping Options",
+      "standard": {
+        "title": "Standard Delivery",
+        "description": "Regular delivery for most orders",
+        "time": "2-5 business days",
+        "price": "€9.95",
+        "features": {
+          "tracking": "Full tracking included",
+          "insurance": "Package insurance",
+          "signature": "Signature required"
+        }
+      },
+      "express": {
+        "title": "Express Delivery",
+        "description": "Fast delivery for urgent orders",
+        "time": "1-2 business days",
+        "price": "€19.95",
+        "features": {
+          "priority": "Priority handling",
+          "tracking": "Real-time tracking",
+          "insurance": "Full insurance coverage"
+        }
+      },
+      "pickup": {
+        "title": "Store Pickup",
+        "description": "Collect from our Ledegem location",
+        "time": "Same day available",
+        "price": "Free",
+        "features": {
+          "free": "No shipping costs",
+          "appointment": "Appointment booking",
+          "installation": "Installation available"
+        }
+      }
+    },
+    "zones": {
+      "title": "Delivery Zones",
+      "belgium": {
+        "title": "Belgium",
+        "description": "Nationwide delivery",
+        "time": "1-3 days",
+        "cost": "From €9.95"
+      },
+      "netherlands": {
+        "title": "Netherlands",
+        "description": "Major cities covered",
+        "time": "2-4 days",
+        "cost": "From €14.95"
+      },
+      "france": {
+        "title": "Northern France",
+        "description": "Border regions",
+        "time": "3-5 days",
+        "cost": "From €19.95"
+      },
+      "germany": {
+        "title": "Western Germany",
+        "description": "Selected areas",
+        "time": "3-5 days",
+        "cost": "From €19.95"
+      }
+    },
+    "info": {
+      "processing": {
+        "title": "Order Processing",
+        "description": "Orders are processed and shipped from our warehouse in Ledegem.",
+        "items": {
+          "cutoff": "Orders placed before 2 PM ship same day",
+          "weekends": "Weekend orders processed Monday",
+          "holidays": "No processing on Belgian holidays"
+        }
+      },
+      "tracking": {
+        "title": "Order Tracking",
+        "description": "Stay updated on your order status with our tracking system.",
+        "items": {
+          "email": "Tracking number sent via email",
+          "realtime": "Real-time status updates",
+          "delivery": "Delivery notifications"
+        }
+      }
+    },
+    "special": {
+      "title": "Special Items",
+      "large": {
+        "title": "Large Items",
+        "description": "Wheels and large accessories may require special delivery arrangements."
+      },
+      "installation": {
+        "title": "Installation Service",
+        "description": "Professional installation available at our service center."
+      }
+    },
+    "contact": {
+      "title": "Shipping Questions?",
+      "description": "Contact our logistics team for shipping inquiries",
+      "button": "Contact Shipping"
+    }
+  },
+  "blog": {
+    "title": "Tire Knowledge Hub",
+    "description": "Expert insights, maintenance tips, and industry news to help you make informed decisions",
+    "searchPlaceholder": "Search articles...",
+    "categories": {
+      "all": "All Articles",
+      "tips": "Tips & Guides",
+      "maintenance": "Maintenance",
+      "safety": "Safety",
+      "seasonal": "Seasonal",
+      "industry": "Industry News"
+    },
+    "featured": "Featured Article",
+    "readMore": "Read More",
+    "posts": {
+      "winterPrep": {
+        "title": "Preparing Your Vehicle for Winter",
+        "excerpt": "Essential tips for winter tire selection and vehicle preparation",
+        "content": "As winter approaches, it's crucial to prepare your vehicle for harsh weather conditions...",
+        "readTime": "5 min read"
+      },
+      "tireMaintenance": {
+        "title": "Tire Maintenance: Extending Tire Life",
+        "excerpt": "Simple maintenance tips to get the most out of your tires",
+        "content": "Proper tire maintenance can significantly extend the life of your tires...",
+        "readTime": "3 min read"
+      },
+      "choosingTires": {
+        "title": "How to Choose the Right Tires",
+        "excerpt": "A comprehensive guide to selecting the perfect tires for your vehicle",
+        "content": "Choosing the right tires for your vehicle depends on several factors...",
+        "readTime": "7 min read"
+      }
+    },
+    "noResults": "No articles found",
+    "noResultsDesc": "Try different search terms or browse categories",
+    "newsletter": {
+      "title": "Subscribe to Our Newsletter",
+      "description": "Get the latest tire tips and industry insights delivered to your inbox",
+      "placeholder": "Enter your email",
+      "subscribe": "Subscribe"
+    }
+  },
+  "careers": {
+    "title": "Join Our Team",
+    "description": "Build your career with Belgium's leading tire service provider. We're looking for passionate individuals to join our growing team.",
+    "culture": {
+      "title": "Our Values"
+    },
+    "values": {
+      "excellence": {
+        "title": "Excellence",
+        "description": "We strive for excellence in everything we do"
+      },
+      "integrity": {
+        "title": "Integrity",
+        "description": "Honest and transparent in all our dealings"
+      },
+      "innovation": {
+        "title": "Innovation",
+        "description": "Embracing new technologies and methods"
+      },
+      "community": {
+        "title": "Community",
+        "description": "Supporting our local community and environment"
+      }
+    },
+    "benefits": {
+      "title": "Why Work With Us?",
+      "health": {
+        "title": "Health Benefits",
+        "description": "Comprehensive health insurance and wellness programs"
+      },
+      "flexibility": {
+        "title": "Work-Life Balance",
+        "description": "Flexible schedules and time off policies"
+      },
+      "growth": {
+        "title": "Career Growth",
+        "description": "Training opportunities and clear advancement paths"
+      },
+      "team": {
+        "title": "Great Team",
+        "description": "Work with experienced professionals in a supportive environment"
+      }
+    },
+    "openings": {
+      "title": "Current Openings"
+    },
+    "jobs": {
+      "mechanic": {
+        "title": "Tire Technician",
+        "department": "Service",
+        "type": "Full-time",
+        "experience": "2+ years",
+        "description": "Join our service team as a tire technician. Install, balance, and repair tires for various vehicles.",
+        "requirements": {
+          "experience": "2+ years experience in tire service",
+          "license": "Valid driver's license",
+          "physical": "Ability to lift heavy objects",
+          "teamwork": "Strong teamwork skills"
+        }
+      },
+      "sales": {
+        "title": "Sales Associate",
+        "department": "Sales",
+        "type": "Full-time",
+        "experience": "Entry level",
+        "description": "Help customers find the right tires and accessories for their vehicles. Provide expert advice and excellent service.",
+        "requirements": {
+          "communication": "Excellent communication skills",
+          "languages": "Dutch and French required, English preferred",
+          "customer": "Customer service experience",
+          "knowledge": "Interest in automotive products"
+        }
+      }
+    },
+    "requirements": "Requirements",
+    "apply": "Apply Now",
+    "noOpenings": {
+      "title": "No Current Openings",
+      "description": "We don't have any open positions right now, but we're always looking for talented people.",
+      "notify": "Get Notified"
+    },
+    "process": {
+      "title": "Application Process",
+      "step1": {
+        "title": "Apply",
+        "description": "Submit your application and resume online"
+      },
+      "step2": {
+        "title": "Review",
+        "description": "We review applications and contact qualified candidates"
+      },
+      "step3": {
+        "title": "Interview",
+        "description": "Meet with our team to discuss the opportunity"
+      },
+      "step4": {
+        "title": "Decision",
+        "description": "We make a decision and extend an offer"
+      }
+    },
+    "contact": {
+      "title": "Questions About Careers?",
+      "description": "Contact our HR team for more information about opportunities"
+    }
+  },
+  "press": {
+    "title": "Press & Media",
+    "description": "Media resources, press releases, and company information for journalists and media professionals",
+    "contact": {
+      "title": "Media Contacts",
+      "media": "Media Inquiries",
+      "mediaDescription": "For press releases and media requests",
+      "phone": "Phone Interviews",
+      "phoneDescription": "Schedule interviews and calls"
+    },
+    "releases": {
+      "title": "Press Releases",
+      "download": "Download PDF",
+      "expansion": {
+        "title": "Ariana Banden Expands Service Capabilities",
+        "summary": "New equipment and expanded hours to better serve customers",
+        "content": "Ariana Banden has invested in new tire mounting equipment and extended service hours to meet growing customer demand..."
+      },
+      "sustainability": {
+        "title": "Sustainability Initiative Launched",
+        "summary": "New tire recycling program supports environmental goals",
+        "content": "Our new tire recycling program ensures 95% of old tires are properly recycled or repurposed..."
+      },
+      "partnership": {
+        "title": "Strategic Partnership with Leading Brands",
+        "summary": "Expanded product offering through new brand partnerships",
+        "content": "Ariana Banden announces partnerships with additional premium tire manufacturers..."
+      }
+    },
+    "mediaKit": {
+      "title": "Media Kit",
+      "download": "Download",
+      "logo": {
+        "name": "Company Logos",
+        "description": "High-resolution logos in various formats"
+      },
+      "photos": {
+        "name": "Company Photos",
+        "description": "Professional photos of facilities and team"
+      },
+      "factsheet": {
+        "name": "Company Fact Sheet",
+        "description": "Key company information and statistics"
+      }
+    },
+    "awards": {
+      "title": "Awards & Recognition",
+      "excellence": {
+        "title": "Excellence in Service Award",
+        "organization": "Belgian Automotive Association",
+        "description": "Recognition for outstanding customer service"
+      },
+      "service": {
+        "title": "Best Service Provider",
+        "organization": "Local Business Awards",
+        "description": "Voted best tire service provider in West Flanders"
+      },
+      "safety": {
+        "title": "Safety Excellence Award",
+        "organization": "Industry Safety Council",
+        "description": "Recognition for workplace safety practices"
+      }
+    },
+    "facts": {
+      "title": "Company Facts",
+      "experience": "Years Experience",
+      "customers": "Happy Customers",
+      "brands": "Tire Brands",
+      "support": "Customer Support"
+    }
+  },
+  "sustainability": {
+    "title": "Sustainability",
+    "description": "Our commitment to environmental responsibility and sustainable business practices for a better future",
+    "mission": {
+      "title": "Our Environmental Mission",
+      "description": "We are committed to reducing our environmental impact through responsible business practices, tire recycling programs, and supporting sustainable transportation solutions."
+    },
+    "initiatives": {
+      "title": "Our Initiatives",
+      "recycling": {
+        "title": "Tire Recycling Program",
+        "description": "Comprehensive tire recycling ensuring 95% of old tires are properly recycled or repurposed",
+        "impact": "Over 10,000 tires recycled annually"
+      },
+      "green": {
+        "title": "Green Operations",
+        "description": "Energy-efficient equipment and renewable energy sources in our facilities",
+        "impact": "40% reduction in energy consumption"
+      },
+      "quality": {
+        "title": "Quality Products",
+        "description": "Promoting high-quality, long-lasting tires to reduce replacement frequency",
+        "impact": "Extended tire life by average 25%"
+      },
+      "community": {
+        "title": "Community Support",
+        "description": "Supporting local environmental initiatives and education programs",
+        "impact": "500+ students educated annually"
+      }
+    },
+    "goals": {
+      "title": "Sustainability Goals",
+      "2025": {
+        "target": "Carbon Neutral Operations",
+        "description": "Achieve carbon neutrality in all our operations through renewable energy and offset programs"
+      },
+      "2027": {
+        "target": "100% Tire Recycling",
+        "description": "Ensure 100% of collected tires are recycled or repurposed through expanded partnerships"
+      },
+      "2030": {
+        "target": "Zero Waste to Landfill",
+        "description": "Eliminate all waste going to landfills through comprehensive recycling and reuse programs"
+      }
+    },
+    "progress": "Progress",
+    "impact": "Impact",
+    "partners": {
+      "title": "Our Partners",
+      "recycling": {
+        "name": "Tire Recycling Partners",
+        "description": "Working with certified recycling facilities across Belgium"
+      },
+      "manufacturers": {
+        "name": "Sustainable Manufacturers",
+        "description": "Partnering with tire manufacturers committed to sustainability"
+      },
+      "research": {
+        "name": "Research Institutions",
+        "description": "Collaborating on sustainable tire technology research"
+      }
+    },
+    "certifications": {
+      "title": "Certifications",
+      "iso14001": "Environmental management system certification",
+      "ecolabel": "EU Ecolabel for sustainable products",
+      "carbon": "Carbon neutral certified operations",
+      "green": "Green business certification"
+    },
+    "stats": {
+      "recycled": "Tires Recycled",
+      "emissions": "CO2 Reduction",
+      "certifications": "Certifications",
+      "partnerships": "Green Partnerships"
+    },
+    "cta": {
+      "title": "Join Our Sustainability Journey",
+      "description": "Learn more about our environmental initiatives and how you can contribute to a more sustainable future",
+      "contact": "Contact Us",
+      "blog": "Read Our Blog"
+    }
+  },
+  "sitemap": {
+    "title": "Site Map",
+    "description": "Complete overview of all pages and sections on our website",
+    "stats": {
+      "pages": "Total Pages",
+      "sections": "Main Sections",
+      "languages": "Languages"
+    },
+    "sections": {
+      "main": {
+        "title": "Main Pages",
+        "links": {
+          "home": "Home",
+          "about": "About Us",
+          "contact": "Contact"
+        },
+        "descriptions": {
+          "home": "Main landing page with featured products",
+          "about": "Learn about our company and mission",
+          "contact": "Get in touch with our team"
+        }
+      },
+      "shop": {
+        "title": "Shop",
+        "links": {
+          "products": "All Products",
+          "categories": "Categories",
+          "brands": "Brands",
+          "cart": "Shopping Cart",
+          "wishlist": "Wishlist",
+          "checkout": "Checkout"
+        },
+        "descriptions": {
+          "products": "Browse our complete product catalog",
+          "categories": "Shop by product categories",
+          "brands": "Explore products by brand",
+          "cart": "Review items in your cart",
+          "wishlist": "Saved items for later",
+          "checkout": "Complete your purchase"
+        }
+      },
+      "account": {
+        "title": "Account",
+        "links": {
+          "login": "Login",
+          "register": "Register",
+          "account": "My Account",
+          "orders": "Order History",
+          "settings": "Account Settings"
+        },
+        "descriptions": {
+          "login": "Sign in to your account",
+          "register": "Create a new account",
+          "account": "Manage your account",
+          "orders": "View past orders",
+          "settings": "Update account preferences"
+        }
+      },
+      "support": {
+        "title": "Support",
+        "links": {
+          "faq": "FAQ",
+          "returns": "Returns",
+          "shipping": "Shipping Info",
+          "sizeGuide": "Size Guide"
+        },
+        "descriptions": {
+          "faq": "Frequently asked questions",
+          "returns": "Return policy and process",
+          "shipping": "Delivery information",
+          "sizeGuide": "Tire sizing guide"
+        }
+      },
+      "company": {
+        "title": "Company",
+        "links": {
+          "blog": "Blog",
+          "careers": "Careers",
+          "press": "Press",
+          "sustainability": "Sustainability"
+        },
+        "descriptions": {
+          "blog": "Latest news and tire tips",
+          "careers": "Job opportunities",
+          "press": "Media resources",
+          "sustainability": "Our environmental commitment"
+        }
+      },
+      "legal": {
+        "title": "Legal",
+        "links": {
+          "privacy": "Privacy Policy",
+          "terms": "Terms of Service",
+          "cookies": "Cookie Policy",
+          "accessibility": "Accessibility"
+        },
+        "descriptions": {
+          "privacy": "How we protect your privacy",
+          "terms": "Terms and conditions",
+          "cookies": "Cookie usage policy",
+          "accessibility": "Accessibility information"
+        }
+      }
+    },
+    "xml": {
+      "title": "XML Sitemap",
+      "description": "Download our XML sitemap for search engines",
+      "download": "Download XML Sitemap"
+    },
+    "lastUpdated": "Last updated"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "description": "How we collect, use, and protect your personal information",
+    "lastUpdated": "Last updated",
+    "overview": {
+      "title": "Privacy Overview",
+      "point1": "We only collect information necessary to provide our services",
+      "point2": "Your data is never sold to third parties",
+      "point3": "You have full control over your personal information"
+    },
+    "dataTypes": {
+      "title": "Types of Data We Collect",
+      "personal": {
+        "type": "Personal Information",
+        "description": "Information you provide directly to us",
+        "examples": "Name, email, phone number, address"
+      },
+      "technical": {
+        "type": "Technical Data",
+        "description": "Information collected automatically",
+        "examples": "IP address, browser type, device information"
+      },
+      "usage": {
+        "type": "Usage Data",
+        "description": "How you interact with our website",
+        "examples": "Pages visited, time spent, click patterns"
+      }
+    },
+    "examples": "Examples",
+    "sections": {
+      "collection": {
+        "title": "Information Collection",
+        "content": "We collect information when you create an account, make a purchase, contact us, or use our website. This includes personal details like name and email, as well as technical information like your IP address and browser type."
+      },
+      "use": {
+        "title": "How We Use Your Information",
+        "content": "We use your information to process orders, provide customer service, improve our website, send updates about your orders, and comply with legal requirements. We do not sell your personal information to third parties."
+      },
+      "sharing": {
+        "title": "Information Sharing",
+        "content": "We only share your information with trusted service providers who help us operate our business, such as payment processors and shipping companies. These partners are bound by strict confidentiality agreements."
+      },
+      "security": {
+        "title": "Data Security",
+        "content": "We implement industry-standard security measures to protect your information, including SSL encryption, secure servers, and regular security audits. However, no method of transmission over the internet is 100% secure."
+      },
+      "cookies": {
+        "title": "Cookies and Tracking",
+        "content": "We use cookies to improve your browsing experience, remember your preferences, and analyze website traffic. You can control cookie settings in your browser. For more details, see our Cookie Policy."
+      },
+      "rights": {
+        "title": "Your Rights",
+        "content": "Under GDPR, you have the right to access, correct, delete, or transfer your personal data. You can also object to processing or withdraw consent. Contact us to exercise these rights."
+      }
+    },
+    "gdpr": {
+      "title": "Your GDPR Rights",
+      "rights": {
+        "title": "Your Rights Include",
+        "access": "Access to your personal data",
+        "rectification": "Correction of inaccurate data",
+        "erasure": "Deletion of your data",
+        "portability": "Data portability",
+        "restriction": "Restriction of processing",
+        "objection": "Object to processing"
+      },
+      "exercise": {
+        "title": "Exercise Your Rights",
+        "description": "To exercise any of these rights, please contact our Data Protection Officer:"
+      }
+    },
+    "contact": {
+      "title": "Contact Information",
+      "company": "Company Details",
+      "dpo": "Data Protection Officer"
+    }
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "description": "Terms and conditions governing the use of our website and services",
+    "lastUpdated": "Last updated",
+    "effective": "Effective date",
+    "notice": {
+      "title": "Important Notice",
+      "description": "By using our website and services, you agree to these terms. Please read them carefully before making any purchases."
+    },
+    "tableOfContents": "Table of Contents",
+    "keyPoints": {
+      "title": "Key Points",
+      "acceptance": {
+        "title": "Agreement",
+        "description": "Using our services means you accept these terms"
+      },
+      "warranty": {
+        "title": "Warranty",
+        "description": "Products come with manufacturer warranty"
+      },
+      "returns": {
+        "title": "Returns",
+        "description": "30-day return policy for unused items"
+      },
+      "liability": {
+        "title": "Liability",
+        "description": "Our liability is limited as described in these terms"
+      }
+    },
+    "sections": {
+      "acceptance": {
+        "title": "Acceptance of Terms",
+        "content": "By accessing and using this website, you accept and agree to be bound by the terms and provision of this agreement."
+      },
+      "definitions": {
+        "title": "Definitions",
+        "content": "In these terms, 'Company' refers to Ariana Banden Service, 'Services' refers to our tire sales and installation services, and 'User' refers to anyone using our website or services."
+      },
+      "products": {
+        "title": "Products and Services",
+        "content": "We sell tires, wheels, and automotive accessories. All products are subject to availability. We reserve the right to limit quantities and discontinue products."
+      },
+      "orders": {
+        "title": "Orders and Payment",
+        "content": "Orders are subject to acceptance and availability. Payment is required at time of order. We accept major credit cards, PayPal, and bank transfers."
+      },
+      "shipping": {
+        "title": "Shipping and Delivery",
+        "content": "Shipping costs and delivery times vary by location and product. Risk of loss transfers to you upon delivery. See our Shipping Policy for detailed information."
+      },
+      "returns": {
+        "title": "Returns and Refunds",
+        "content": "Unused products may be returned within 30 days with original packaging. Installation services are non-refundable. See our Return Policy for complete details."
+      },
+      "warranty": {
+        "title": "Warranty",
+        "content": "Products come with manufacturer warranty. We provide warranty service in accordance with manufacturer terms. Warranty does not cover normal wear or misuse."
+      },
+      "liability": {
+        "title": "Limitation of Liability",
+        "content": "Our liability is limited to the purchase price of products. We are not liable for indirect, incidental, or consequential damages."
+      },
+      "intellectual": {
+        "title": "Intellectual Property",
+        "content": "Website content, logos, and trademarks are our property or used with permission. You may not use our intellectual property without written consent."
+      },
+      "conduct": {
+        "title": "User Conduct",
+        "content": "You agree to use our website lawfully and not to engage in any activity that could harm our business or other users."
+      },
+      "termination": {
+        "title": "Termination",
+        "content": "We may terminate or suspend access to our services at any time for violation of these terms or for any other reason."
+      },
+      "governing": {
+        "title": "Governing Law",
+        "content": "These terms are governed by Belgian law. Any disputes will be resolved in the courts of Belgium."
+      }
+    },
+    "dispute": {
+      "title": "Dispute Resolution",
+      "mediation": "We encourage resolving disputes through direct communication first.",
+      "arbitration": "If direct resolution fails, disputes may be subject to arbitration.",
+      "jurisdiction": "Any legal proceedings must be brought in Belgian courts."
+    },
+    "contact": {
+      "title": "Contact Information",
+      "company": "Company Information",
+      "legal": "Legal Department"
+    }
+  },
+  "cookies": {
+    "title": "Cookie Policy",
+    "description": "How we use cookies and similar technologies to improve your browsing experience",
+    "lastUpdated": "Last updated",
+    "what": {
+      "title": "What Are Cookies?",
+      "description": "Cookies are small text files stored on your device when you visit our website. They help us provide a better user experience by remembering your preferences and analyzing how you use our site.",
+      "usage": "We use both session cookies (which expire when you close your browser) and persistent cookies (which remain on your device for a set period)."
+    },
+    "preferences": {
+      "title": "Cookie Preferences",
+      "acceptAll": "Accept All",
+      "rejectAll": "Reject All",
+      "save": "Save Preferences",
+      "saved": "Cookie preferences saved successfully!"
+    },
+    "essential": "Essential",
+    "categories": {
+      "essential": {
+        "name": "Essential Cookies",
+        "description": "Required for basic website functionality. These cannot be disabled.",
+        "cookies": {
+          "session": {
+            "purpose": "Maintains your session while browsing",
+            "duration": "Session"
+          },
+          "csrf": {
+            "purpose": "Protects against security attacks",
+            "duration": "Session"
+          }
+        }
+      },
+      "functional": {
+        "name": "Functional Cookies",
+        "description": "Remember your preferences and settings for a better experience.",
+        "cookies": {
+          "language": {
+            "purpose": "Remembers your language preference",
+            "duration": "1 year"
+          },
+          "theme": {
+            "purpose": "Saves your theme preference",
+            "duration": "1 year"
+          }
+        }
+      },
+      "analytics": {
+        "name": "Analytics Cookies",
+        "description": "Help us understand how visitors use our website to improve performance.",
+        "cookies": {
+          "ga": {
+            "purpose": "Tracks website usage and visitor behavior",
+            "duration": "2 years"
+          },
+          "gid": {
+            "purpose": "Distinguishes unique users",
+            "duration": "24 hours"
+          }
+        }
+      },
+      "marketing": {
+        "name": "Marketing Cookies",
+        "description": "Used to show relevant advertisements and measure campaign effectiveness.",
+        "cookies": {
+          "fbp": {
+            "purpose": "Facebook pixel for advertising",
+            "duration": "3 months"
+          },
+          "ads": {
+            "purpose": "Stores advertising preferences",
+            "duration": "1 year"
+          }
+        }
+      }
+    },
+    "details": {
+      "name": "Cookie Name",
+      "purpose": "Purpose",
+      "duration": "Duration",
+      "provider": "Provider"
+    },
+    "manage": {
+      "title": "Managing Cookies",
+      "description": "You can control cookies through your browser settings or by using our cookie preference center above.",
+      "browser": {
+        "title": "Browser Settings"
+      },
+      "thirdParty": {
+        "title": "Third-Party Opt-outs"
+      }
+    },
+    "contact": {
+      "title": "Questions About Cookies?",
+      "description": "Contact us if you have questions about our cookie usage"
+    }
+  },
+  "accessibility": {
+    "title": "Accessibility Statement",
+    "description": "Our commitment to making our website accessible to everyone, including people with disabilities",
+    "lastUpdated": "Last updated",
+    "commitment": {
+      "title": "Our Commitment",
+      "description": "We are committed to ensuring our website is accessible to all users, including those with disabilities. We strive to meet WCAG 2.1 AA standards and continuously improve our accessibility features."
+    },
+    "wcag": {
+      "title": "WCAG Compliance",
+      "aa": {
+        "title": "Level AA Compliance",
+        "description": "Meets most accessibility standards",
+        "status": "Compliant"
+      },
+      "aaa": {
+        "title": "Level AAA Compliance",
+        "description": "Highest accessibility standards",
+        "status": "Partial"
+      }
+    },
+    "features": {
+      "title": "Accessibility Features",
+      "keyboard": {
+        "title": "Keyboard Navigation",
+        "description": "Full website functionality available via keyboard",
+        "details": {
+          "tab": "Tab through all interactive elements",
+          "enter": "Enter key activates buttons and links",
+          "escape": "Escape key closes dialogs and menus",
+          "arrows": "Arrow keys navigate menus and lists"
+        }
+      },
+      "visual": {
+        "title": "Visual Accessibility",
+        "description": "Design optimized for users with visual impairments",
+        "details": {
+          "contrast": "High contrast color schemes",
+          "resize": "Text can be resized up to 200%",
+          "screen": "Compatible with screen readers",
+          "alt": "Alternative text for all images"
+        }
+      },
+      "audio": {
+        "title": "Audio Accessibility",
+        "description": "Audio content is accessible to users with hearing impairments",
+        "details": {
+          "captions": "Captions for video content",
+          "transcripts": "Transcripts for audio content",
+          "visual": "Visual indicators for audio alerts",
+          "controls": "Audio controls clearly labeled"
+        }
+      },
+      "cognitive": {
+        "title": "Cognitive Accessibility",
+        "description": "Clear structure and navigation for all users",
+        "details": {
+          "clear": "Clear and simple language",
+          "consistent": "Consistent navigation and layout",
+          "simple": "Simple, intuitive design",
+          "help": "Help and support easily accessible"
+        }
+      }
+    },
+    "shortcuts": {
+      "title": "Keyboard Shortcuts",
+      "tab": "Navigate to next element",
+      "shiftTab": "Navigate to previous element",
+      "enter": "Activate buttons and links",
+      "space": "Check/uncheck checkboxes",
+      "escape": "Close dialogs and menus",
+      "arrows": "Navigate menus and lists"
+    },
+    "assistive": {
+      "title": "Assistive Technology Support",
+      "supported": "Supported Technologies",
+      "screenReaders": {
+        "name": "Screen Readers",
+        "description": "Compatible with popular screen reading software"
+      },
+      "voice": {
+        "name": "Voice Recognition",
+        "description": "Works with voice recognition software"
+      },
+      "switch": {
+        "name": "Switch Navigation",
+        "description": "Supports switch-based navigation devices"
+      },
+      "magnification": {
+        "name": "Screen Magnification",
+        "description": "Compatible with screen magnification tools"
+      }
+    },
+    "issues": {
+      "title": "Known Issues",
+      "description": "We are aware of the following accessibility issues and are working to resolve them:",
+      "item1": "Some third-party content may not meet full accessibility standards",
+      "item2": "Complex product filtering may be challenging for some assistive technologies"
+    },
+    "feedback": {
+      "title": "Accessibility Feedback",
+      "description": "We welcome feedback about accessibility issues or suggestions for improvement."
+    },
+    "support": {
+      "title": "Accessibility Support",
+      "description": "If you need assistance accessing any part of our website, please contact us:"
+    },
+    "formats": {
+      "title": "Alternative Formats",
+      "description": "This accessibility statement is available in alternative formats upon request.",
+      "request": "Request Alternative Format",
+      "pdf": "Download PDF Version"
+    }
+  },
+  "seo": {
+    "defaultTitle": "Premium Tires & Professional Installation",
+    "defaultDescription": "Ariana Banden Service - Your trusted tire expert in Ledegem, Belgium. Premium tires, professional installation, and exceptional service for all vehicle types.",
+    "defaultKeywords": "tires, tyres, tire installation, Ledegem, Belgium, car tires, truck tires, automotive service, tire repair, wheel alignment"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "description": "Get in touch with our tire experts. We're here to help you find the perfect tires for your vehicle and answer any questions you may have.",
+    "location": {
+      "title": "Visit Our Store",
+      "businessName": "Ariana Banden Service",
+      "street": "Industrielaan 12",
+      "cityPostal": "8930 Menen",
+      "country": "Belgium",
+      "directions": "Get Directions"
+    },
+    "details": {
+      "title": "Contact Details",
+      "phone": "Phone",
+      "phoneNumber": "+32 56 51 28 29",
+      "email": "Email",
+      "emailAddress": "info@arianabanden.be",
+      "whatsapp": "WhatsApp",
+      "whatsappNumber": "+32 475 12 34 56"
+    },
+    "hours": {
+      "title": "Business Hours",
+      "weekdays": "Monday - Friday",
+      "weekdayTime": "8:00 AM - 6:00 PM",
+      "saturday": "Saturday",
+      "saturdayTime": "8:00 AM - 4:00 PM",
+      "sunday": "Sunday",
+      "closed": "Closed",
+      "emergency": "Emergency Service",
+      "emergencyDesc": "Available 24/7 for roadside assistance"
+    },
+    "form": {
+      "title": "Send Us a Message",
+      "success": "Message Sent!",
+      "successMessage": "Thank you for contacting us. We'll get back to you within 24 hours.",
+      "submitError": "Failed to submit form. Please try again.",
+      "inquiryType": "Type of Inquiry",
+      "options": {
+        "general": "General Question",
+        "quote": "Request Quote",
+        "appointment": "Schedule Appointment",
+        "warranty": "Warranty Claim",
+        "complaint": "Complaint",
+        "support": "Technical Support"
+      },
+      "fullName": "Full Name",
+      "emailAddress": "Email Address",
+      "phoneNumber": "Phone Number",
+      "subject": "Subject",
+      "message": "Message",
+      "required": "Required fields. We'll respond within 24 hours.",
+      "sending": "Sending...",
+      "sendMessage": "Send Message",
+      "placeholders": {
+        "fullName": "Your full name",
+        "email": "your.email@example.com",
+        "phone": "+32 475 12 34 56",
+        "subject": "Brief subject of your inquiry",
+        "message": "Please provide details about your inquiry, including vehicle information if relevant..."
+      }
+    },
+    "quickContact": {
+      "call": "Call Us",
+      "callDesc": "Immediate assistance",
+      "whatsapp": "WhatsApp",
+      "whatsappDesc": "Quick messages",
+      "email": "Email",
+      "emailDesc": "Detailed inquiries",
+      "visit": "Visit Store",
+      "visitDesc": "In-person service"
+    },
+    "emergency": {
+      "title": "Emergency Roadside Assistance",
+      "description": "Flat tire or tire emergency? We provide 24/7 roadside assistance.",
+      "callButton": "Call Emergency: +32 470 12 34 56"
+    }
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "items": "items",
+    "item": "item",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "shipping": "Shipping",
+    "total": "Total",
+    "checkout": "Checkout",
+    "continueShopping": "Continue Shopping",
+    "updateCart": "Update Cart",
+    "clearCart": "Clear Cart",
+    "removeItem": "Remove Item",
+    "quantity": "Quantity",
+    "price": "Price",
+    "totalPrice": "Total Price",
+    "estimatedShipping": "Estimated Shipping",
+    "freeShipping": "Free Shipping",
+    "shippingCost": "Shipping Cost",
+    "discount": "Discount",
+    "coupon": "Coupon",
+    "applyCoupon": "Apply Coupon",
+    "invalidCoupon": "Invalid coupon code",
+    "couponApplied": "Coupon applied successfully",
+    "cartUpdated": "Cart updated",
+    "itemRemoved": "Item removed from cart",
+    "cartCleared": "Cart cleared"
+  },
+  "wishlist": {
+    "title": "Wishlist",
+    "empty": "Your wishlist is empty",
+    "items": "items",
+    "item": "item",
+    "addToCart": "Add to Cart",
+    "removeFromWishlist": "Remove from Wishlist",
+    "moveToCart": "Move to Cart",
+    "clearWishlist": "Clear Wishlist",
+    "itemAdded": "Item added to wishlist",
+    "itemRemoved": "Item removed from wishlist",
+    "wishlistCleared": "Wishlist cleared",
+    "noItems": "No wishlist items found"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "billingAddress": "Billing Address",
+    "shippingAddress": "Shipping Address",
+    "paymentMethod": "Payment Method",
+    "orderSummary": "Order Summary",
+    "placeOrder": "Place Order",
+    "orderConfirmation": "Order Confirmation",
+    "orderNumber": "Order Number",
+    "orderDate": "Order Date",
+    "orderStatus": "Order Status",
+    "trackingNumber": "Tracking Number",
+    "estimatedDelivery": "Estimated Delivery",
+    "cardNumber": "Card Number",
+    "expiryDate": "Expiry Date",
+    "cvv": "CVV",
+    "cardholderName": "Cardholder Name",
+    "sameAsShipping": "Same as shipping address",
+    "differentBilling": "Different billing address",
+    "orderPlaced": "Order placed successfully",
+    "orderFailed": "Order failed",
+    "paymentFailed": "Payment failed",
+    "invalidPayment": "Invalid payment information",
+    "processingOrder": "Processing your order...",
+    "orderComplete": "Order Complete",
+    "thankYou": "Thank you for your order!",
+    "orderDetails": "Order Details",
+    "orderHistory": "Order History"
+  },
+  "account": {
+    "title": "My Account",
+    "profile": "Profile",
+    "orders": "Orders",
+    "wishlist": "Wishlist",
+    "addresses": "Addresses",
+    "settings": "Settings",
+    "security": "Security",
+    "notifications": "Notifications",
+    "preferences": "Preferences",
+    "personalInfo": "Personal Information",
+    "contactInfo": "Contact Information",
+    "addressInfo": "Address Information",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "updateProfile": "Update Profile",
+    "profileUpdated": "Profile updated successfully",
+    "passwordChanged": "Password changed successfully",
+    "accountDeleted": "Account deleted successfully",
+    "deleteAccount": "Delete Account",
+    "deleteAccountWarning": "This action cannot be undone",
+    "confirmDelete": "Are you sure you want to delete your account?"
+  },
+  "footer": {
+    "about": "About Us",
+    "contact": "Contact",
+    "support": "Support",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "cookies": "Cookie Policy",
+    "shipping": "Shipping Information",
+    "returns": "Returns & Exchanges",
+    "warranty": "Warranty Information",
+    "newsletter": "Newsletter",
+    "subscribe": "Subscribe",
+    "emailPlaceholder": "Enter your email",
+    "followUs": "Follow Us",
+    "copyright": "© 2024 Tire Store. All rights reserved.",
+    "poweredBy": "Powered by",
+    "madeWith": "Made with ❤️"
+  },
+  "errors": {
+    "general": "Something went wrong",
+    "network": "Network error",
+    "notFound": "Page not found",
+    "unauthorized": "Unauthorized",
+    "forbidden": "Access forbidden",
+    "serverError": "Server error",
+    "validation": "Validation error",
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "invalidPassword": "Invalid password",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "invalidPhone": "Invalid phone number",
+    "invalidPostalCode": "Invalid postal code",
+    "fileTooLarge": "File is too large",
+    "invalidFileType": "Invalid file type",
+    "loginFailed": "Login failed",
+    "registrationFailed": "Registration failed",
+    "emailAlreadyExists": "Email already exists",
+    "invalidCredentials": "Invalid credentials",
+    "accountLocked": "Account is locked",
+    "emailNotVerified": "Email not verified",
+    "verificationFailed": "Verification failed",
+    "passwordResetFailed": "Password reset failed",
+    "orderFailed": "Order failed",
+    "paymentFailed": "Payment failed",
+    "cartError": "Cart error",
+    "wishlistError": "Wishlist error",
+    "productNotFound": "Product not found",
+    "categoryNotFound": "Category not found",
+    "outOfStock": "Product is out of stock",
+    "insufficientStock": "Insufficient stock",
+    "invalidQuantity": "Invalid quantity",
+    "invalidCoupon": "Invalid coupon code",
+    "couponExpired": "Coupon has expired",
+    "couponAlreadyUsed": "Coupon already used",
+    "shippingNotAvailable": "Shipping not available",
+    "paymentNotSupported": "Payment method not supported",
+    "checkoutError": "Failed to proceed to checkout. Please try again"
+  },
+  "success": {
+    "login": "Login successful",
+    "register": "Registration successful",
+    "logout": "Logout successful",
+    "passwordReset": "Password reset email sent",
+    "emailVerified": "Email verified successfully",
+    "profileUpdated": "Profile updated successfully",
+    "passwordChanged": "Password changed successfully",
+    "orderPlaced": "Order placed successfully",
+    "paymentSuccessful": "Payment successful",
+    "itemAdded": "Item added successfully",
+    "itemRemoved": "Item removed successfully",
+    "cartUpdated": "Cart updated successfully",
+    "wishlistUpdated": "Wishlist updated successfully",
+    "couponApplied": "Coupon applied successfully",
+    "emailSent": "Email sent successfully",
+    "fileUploaded": "File uploaded successfully",
+    "settingsSaved": "Settings saved successfully",
+    "preferencesUpdated": "Preferences updated successfully"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "password": "Password must be at least 8 characters long",
+    "passwordMatch": "Passwords must match",
+    "phone": "Please enter a valid phone number",
+    "postalCode": "Please enter a valid postal code",
+    "minLength": "Must be at least {{min}} characters",
+    "maxLength": "Must be no more than {{max}} characters",
+    "minValue": "Must be at least {{min}}",
+    "maxValue": "Must be no more than {{max}}",
+    "numeric": "Must be a number",
+    "integer": "Must be an integer",
+    "positive": "Must be positive",
+    "url": "Please enter a valid URL",
+    "date": "Please enter a valid date",
+    "futureDate": "Date must be in the future",
+    "pastDate": "Date must be in the past",
+    "unique": "This value must be unique",
+    "exists": "This value must exist",
+    "confirmed": "This field must be confirmed"
+  },
+  "brands": {
+    "title": "Brands",
+    "description": "Discover premium tire brands from around the world",
+    "searchPlaceholder": "Search brands...",
+    "allCountries": "All Countries",
+    "sort": {
+      "name": "Name",
+      "rating": "Rating",
+      "products": "Products",
+      "founded": "Founded"
+    },
+    "premium": "Premium",
+    "products": "Products",
+    "founded": "Founded",
+    "viewProducts": "View Products",
+    "new": "New",
+    "sale": "Sale",
+    "addToCart": "Add to Cart",
+    "productsBy": "Products by",
+    "statistics": {
+      "title": "Brand Statistics",
+      "brands": "Brands",
+      "products": "Total Products",
+      "countries": "Countries",
+      "premium": "Premium Brands"
+    },
+    "michelin": {
+      "description": "Leading French tire manufacturer known for innovation and performance"
+    },
+    "bridgestone": {
+      "description": "World's largest tire manufacturer, Japanese quality and reliability"
+    },
+    "continental": {
+      "description": "German engineering excellence in tire technology and safety"
+    },
+    "goodyear": {
+      "description": "American tire giant with over 120 years of innovation"
+    },
+    "pirelli": {
+      "description": "Italian luxury tire brand, preferred by high-performance vehicles"
+    },
+    "hankook": {
+      "description": "Korean tire manufacturer offering excellent value and quality"
+    }
+  },
+  "newArrivals": {
+    "title": "New Arrivals",
+    "description": "Discover the latest products just added to our collection",
+    "searchPlaceholder": "Search new arrivals...",
+    "categories": {
+      "all": "All Categories",
+      "summer": "Summer Tires",
+      "winter": "Winter Tires",
+      "allSeason": "All-Season Tires",
+      "truck": "Truck Tires",
+      "motorcycle": "Motorcycle Tires"
+    },
+    "sort": {
+      "date": "Newest First",
+      "priceLow": "Price: Low to High",
+      "priceHigh": "Price: High to Low",
+      "rating": "Rating",
+      "name": "Name"
+    },
+    "new": "New",
+    "sale": "Sale",
+    "addToCart": "Add to Cart",
+    "stats": {
+      "newProducts": "New Products",
+      "onSale": "On Sale",
+      "daysSince": "Days Since Latest",
+      "brands": "Brands"
+    },
+    "newsletter": {
+      "title": "Stay Updated",
+      "description": "Be the first to know about new arrivals and exclusive offers",
+      "placeholder": "Enter your email",
+      "subscribe": "Subscribe"
+    }
+  },
+  "sale": {
+    "title": "Sale",
+    "description": "Limited time offers on premium tires and accessories",
+    "searchPlaceholder": "Search sale items...",
+    "categories": {
+      "all": "All Categories",
+      "summer": "Summer Tires",
+      "winter": "Winter Tires",
+      "allSeason": "All-Season Tires",
+      "truck": "Truck Tires",
+      "motorcycle": "Motorcycle Tires"
+    },
+    "discountRanges": {
+      "all": "All Discounts"
+    },
+    "sort": {
+      "discount": "Highest Discount",
+      "priceLow": "Price: Low to High",
+      "priceHigh": "Price: High to Low",
+      "rating": "Rating",
+      "name": "Name"
+    },
+    "save": "Save",
+    "addToCart": "Add to Cart",
+    "stats": {
+      "products": "Sale Products",
+      "totalSavings": "Total Savings",
+      "averageDiscount": "Avg. Discount",
+      "daysLeft": "Days Left"
+    },
+    "stock": {
+      "high": "In Stock",
+      "medium": "Limited Stock",
+      "low": "Low Stock"
+    },
+    "countdown": {
+      "title": "Sale Ends Soon",
+      "description": "Don't miss out on these amazing deals. Limited time only!",
+      "days": "Days Left",
+      "averageDiscount": "Avg. Discount",
+      "totalSavings": "Total Savings"
+    }
+  }
+}

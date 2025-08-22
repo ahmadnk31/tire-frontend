@@ -9,6 +9,7 @@ import { ProductCard } from "./ProductCard";
 
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 interface Product {
   id: number;
@@ -30,6 +31,7 @@ interface Product {
 }
 
 export const ProductGrid = ({ sectionTitle = "Products", featuredOnly = false, showAllButton = false }: { sectionTitle?: string; featuredOnly?: boolean; showAllButton?: boolean }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
@@ -40,7 +42,7 @@ export const ProductGrid = ({ sectionTitle = "Products", featuredOnly = false, s
     return stored ? JSON.parse(stored) : [];
   });
   const [currentPage, setCurrentPage] = React.useState(1);
-  const pageSize = 6;
+  const pageSize = 24; // Increased from 6 to 24 products per page
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
   // Get query params from React Router
@@ -71,7 +73,7 @@ export const ProductGrid = ({ sectionTitle = "Products", featuredOnly = false, s
             validQuery[key] = value;
           }
         });
-        const apiParams = { status: 'published', limit: 100, ...validQuery };
+        const apiParams = { status: 'published', limit: 500, ...validQuery }; // Increased from 100 to 500 products
         response = await productsApi.getAll(apiParams);
       }
       return response.products || [];
@@ -105,12 +107,28 @@ export const ProductGrid = ({ sectionTitle = "Products", featuredOnly = false, s
       } else {
         await wishlistApi.addToWishlist(productId, token);
       }
+      return { productId, isWishlisted };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Invalidate both wishlist queries to ensure all wishlist pages update
       queryClient.invalidateQueries({ queryKey: ['wishlist', token] });
+      queryClient.invalidateQueries({ queryKey: ['wishlist-products'] });
+      
+      // Show success toast
+      if (data?.isWishlisted) {
+        toast({ 
+          title: t('wishlist.itemRemoved'), 
+          description: t('wishlist.itemRemoved') 
+        });
+      } else {
+        toast({ 
+          title: t('wishlist.itemAdded'), 
+          description: t('wishlist.itemAdded') 
+        });
+      }
     },
     onError: () => {
-      toast({ title: 'Error', description: 'Failed to update wishlist', variant: 'destructive' });
+      toast({ title: t('common.error'), description: t('errors.wishlistError'), variant: 'destructive' });
     },
   });
 
@@ -156,8 +174,8 @@ export const ProductGrid = ({ sectionTitle = "Products", featuredOnly = false, s
     setCart(newCart);
     window.dispatchEvent(new Event('cart-updated'));
     toast({
-      title: "Added to Cart",
-      description: `${product.name} has been added to your cart.`,
+      title: t('products.addToCart'),
+      description: t('products.productAdded'),
     });
   };
 
@@ -219,7 +237,7 @@ export const ProductGrid = ({ sectionTitle = "Products", featuredOnly = false, s
         <div className="flex justify-between items-center mb-12">
           <div>
             <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 md:mb-2 lg:mb-3">{sectionTitle}</h2>
-            <p className="text-sm md:text-base lg:text-lg text-gray-600 ">Top-rated tyres chosen by our experts</p>
+            <p className="text-sm md:text-base lg:text-lg text-gray-600 ">{t('products.allProducts')}</p>
           </div>
             {showAllButton && (
             <Button
@@ -227,7 +245,7 @@ export const ProductGrid = ({ sectionTitle = "Products", featuredOnly = false, s
               onClick={() => navigate('/products')}
               className="px-6 py-3 border-2 border-border text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-200 rounded-xl font-medium flex items-center justify-center"
             >
-              <span className="hidden sm:inline">View All Products</span>
+              <span className="hidden sm:inline">{t('products.viewAll')}</span>
               <span className="sm:hidden">
               <ArrowRightIcon className="w-5 h-5" />
               </span>

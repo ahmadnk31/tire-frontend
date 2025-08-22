@@ -8,8 +8,10 @@ import {
 } from "@/components/ui/navigation-menu";
 import { productsApi } from "@/lib/api";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 export function MegaMenu() {
+  const { t } = useTranslation();
   const [active, setActive] = useState<string | null>(null);
   const [navHeight, setNavHeight] = useState(0);
   const navRef = useRef<HTMLDivElement>(null);
@@ -18,7 +20,12 @@ export function MegaMenu() {
   const [models, setModels] = useState<string[]>([]);
   const [sizes, setSizes] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [important] = useState<string[]>(["Offers", "New Arrivals", "Best Sellers", "Support"]);
+  const important = [
+    t('megaMenu.offers'), 
+    t('megaMenu.newArrivals'), 
+    t('megaMenu.bestSellers'), 
+    t('megaMenu.support')
+  ];
   const [relatedParts, setRelatedParts] = useState<Record<string, string[]>>({});
   const navigate = useNavigate();
 
@@ -155,7 +162,7 @@ export function MegaMenu() {
                         {part}
                       </li>
                     )) : (
-                      <li className="text-gray-400 italic text-sm">No related parts</li>
+                      <li className="text-gray-400 italic text-sm">{t('megaMenu.noRelatedParts')}</li>
                     )
                   }
                 </ul>
@@ -179,7 +186,7 @@ export function MegaMenu() {
             </ul>
           </div>
           <div className="flex-1 p-8">
-            <h3 className="font-bold mb-6 text-lg text-gray-900">Related Parts</h3>
+            <h3 className="font-bold mb-6 text-lg text-gray-900">{t('megaMenu.relatedParts')}</h3>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {currentItems.map((item) => (
                 <div key={item} className="space-y-3">
@@ -191,7 +198,7 @@ export function MegaMenu() {
                           {part}
                         </li>
                       )) : (
-                        <li className="text-gray-400 italic text-sm">No related parts</li>
+                        <li className="text-gray-400 italic text-sm">{t('megaMenu.noRelatedParts')}</li>
                       )
                     }
                   </ul>
@@ -218,7 +225,7 @@ export function MegaMenu() {
                   onMouseEnter={() => handleTriggerEnter("brands")}
                   onMouseLeave={handleTriggerLeave}
                 >
-                  Brands
+                  {t('megaMenu.brands')}
                 </NavigationMenuTrigger>
               </NavigationMenuItem>
 
@@ -229,7 +236,7 @@ export function MegaMenu() {
                   onMouseEnter={() => handleTriggerEnter("models")}
                   onMouseLeave={handleTriggerLeave}
                 >
-                  Models
+                  {t('megaMenu.models')}
                 </NavigationMenuTrigger>
               </NavigationMenuItem>
 
@@ -240,7 +247,7 @@ export function MegaMenu() {
                   onMouseEnter={() => handleTriggerEnter("sizes")}
                   onMouseLeave={handleTriggerLeave}
                 >
-                  Sizes
+                  {t('megaMenu.sizes')}
                 </NavigationMenuTrigger>
               </NavigationMenuItem>
 
@@ -251,7 +258,7 @@ export function MegaMenu() {
                   onMouseEnter={() => handleTriggerEnter("categories")}
                   onMouseLeave={handleTriggerLeave}
                 >
-                  Categories
+                  {t('megaMenu.categories')}
                 </NavigationMenuTrigger>
               </NavigationMenuItem>
 
@@ -262,7 +269,7 @@ export function MegaMenu() {
                   onMouseEnter={() => handleTriggerEnter("important")}
                   onMouseLeave={handleTriggerLeave}
                 >
-                  Important
+                  {t('megaMenu.important')}
                 </NavigationMenuTrigger>
               </NavigationMenuItem>
             </NavigationMenuList>

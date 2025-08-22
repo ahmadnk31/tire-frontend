@@ -2,16 +2,18 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ProductCard } from '@/components/store/ProductCard';
+import { WishlistCard } from '@/components/store/WishlistCard';
 import { WishlistSkeleton } from '@/components/ui/skeletons';
 
 import { productsApi } from '@/lib/api';
 import { wishlistApi } from '@/lib/wishlistApi';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 
 const Wishlist = () => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
@@ -57,14 +59,18 @@ const Wishlist = () => {
     mutationFn: async (productId: number) => {
       if (!token) throw new Error('Not authenticated');
       await wishlistApi.removeFromWishlist(productId, token);
+      return productId;
     },
-    onSuccess: () => {
+    onSuccess: (productId) => {
       queryClient.invalidateQueries({ queryKey: ['wishlist', token] });
       queryClient.invalidateQueries({ queryKey: ['wishlist-products'] });
-      toast({ title: 'Removed from Wishlist', description: 'Product removed from your wishlist.' });
+      toast({ 
+        title: t('wishlist.itemRemoved'), 
+        description: t('wishlist.itemRemoved') 
+      });
     },
     onError: () => {
-      toast({ title: 'Error', description: 'Failed to update wishlist', variant: 'destructive' });
+      toast({ title: t('common.error'), description: t('errors.wishlistError'), variant: 'destructive' });
     },
   });
 
@@ -98,10 +104,10 @@ const Wishlist = () => {
     localStorage.setItem('cart', JSON.stringify(newCart));
     setCart(newCart);
     window.dispatchEvent(new Event('cart-updated'));
-    toast({
-      title: 'Added to Cart',
-      description: `${product.name} has been added to your cart.`,
-    });
+          toast({
+        title: t('products.addToCart'),
+        description: t('products.productAdded'),
+      });
   };
 
   // Update cart quantity logic (local only)
@@ -132,8 +138,8 @@ const Wishlist = () => {
     <div className="min-h-[60vh] flex flex-col items-center justify-center bg-background py-12">
       <Card className="w-full max-w-5xl shadow-xl border border-primary/20">
         <CardHeader>
-          <CardTitle className="text-primary">Wishlist</CardTitle>
-          <CardDescription className="text-base text-muted-foreground">Your saved products</CardDescription>
+          <CardTitle className="text-primary">{t('wishlist.title')}</CardTitle>
+          <CardDescription className="text-base text-muted-foreground">{t('wishlist.empty')}</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading || productsLoading ? (
@@ -141,20 +147,19 @@ const Wishlist = () => {
           ) : isError ? (
             <div className="text-center text-red-500 py-8">{(error as any)?.message || 'Failed to load wishlist'}</div>
           ) : products.length === 0 ? (
-            <div className="text-center text-muted-foreground py-8">No wishlist items found.</div>
+            <div className="text-center text-muted-foreground py-8">{t('wishlist.noItems')}</div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {products.map((product: any) => {
                 const cartItem = cart.find((item: any) => item.id === product.id && item.size === product.size);
                 return (
-                  <ProductCard
+                  <WishlistCard
                     key={product.id}
                     product={product}
                     cartItem={cartItem}
                     addToCart={() => addToCart(product)}
                     updateCartQuantity={delta => updateCartQuantity(product, delta)}
-                    isWishlisted={true}
-                    onToggleWishlist={() => handleRemoveFromWishlist(product.id)}
+                    onRemoveFromWishlist={() => handleRemoveFromWishlist(product.id)}
                     onClick={() => window.location.href = `/products/${product.id}`}
                   />
                 );

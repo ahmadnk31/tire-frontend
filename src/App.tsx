@@ -1,10 +1,10 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import './i18n'; // Initialize i18n
 
 import Index from "./pages/Index";
-import BrandsMarquee from "@/components/BrandsMarquee";
 import Footer from "@/components/Footer";
 import NotFound from "./pages/NotFound";
 import ProductPage from "./pages/Product";
@@ -28,6 +28,22 @@ import About from "./pages/About";
 import SizeGuide from "./pages/SizeGuide";
 import Contact from "./pages/Contact";
 import Unsubscribe from "./pages/Unsubscribe";
+import FAQ from "./pages/FAQ";
+import Returns from "./pages/Returns";
+import Shipping from "./pages/Shipping";
+import Blog from "./pages/Blog";
+import Careers from "./pages/Careers";
+import Press from "./pages/Press";
+import Sustainability from "./pages/Sustainability";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import Cookies from "./pages/Cookies";
+import Accessibility from "./pages/Accessibility";
+import Sitemap from "./pages/Sitemap";
+import Brands from "./pages/Brands";
+import NewArrivals from "./pages/NewArrivals";
+import Sale from "./pages/Sale";
+import Categories from "./pages/Categories";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,15 +64,18 @@ const queryClient = new QueryClient({
 });
 
 
-const App = () => {
+const AppContent = () => {
+  const location = useLocation();
+  
+  // Define auth routes that should not show header/footer
+  const authRoutes = ['/login', '/register', '/forgot-password', '/email-not-verified', '/verify'];
+  const isAuthRoute = authRoutes.includes(location.pathname);
+  
   return (
-    <QueryClientProvider client={queryClient}>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Header />
-          <Breadcrumbs />
-          <Routes>
+    <>
+      {!isAuthRoute && <Header />}
+      {!isAuthRoute && <Breadcrumbs />}
+      <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/products/:id" element={<ProductPage />} />
             <Route path="/products" element={<Products />} />
@@ -78,12 +97,39 @@ const App = () => {
             <Route path="/size-guide" element={<SizeGuide />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/returns" element={<Returns />} />
+            <Route path="/shipping" element={<Shipping />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/careers" element={<Careers />} />
+            <Route path="/press" element={<Press />} />
+            <Route path="/sustainability" element={<Sustainability />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/cookies" element={<Cookies />} />
+            <Route path="/accessibility" element={<Accessibility />} />
+            <Route path="/sitemap" element={<Sitemap />} />
+            <Route path="/brands" element={<Brands />} />
+            <Route path="/new-arrivals" element={<NewArrivals />} />
+            <Route path="/sale" element={<Sale />} />
+            <Route path="/categories" element={<Categories />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
           
-          <Footer />
-        </BrowserRouter>
+          {!isAuthRoute && <Footer />}
+    </>
+  );
+};
+
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
     </QueryClientProvider>
   );
 };

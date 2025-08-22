@@ -3,6 +3,7 @@ import { WishlistButton } from "@/components/store/WishlistButton";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 
 // Add custom styles for better image display
 const carouselStyles = `
@@ -87,6 +88,7 @@ export interface ProductCardProps {
 };
 
 export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQuantity, isWishlisted, onToggleWishlist }: ProductCardProps) => {
+  const { t } = useTranslation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
@@ -286,7 +288,7 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
         {product.featured && (
           <div className="absolute top-2 sm:top-4 left-2 sm:left-4">
             <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-gradient-to-r from-primary to-accent text-white text-xs font-medium shadow-lg">
-              Featured
+              {t('products.featured')}
             </span>
           </div>
         )}
@@ -294,7 +296,7 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
         {product.stock === 0 && (
           <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center">
             <span className="inline-flex items-center px-3 sm:px-4 py-2 rounded-full bg-red-50 text-red-700 border border-red-200 font-medium text-xs sm:text-sm">
-              Out of Stock
+              {t('products.outOfStock')}
             </span>
           </div>
         )}
@@ -310,7 +312,7 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
             <Star className="h-4 w-4 sm:h-5 sm:w-5 fill-amber-400 text-amber-400" />
             <span className="ml-1 text-xs sm:text-sm md:text-base font-medium text-gray-900">{parseFloat(product.rating).toFixed(1)}</span>
           </div>
-          <span className="text-xs sm:text-sm md:text-base text-gray-500">({product.reviews} reviews)</span>
+          <span className="text-xs sm:text-sm md:text-base text-gray-500">({product.reviews} {t('products.reviews')})</span>
         </div>
         <div className="flex items-center justify-between gap-2">
           <span className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-primary">{formatCurrency(product.price)}</span>
@@ -327,8 +329,9 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
           ) : addToCart ? (
             <Button size="sm" className="bg-primary hover:bg-accent text-primary-foreground px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-lg font-medium transition-all duration-200 flex items-center space-x-1 sm:space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm" disabled={product.stock === 0} onClick={e => { e.stopPropagation(); addToCart(); }} data-add-to-cart>
               <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Add to Cart</span>
-              <span className="sm:hidden">Add</span>
+              <span className="hidden md:inline">{t('products.addCart')}</span>
+              <span className="hidden sm:inline md:hidden">Cart</span>
+              <span className="sm:hidden">+</span>
             </Button>
           ) : null}
         </div>
