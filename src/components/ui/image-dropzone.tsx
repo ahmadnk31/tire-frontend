@@ -141,7 +141,7 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
   const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
     onDrop,
     accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp']
+      'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp', '.svg', '.heic', '.heif', '.avif']
     },
     maxSize,
     multiple,
