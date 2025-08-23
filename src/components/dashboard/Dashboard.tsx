@@ -18,7 +18,7 @@ import { BarChart3, Package, Plus, Settings, Users, ShoppingCart, Shield, Upload
 
 import { CategoryManagement } from "./CategoryManagement";
 import { BannerManagement } from './BannerManagement';
-type DashboardView = 'overview' | 'products' | 'add-product' | 'orders' | 'customers' | 'security' | 'settings' | 'categories' | 'banners' | 'bulk-import' | 'contacts' | 'newsletter' | 'campaigns';
+type DashboardView = 'overview' | 'products' | 'add-product' | 'orders' | 'customers' | 'security' | 'settings' | 'categories' | 'banners' | 'bulk-import' | 'contacts' | 'newsletter' | 'campaigns' | 'upload-diagnostics';
 
 const navigation = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
