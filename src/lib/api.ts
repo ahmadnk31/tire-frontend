@@ -309,24 +309,148 @@ export const usersApi = {
 
 // Upload API
 export const uploadApi = {
-  single: (file: File, folder = 'products') => {
-    const formData = new FormData();
-    formData.append('image', file);
-    formData.append('folder', folder);
-    return apiClient.post('/upload/single', formData);
+  single: async (file: File, folder = 'products') => {
+    try {
+      console.log('📤 Starting single file upload:', {
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type,
+        folder,
+        apiUrl: `${API_BASE_URL}/upload/single`
+      });
+
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('folder', folder);
+      
+      const response = await apiClient.post('/upload/single', formData);
+      
+      console.log('✅ Single upload successful:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ Single upload failed:', error);
+      
+      // Try fallback method for deployment issues
+      if (error instanceof Error && error.message.includes('Failed to fetch')) {
+        console.log('🔄 Trying fallback upload method...');
+        return await uploadApi.fallbackSingle(file, folder);
+      }
+      
+      throw error;
+    }
   },
 
-  multiple: (files: File[], folder = 'products') => {
-    const formData = new FormData();
-    files.forEach(file => formData.append('images', file));
-    formData.append('folder', folder);
-    return apiClient.post('/upload/multiple', formData);
+  multiple: async (files: File[], folder = 'products') => {
+    try {
+      console.log('📤 Starting multiple file upload:', {
+        fileCount: files.length,
+        totalSize: files.reduce((sum, file) => sum + file.size, 0),
+        folder,
+        apiUrl: `${API_BASE_URL}/upload/multiple`
+      });
+
+      const formData = new FormData();
+      files.forEach(file => formData.append('images', file));
+      formData.append('folder', folder);
+      
+      const response = await apiClient.post('/upload/multiple', formData);
+      
+      console.log('✅ Multiple upload successful:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ Multiple upload failed:', error);
+      
+      // Try fallback method for deployment issues
+      if (error instanceof Error && error.message.includes('Failed to fetch')) {
+        console.log('🔄 Trying fallback upload method...');
+        return await uploadApi.fallbackMultiple(files, folder);
+      }
+      
+      throw error;
+    }
+  },
+
+  // Fallback method using presigned URLs for deployment issues
+  fallbackSingle: async (file: File, folder = 'products') => {
+    try {
+      console.log('🔄 Using fallback single upload method');
+      
+      // Get presigned URL
+      const presignedResponse = await apiClient.get('/upload/presigned-url', { 
+        fileName: file.name, 
+        folder 
+      });
+      
+      if (!presignedResponse.presignedUrl) {
+        throw new Error('Failed to get presigned URL');
+      }
+      
+      // Upload directly to S3
+      const uploadResponse = await fetch(presignedResponse.presignedUrl, {
+        method: 'PUT',
+        body: file,
+        headers: {
+          'Content-Type': file.type,
+        },
+      });
+      
+      if (!uploadResponse.ok) {
+        throw new Error(`S3 upload failed: ${uploadResponse.statusText}`);
+      }
+      
+      const imageUrl = `https://${process.env.VITE_S3_BUCKET || 'tire-store-images'}.s3.${process.env.VITE_AWS_REGION || 'us-east-1'}.amazonaws.com/${presignedResponse.key}`;
+      
+      return {
+        success: true,
+        message: 'File uploaded successfully (fallback method)',
+        imageUrl,
+        originalName: file.name,
+        size: file.size
+      };
+    } catch (error) {
+      console.error('❌ Fallback upload failed:', error);
+      throw new Error(`Fallback upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+
+  fallbackMultiple: async (files: File[], folder = 'products') => {
+    try {
+      console.log('🔄 Using fallback multiple upload method');
+      
+      const results = [];
+      
+      for (const file of files) {
+        const result = await uploadApi.fallbackSingle(file, folder);
+        results.push(result);
+      }
+      
+      return {
+        success: true,
+        message: `${results.length} files uploaded successfully (fallback method)`,
+        results
+      };
+    } catch (error) {
+      console.error('❌ Fallback multiple upload failed:', error);
+      throw error;
+    }
   },
 
   delete: (imageUrl: string) => apiClient.delete(`/upload/delete?imageUrl=${encodeURIComponent(imageUrl)}`),
 
   getPresignedUrl: (fileName: string, folder = 'products') => 
     apiClient.get('/upload/presigned-url', { fileName, folder }),
+
+  // Test upload functionality
+  testConnection: async () => {
+    try {
+      const response = await apiClient.get('/upload/test-s3');
+      console.log('✅ Upload connection test successful:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ Upload connection test failed:', error);
+      throw error;
+    }
+  }
 };
 
 // Stripe API

@@ -35,10 +35,17 @@ interface Product {
     speedRating?: string;
     loadIndex?: string;
     seasonType?: string;
-    vehicleType?: string;
+    tireType?: string;
     treadDepth?: number | string;
     construction?: string;
   };
+  // Individual specification fields for backward compatibility
+  speedRating?: string;
+  loadIndex?: string;
+  seasonType?: string;
+  tireType?: string;
+  treadDepth?: string | number;
+  construction?: string;
   comparePrice?: string | number;
   compareAtPrice?: string | number;
   stockQuantity?: number | string;
@@ -47,6 +54,9 @@ interface Product {
     metaTitle?: string;
     metaDescription?: string;
   };
+  // SEO fields for backward compatibility
+  seoTitle?: string;
+  seoDescription?: string;
   categoryIds?: number[];
   // Sale fields
   saleStartDate?: string;
@@ -119,12 +129,13 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
         name: editingProduct.name || '',
         size: editingProduct.size || '',
         
-        speedRating: editingProduct.specifications?.speedRating || '',
-        loadIndex: editingProduct.specifications?.loadIndex || '',
-        seasonType: editingProduct.specifications?.seasonType || '',
-        vehicleType: editingProduct.specifications?.vehicleType || '',
-        treadDepth: editingProduct.specifications?.treadDepth?.toString() || '',
-        construction: editingProduct.specifications?.construction || 'radial',
+        // Load specifications from both specifications object and individual fields for backward compatibility
+        speedRating: editingProduct.specifications?.speedRating || editingProduct.speedRating || '',
+        loadIndex: editingProduct.specifications?.loadIndex || editingProduct.loadIndex || '',
+        seasonType: editingProduct.specifications?.seasonType || editingProduct.seasonType || '',
+        vehicleType: editingProduct.specifications?.tireType || editingProduct.tireType || '',
+        treadDepth: editingProduct.specifications?.treadDepth?.toString() || editingProduct.treadDepth?.toString() || '',
+        construction: editingProduct.specifications?.construction || editingProduct.construction || 'radial',
         price: (editingProduct.price || '').toString().replace('$', ''),
         comparePrice: (editingProduct.comparePrice || editingProduct.compareAtPrice || '').toString(),
         sku: editingProduct.sku || '',
@@ -133,8 +144,8 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
         visibility: editingProduct.status || 'published',
         featured: editingProduct.featured ? 'yes' : 'no',
         tags: Array.isArray(editingProduct.tags) ? editingProduct.tags.join(', ') : (editingProduct.tags || ''),
-        metaTitle: editingProduct.seo?.metaTitle || '',
-        metaDescription: editingProduct.seo?.metaDescription || '',
+        metaTitle: editingProduct.seoTitle || editingProduct.seo?.metaTitle || '',
+        metaDescription: editingProduct.seoDescription || editingProduct.seo?.metaDescription || '',
         categoryIds: editingProduct.categoryIds || [],
         // Sale fields
         saleStartDate: editingProduct.saleStartDate || '',
@@ -219,7 +230,16 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
         price: parseFloat(formData.price) || 0,
         comparePrice: formData.comparePrice ? parseFloat(formData.comparePrice) : null,
         description: formData.description,
-        // Flatten specifications to top-level fields
+        // Save specifications as a JSON object
+        specifications: {
+          speedRating: formData.speedRating || null,
+          loadIndex: formData.loadIndex || null,
+          seasonType: formData.seasonType || null,
+          tireType: formData.vehicleType || null, // Map vehicleType to tireType
+          treadDepth: formData.treadDepth || null,
+          construction: formData.construction || null,
+        },
+        // Also keep individual fields for backward compatibility
         speedRating: formData.speedRating,
         loadIndex: formData.loadIndex,
         seasonType: formData.seasonType,
@@ -229,7 +249,7 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
         // Sale fields
         saleStartDate: formData.saleStartDate || null,
         saleEndDate: formData.saleEndDate || null,
-        // Flatten SEO fields
+        // SEO fields
         seoTitle: formData.metaTitle,
         seoDescription: formData.metaDescription,
         // Keep features as an array but join for storage

@@ -41,7 +41,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     // Setup token expiration checking
-    setupTokenExpirationCheck();
+    const setupAuth = async () => {
+      await setupTokenExpirationCheck();
+    };
+    setupAuth();
 
     // Listen for logout events
     const handleLogout = () => {

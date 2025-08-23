@@ -891,5 +891,40 @@
   "sitemap": {
     "title": "Sitemap",
     "description": "Overzicht van alle pagina's op onze website"
+  },
+  "categories": {
+    "title": "Productcategorieën",
+    "description": "Bekijk onze uitgebreide selectie van bandencategorieën",
+    "searchPlaceholder": "Zoek categorieën...",
+    "sort": {
+      "name": "Sorteer op naam",
+      "priceLow": "Prijs: Laag naar hoog",
+      "priceHigh": "Prijs: Hoog naar laag",
+      "rating": "Sorteer op beoordeling"
+    },
+    "products": "producten",
+    "subcategories": "Subcategorieën",
+    "new": "Nieuw",
+    "sale": "Aanbieding",
+    "addToCart": "Toevoegen aan winkelwagen",
+    "browseAll": "Alle categorieën bekijken",
+    "productsIn": "Producten in",
+    "noProducts": "Geen producten gevonden in deze categorie"
+  },
+  "cart": {
+    "addedToCart": "Toegevoegd aan winkelwagen",
+    "itemAddedSuccessfully": "Artikel is succesvol toegevoegd aan je winkelwagen",
+    "addToCartFailed": "Toevoegen aan winkelwagen mislukt",
+    "removeFromCart": "Verwijderd uit winkelwagen",
+    "itemRemovedSuccessfully": "Artikel is verwijderd uit je winkelwagen",
+    "removeFromCartFailed": "Verwijderen uit winkelwagen mislukt"
+  },
+  "wishlist": {
+    "addedToWishlist": "Toegevoegd aan verlanglijst",
+    "itemAddedSuccessfully": "Artikel is succesvol toegevoegd aan je verlanglijst",
+    "addToWishlistFailed": "Toevoegen aan verlanglijst mislukt",
+    "removedFromWishlist": "Verwijderd uit verlanglijst",
+    "itemRemovedSuccessfully": "Artikel is verwijderd uit je verlanglijst",
+    "removeFromWishlistFailed": "Verwijderen uit verlanglijst mislukt"
   }
 }

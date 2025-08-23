@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { authApi } from '@/lib/api';
+import { setAuthToken } from '@/lib/auth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -22,11 +23,7 @@ export default function Login() {
     try {
       const res = await authApi.login({ email, password, resendVerification: resend, language: i18n.language });
       if (res.token) {
-        localStorage.setItem('token', res.token);
-        if (res.user) {
-          localStorage.setItem('user', JSON.stringify(res.user));
-          window.dispatchEvent(new Event('login'));
-        }
+        await setAuthToken(res.token, res.user);
         navigate('/');
       } else if (res.unverified) {
         // Redirect to EmailNotVerified page, pass email in state

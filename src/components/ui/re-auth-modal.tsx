@@ -33,7 +33,7 @@ export const ReAuthModal: React.FC<ReAuthModalProps> = ({
       const response = await authApi.login({ email, password });
       
       if (response.user && response.token) {
-        setAuthToken(response.token, response.user);
+        await setAuthToken(response.token, response.user);
         toast({
           title: t('auth.loginSuccess'),
           description: t('auth.welcomeBack'),

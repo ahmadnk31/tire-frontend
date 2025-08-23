@@ -6,6 +6,8 @@ import { AddProduct } from "./AddProduct";
 import { OrdersManagement } from "./OrdersManagement";
 import { CustomersManagement } from "./CustomersManagement";
 import { SecurityManagement } from "./SecurityManagement";
+import { SettingsManagement } from "./SettingsManagement";
+import { UploadDiagnostics } from "./UploadDiagnostics";
 import { ContactManagement } from "./ContactManagement";
 import { NewsletterManagement } from "./NewsletterManagement";
 import CampaignManagement from "./CampaignManagement";
@@ -31,6 +33,7 @@ const navigation = [
   { id: 'security', label: 'Security', icon: Shield },
   { id: 'bulk-import', label: 'Bulk Import', icon: Upload },
   { id: 'settings', label: 'Settings', icon: Settings },
+  { id: 'upload-diagnostics', label: 'Upload Diagnostics', icon: Upload },
 ];
 
 export const Dashboard = () => {
@@ -81,13 +84,10 @@ export const Dashboard = () => {
         return <SecurityManagement />;
       case 'bulk-import':
         return <BulkImport />;
-      case 'settings':
-        return (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold mb-4">Settings</h2>
-            <p className="text-muted-foreground">Settings panel coming soon...</p>
-          </div>
-        );
+              case 'settings':
+          return <SettingsManagement />;
+        case 'upload-diagnostics':
+          return <UploadDiagnostics />;
       default:
         return <DashboardOverview />;
     }

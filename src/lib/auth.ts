@@ -1,4 +1,4 @@
-// Authentication utilities with 2-hour session timeout
+// Authentication utilities with dynamic session timeout from settings
 
 // JWT token interface
 interface DecodedToken {
@@ -36,6 +36,33 @@ export function getTokenTimeToExpiry(token: string): number {
   
   const currentTime = Math.floor(Date.now() / 1000);
   return Math.max(0, decoded.exp - currentTime);
+}
+
+// Get token expiration settings from backend
+export async function getTokenExpirationSettings(): Promise<{ tokenExpirationHours: number; sessionTimeoutMinutes: number }> {
+  try {
+    const response = await fetch('/api/admin/settings', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      return {
+        tokenExpirationHours: data.settings?.tokenExpirationHours || 24,
+        sessionTimeoutMinutes: data.settings?.sessionTimeoutMinutes || 60,
+      };
+    }
+  } catch (error) {
+    console.error('Failed to fetch token expiration settings:', error);
+  }
+  
+  // Return defaults if fetch fails
+  return {
+    tokenExpirationHours: 24,
+    sessionTimeoutMinutes: 60,
+  };
 }
 
 // Logout function that clears all auth data
@@ -78,7 +105,11 @@ export function getAuthenticatedUser(): any {
 }
 
 // Setup automatic token expiration check
-export function setupTokenExpirationCheck(): void {
+export async function setupTokenExpirationCheck(): Promise<void> {
+  // Get token expiration settings
+  const settings = await getTokenExpirationSettings();
+  const warningMinutes = Math.min(10, Math.floor(settings.tokenExpirationHours * 60 * 0.1)); // 10% of total time or 10 minutes, whichever is less
+  
   // Check every minute
   const checkInterval = setInterval(() => {
     const token = localStorage.getItem('token');
@@ -88,14 +119,15 @@ export function setupTokenExpirationCheck(): void {
     }
   }, 60000); // Check every 60 seconds
   
-  // Warning notification 10 minutes before expiration
+  // Warning notification before expiration
   const warningInterval = setInterval(() => {
     const token = localStorage.getItem('token');
     if (token) {
       const timeToExpiry = getTokenTimeToExpiry(token);
+      const warningSeconds = warningMinutes * 60;
       
-      // Show warning if less than 10 minutes remaining
-      if (timeToExpiry > 0 && timeToExpiry <= 600) {
+      // Show warning if within warning period
+      if (timeToExpiry > 0 && timeToExpiry <= warningSeconds) {
         const minutes = Math.ceil(timeToExpiry / 60);
         
         // Dispatch event to show re-auth modal
@@ -123,7 +155,7 @@ export function clearTokenExpirationCheck(): void {
 }
 
 // Enhanced token storage with expiration tracking
-export function setAuthToken(token: string, user: any): void {
+export async function setAuthToken(token: string, user: any): Promise<void> {
   localStorage.setItem('token', token);
   localStorage.setItem('user', JSON.stringify(user));
   
@@ -136,16 +168,16 @@ export function setAuthToken(token: string, user: any): void {
   window.dispatchEvent(new Event('login'));
   
   // Setup automatic expiration check
-  setupTokenExpirationCheck();
+  await setupTokenExpirationCheck();
 }
 
 // Auto-logout on token expiration - call this once on app initialization
-export function initializeAuthWatcher(): void {
+export async function initializeAuthWatcher(): Promise<void> {
   // Check authentication status on page load
   isAuthenticated();
   
   // Setup token expiration checking
-  setupTokenExpirationCheck();
+  await setupTokenExpirationCheck();
   
   // Listen for storage changes (useful for multi-tab scenarios)
   window.addEventListener('storage', (e) => {
