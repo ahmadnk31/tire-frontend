@@ -109,7 +109,7 @@ export default function ProductPage() {
           name: product.name,
           brand: product.brand,
           price: product.price,
-          image: productImages[0],
+          imageUrl: productImages[0],
           size: selectedSize,
           quantity: quantity,
         });
@@ -150,7 +150,7 @@ export default function ProductPage() {
           name: product.name,
           brand: product.brand,
           price: product.price,
-          image: productImages[0],
+          imageUrl: productImages[0],
           size: selectedSize,
           quantity: quantity,
         });
@@ -465,7 +465,7 @@ export default function ProductPage() {
                     <img
                       src={img}
                       alt={`Thumbnail ${idx + 1}`}
-                      className="object-cover w-full h-full"
+                      className="object-contain w-full h-full bg-gray-50"
                     />
                   </button>
                 ))}
@@ -482,7 +482,7 @@ export default function ProductPage() {
                 <img 
                   src={productImages[selectedImage]} 
                   alt="Main product image" 
-                  className={`w-full h-full object-cover transition-all duration-300 ease-in-out group-hover:scale-105 cursor-zoom-in select-none ${imageTransition ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
+                  className={`w-full h-full object-contain bg-gray-50 transition-all duration-300 ease-in-out group-hover:scale-105 cursor-zoom-in select-none ${imageTransition ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
                   onClick={() => setFullscreen(true)}
                   onError={e => (e.currentTarget.src = "/placeholder.svg")}
                   draggable={false}

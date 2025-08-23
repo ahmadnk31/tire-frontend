@@ -17,6 +17,7 @@ interface CartItem {
   price: number;
   quantity: number;
   image?: string;
+  imageUrl?: string;
 }
 
 interface CheckoutStep {
@@ -72,10 +73,9 @@ function StepperIndicator({ steps, currentStep }: { steps: CheckoutStep[], curre
   );
 }
 
-function OrderSummary({ cart, subtotal, tax, total }: { 
+function OrderSummary({ cart, subtotal, total }: { 
   cart: CartItem[], 
   subtotal: number, 
-  tax: number, 
   total: number 
 }) {
   const { t } = useTranslation();
@@ -90,8 +90,8 @@ function OrderSummary({ cart, subtotal, tax, total }: {
         {cart.map((item) => (
           <div key={item.id} className="flex items-center space-x-3">
             <div className="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center">
-              {item.image ? (
-                <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded-md" />
+              {item.image || item.imageUrl ? (
+                <img src={item.image || item.imageUrl} alt={item.name} className="w-12 h-12 object-contain bg-gray-50 rounded-md" />
               ) : (
                 <ShoppingBag className="w-6 h-6 text-gray-400" />
               )}
@@ -113,10 +113,7 @@ function OrderSummary({ cart, subtotal, tax, total }: {
           <span className="text-gray-600">{t('checkout.orderSummary.subtotal')}</span>
           <span className="text-gray-900">€{subtotal.toFixed(2)}</span>
         </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-600">{t('checkout.orderSummary.tax')}</span>
-          <span className="text-gray-900">€{tax.toFixed(2)}</span>
-        </div>
+
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">{t('checkout.orderSummary.shipping')}</span>
           <span className="text-gray-900">{t('checkout.orderSummary.free')}</span>
@@ -215,8 +212,7 @@ function CheckoutForm({ cart, currentStep, setCurrentStep, steps, setSteps }: {
   };
 
   const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const tax = subtotal * 0.21; // 21% VAT
-  const total = subtotal + tax;
+  const total = subtotal;
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-6xl mx-auto bg-white p-4 sm:p-6 lg:p-8 rounded-xl shadow-sm">
@@ -348,7 +344,7 @@ function CheckoutForm({ cart, currentStep, setCurrentStep, steps, setSteps }: {
         </div>
 
         <div className="lg:col-span-1">
-          <OrderSummary cart={cart} subtotal={subtotal} tax={tax} total={total} />
+          <OrderSummary cart={cart} subtotal={subtotal} total={total} />
         </div>
       </div>
     </form>
@@ -369,6 +365,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     // Get cart from localStorage
     const cartData = JSON.parse(localStorage.getItem('cart') || '[]');
+    console.log('🛒 Cart data loaded in checkout:', cartData);
     setCart(cartData);
     
     // Fetch PaymentIntent client secret from backend

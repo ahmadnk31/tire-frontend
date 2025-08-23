@@ -95,7 +95,7 @@ const Categories: React.FC = () => {
            id: product.id,
            name: product.name,
            price: product.price,
-           image: product.image,
+           imageUrl: product.image,
            quantity: 1,
            brand: product.brand
          });

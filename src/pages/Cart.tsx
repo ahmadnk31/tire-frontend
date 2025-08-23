@@ -64,7 +64,7 @@ export default function CartPage() {
         <div className="space-y-6">
           {cart.map((item, idx) => (
             <div key={item.id + '-' + (item.size || 'default')} className="flex items-center gap-4 border-b pb-4">
-              <img src={item.image || item.imageUrl || '/placeholder.svg'} alt={item.name} className="w-20 h-20 object-cover rounded" />
+              <img src={item.image || item.imageUrl || '/placeholder.svg'} alt={item.name} className="w-20 h-20 object-contain bg-gray-50 rounded" />
               <div className="flex-1">
                 <div className="font-semibold text-lg">{item.name}</div>
                 <div className="text-gray-500">{item.brand}</div>

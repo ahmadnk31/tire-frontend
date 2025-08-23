@@ -309,7 +309,12 @@
     "callUs": "Bel Ons",
     "products": "Producten",
     "product": "Product",
-    "subcategories": "Subcategorieën"
+    "subcategories": "Subcategorieën",
+    
+    "new": "Nieuw",
+    "sale": "Aanbieding",
+    "addToCart": "Toevoegen aan winkelwagen"
+    
   },
   "auth": {
     "brandName": "Ariana Bandencentraal",
@@ -318,6 +323,7 @@
     "name": "Naam",
     "signUp": "Aanmelden",
     "signIn": "Inloggen",
+    "logout": "Uitloggen",
     "loginButton": "Inloggen",
     "login": {
       "title": "Log in op je account",
@@ -345,6 +351,12 @@
     "loginRequired": "Inloggen vereist",
     "loginToAddCart": "Log in om artikelen aan je winkelwagen toe te voegen",
     "loginToAddWishlist": "Log in om artikelen aan je verlanglijst toe te voegen",
+    "sessionExpired": "Sessie Verlopen",
+    "sessionExpiredMessage": "Je sessie is verlopen. Log opnieuw in om door te gaan.",
+    "welcomeBack": "Welkom terug!",
+    "invalidCredentials": "Ongeldige inloggegevens",
+    "emailPlaceholder": "Voer je e-mailadres in",
+    "passwordPlaceholder": "Voer je wachtwoord in",
     "testimonials": {
       "title": "Wat onze klanten zeggen",
       "googleReviews": "Google Reviews",
@@ -509,7 +521,13 @@
     "couponApplied": "Kortingscode succesvol toegepast",
     "cartUpdated": "Winkelwagen bijgewerkt",
     "itemRemoved": "Artikel verwijderd uit winkelwagen",
-    "cartCleared": "Winkelwagen geleegd"
+    "cartCleared": "Winkelwagen geleegd",
+    "addedToCart": "Toegevoegd aan winkelwagen",
+    "itemAddedSuccessfully": "Artikel is succesvol toegevoegd aan je winkelwagen",
+    "addToCartFailed": "Toevoegen aan winkelwagen mislukt",
+    "removeFromCart": "Verwijderd uit winkelwagen",
+    "itemRemovedSuccessfully": "Artikel is verwijderd uit je winkelwagen",
+    "removeFromCartFailed": "Verwijderen uit winkelwagen mislukt"
   },
   "wishlist": {
     "title": "Verlanglijst",
@@ -523,13 +541,19 @@
     "itemAdded": "Artikel toegevoegd aan verlanglijst",
     "itemRemoved": "Artikel verwijderd uit verlanglijst",
     "wishlistCleared": "Verlanglijst geleegd",
-    "noItems": "Geen artikelen in verlanglijst gevonden"
+    "noItems": "Geen artikelen in verlanglijst gevonden",
+    "addedToWishlist": "Toegevoegd aan verlanglijst",
+    "itemAddedSuccessfully": "Artikel is succesvol toegevoegd aan je verlanglijst",
+    "addToWishlistFailed": "Toevoegen aan verlanglijst mislukt",
+    "removedFromWishlist": "Verwijderd uit verlanglijst",
+    "itemRemovedSuccessfully": "Artikel is verwijderd uit je verlanglijst",
+    "removeFromWishlistFailed": "Verwijderen uit verlanglijst mislukt"
   },
   "checkout": {
     "title": "Afrekenen",
     "shippingAddress": "Verzendadres",
     "paymentMethod": "Betaalmethode",
-    "orderSummary": "Besteloverzicht",
+    
     "placeOrder": "Bestelling plaatsen",
     "orderConfirmation": "Bestelbevestiging",
     "orderNumber": "Bestelnummer",
@@ -891,40 +915,5 @@
   "sitemap": {
     "title": "Sitemap",
     "description": "Overzicht van alle pagina's op onze website"
-  },
-  "categories": {
-    "title": "Productcategorieën",
-    "description": "Bekijk onze uitgebreide selectie van bandencategorieën",
-    "searchPlaceholder": "Zoek categorieën...",
-    "sort": {
-      "name": "Sorteer op naam",
-      "priceLow": "Prijs: Laag naar hoog",
-      "priceHigh": "Prijs: Hoog naar laag",
-      "rating": "Sorteer op beoordeling"
-    },
-    "products": "producten",
-    "subcategories": "Subcategorieën",
-    "new": "Nieuw",
-    "sale": "Aanbieding",
-    "addToCart": "Toevoegen aan winkelwagen",
-    "browseAll": "Alle categorieën bekijken",
-    "productsIn": "Producten in",
-    "noProducts": "Geen producten gevonden in deze categorie"
-  },
-  "cart": {
-    "addedToCart": "Toegevoegd aan winkelwagen",
-    "itemAddedSuccessfully": "Artikel is succesvol toegevoegd aan je winkelwagen",
-    "addToCartFailed": "Toevoegen aan winkelwagen mislukt",
-    "removeFromCart": "Verwijderd uit winkelwagen",
-    "itemRemovedSuccessfully": "Artikel is verwijderd uit je winkelwagen",
-    "removeFromCartFailed": "Verwijderen uit winkelwagen mislukt"
-  },
-  "wishlist": {
-    "addedToWishlist": "Toegevoegd aan verlanglijst",
-    "itemAddedSuccessfully": "Artikel is succesvol toegevoegd aan je verlanglijst",
-    "addToWishlistFailed": "Toevoegen aan verlanglijst mislukt",
-    "removedFromWishlist": "Verwijderd uit verlanglijst",
-    "itemRemovedSuccessfully": "Artikel is verwijderd uit je verlanglijst",
-    "removeFromWishlistFailed": "Verwijderen uit verlanglijst mislukt"
   }
 }

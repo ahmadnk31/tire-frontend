@@ -155,7 +155,7 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({
               <img
                 src={images[currentImageIndex] || '/placeholder.svg'}
                 alt={product.name}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                className="w-full h-full object-contain bg-gray-50 transition-transform duration-300 group-hover:scale-105"
               />
               
               {/* Carousel Controls - Only show when hovering and multiple images */}

@@ -301,7 +301,20 @@
     "title": "Categories",
     "products": "Products",
     "product": "Product",
-    "subcategories": "Subcategories"
+    "subcategories": "Subcategories",
+    "noProducts": "No products found in this category",
+    "addToCart": "Add to Cart",
+    "addToWishlist": "Add to Wishlist",
+    "removeFromWishlist": "Remove from Wishlist",
+    "removeFromCart": "Remove from Cart",
+    "itemAddedSuccessfully": "Item has been added to your cart successfully",
+    "addToCartFailed": "Failed to Add to Cart",
+    "itemAddedToWishlist": "Item has been added to your wishlist successfully",
+    "addToWishlistFailed": "Failed to Add to Wishlist",
+    "itemRemovedFromWishlist": "Item has been removed from your wishlist",
+    "removeFromWishlistFailed": "Failed to Remove from Wishlist",
+    "itemRemovedFromCart": "Item has been removed from your cart",
+    "removeFromCartFailed": "Failed to Remove from Cart"
   },
   "auth": {
     "brandName": "Ariana Bandencentraal",
@@ -1471,7 +1484,13 @@
     "couponApplied": "Coupon applied successfully",
     "cartUpdated": "Cart updated",
     "itemRemoved": "Item removed from cart",
-    "cartCleared": "Cart cleared"
+    "cartCleared": "Cart cleared",
+    "addedToCart": "Added to Cart",
+    "itemAddedSuccessfully": "Item has been added to your cart successfully",
+    "addToCartFailed": "Failed to Add to Cart",
+    "removeFromCart": "Removed from Cart",
+    "itemRemovedSuccessfully": "Item has been removed from your cart",
+    "removeFromCartFailed": "Failed to Remove from Cart"
   },
   "wishlist": {
     "title": "Wishlist",
@@ -1485,6 +1504,12 @@
     "itemAdded": "Item added to wishlist",
     "itemRemoved": "Item removed from wishlist",
     "wishlistCleared": "Wishlist cleared",
+    "addedToWishlist": "Added to Wishlist",
+    "itemAddedSuccessfully": "Item has been added to your wishlist successfully",
+    "addToWishlistFailed": "Failed to Add to Wishlist",
+    "removedFromWishlist": "Removed from Wishlist",
+    "itemRemovedSuccessfully": "Item has been removed from your wishlist",
+    "removeFromWishlistFailed": "Failed to Remove from Wishlist",
     "noItems": "No wishlist items found"
   },
   "checkout": {
@@ -1492,7 +1517,7 @@
     "billingAddress": "Billing Address",
     "shippingAddress": "Shipping Address",
     "paymentMethod": "Payment Method",
-    "orderSummary": "Order Summary",
+   
     "placeOrder": "Place Order",
     "orderConfirmation": "Order Confirmation",
     "orderNumber": "Order Number",
@@ -1795,40 +1820,5 @@
       "averageDiscount": "Avg. Discount",
       "totalSavings": "Total Savings"
     }
-  },
-  "categories": {
-    "title": "Product Categories",
-    "description": "Browse our comprehensive selection of tire categories",
-    "searchPlaceholder": "Search categories...",
-    "sort": {
-      "name": "Sort by Name",
-      "priceLow": "Price: Low to High",
-      "priceHigh": "Price: High to Low",
-      "rating": "Sort by Rating"
-    },
-    "products": "products",
-    "subcategories": "Subcategories",
-    "new": "New",
-    "sale": "Sale",
-    "addToCart": "Add to Cart",
-    "browseAll": "Browse All Categories",
-    "productsIn": "Products in",
-    "noProducts": "No products found in this category"
-  },
-  "cart": {
-    "addedToCart": "Added to Cart",
-    "itemAddedSuccessfully": "Item has been added to your cart successfully",
-    "addToCartFailed": "Failed to Add to Cart",
-    "removeFromCart": "Removed from Cart",
-    "itemRemovedSuccessfully": "Item has been removed from your cart",
-    "removeFromCartFailed": "Failed to Remove from Cart"
-  },
-  "wishlist": {
-    "addedToWishlist": "Added to Wishlist",
-    "itemAddedSuccessfully": "Item has been added to your wishlist successfully",
-    "addToWishlistFailed": "Failed to Add to Wishlist",
-    "removedFromWishlist": "Removed from Wishlist",
-    "itemRemovedSuccessfully": "Item has been removed from your wishlist",
-    "removeFromWishlistFailed": "Failed to Remove from Wishlist"
   }
 }

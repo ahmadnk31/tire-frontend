@@ -35,7 +35,7 @@ export const ReAuthModal: React.FC<ReAuthModalProps> = ({
       if (response.user && response.token) {
         await setAuthToken(response.token, response.user);
         toast({
-          title: t('auth.loginSuccess'),
+          title: t('auth.login.success'),
           description: t('auth.welcomeBack'),
         });
         onSuccess();
@@ -44,7 +44,7 @@ export const ReAuthModal: React.FC<ReAuthModalProps> = ({
     } catch (error: any) {
       console.error('Re-authentication failed:', error);
       toast({
-        title: t('auth.loginFailed'),
+        title: t('auth.login.failed'),
         description: error.message || t('auth.invalidCredentials'),
         variant: 'destructive',
       });
@@ -61,7 +61,7 @@ export const ReAuthModal: React.FC<ReAuthModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t('auth.sessionExpired')}</DialogTitle>
         </DialogHeader>
@@ -81,6 +81,7 @@ export const ReAuthModal: React.FC<ReAuthModalProps> = ({
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t('auth.emailPlaceholder')}
                 required
+                className="w-full"
               />
             </div>
             
@@ -93,21 +94,23 @@ export const ReAuthModal: React.FC<ReAuthModalProps> = ({
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder={t('auth.passwordPlaceholder')}
                 required
+                className="w-full"
               />
             </div>
             
-            <div className="flex gap-2 pt-4">
+            <div className="flex flex-col sm:flex-row gap-2 pt-4">
               <Button
                 type="submit"
                 className="flex-1"
                 disabled={isLoading}
               >
-                {isLoading ? t('common.loading') : t('auth.login')}
+                {isLoading ? t('common.loading') : t('auth.signIn')}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleLogout}
+                className="flex-1 sm:flex-none"
               >
                 {t('auth.logout')}
               </Button>

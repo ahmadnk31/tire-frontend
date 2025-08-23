@@ -170,6 +170,7 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
   }, [editingProduct]);
 
   const handleInputChange = (field: string, value: any) => {
+    console.log(`🔄 handleInputChange: ${field} =`, value, 'Type:', typeof value);
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -209,8 +210,12 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
       setIsSubmitting(true);
 
       // Validate required fields
-  const requiredFields = ['name', 'size', 'brand', 'model', 'speedRating', 'loadIndex', 'seasonType', 'vehicleType', 'price', 'stock'];
-      const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
+      const requiredFields = ['name', 'size', 'brand', 'model', 'speedRating', 'loadIndex', 'seasonType', 'vehicleType', 'price', 'stock'];
+      const missingFields = requiredFields.filter(field => {
+        const value = formData[field as keyof typeof formData];
+        console.log(`🔍 Validating field ${field}:`, value, 'Type:', typeof value);
+        return !value || value === '';
+      });
 
       if (missingFields.length > 0 && !isDraft) {
         toast({
@@ -268,6 +273,9 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
 
 
 
+      console.log('🔄 Submitting product data:', JSON.stringify(productData, null, 2));
+      console.log('🚗 Vehicle Type from form:', formData.vehicleType);
+      console.log('🚗 Tire Type being sent:', productData.tireType);
       console.log('Submitting images:', productData.images);
       let response;
       if (editingProduct) {

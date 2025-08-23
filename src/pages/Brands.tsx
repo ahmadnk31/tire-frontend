@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Star, ShoppingCart, Heart, Filter, Grid, List, ChevronRight, Clock } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productsApi } from '@/lib/api';
+import { wishlistApi } from '@/lib/wishlistApi';
 import { useToast } from '@/hooks/use-toast';
 
 interface Brand {
@@ -40,6 +41,7 @@ const Brands: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCountry, setFilterCountry] = useState('all');
@@ -62,7 +64,8 @@ const logos={
   'double star': 'https://kelucktyre.com/u_file/2007/photo/185a4cb981.jpg',
   'rotalla': 'https://cdn.buttercms.com/5RvYx5AVS9qnaHY9Nlbz',
   'ovation': 'https://eshop.tireworld.co.ke/media/manufacturers/Ovation-Tyres-Logo.webp',
-  'tracmax': 'https://www.tyrecenter.net/wp-content/uploads/2020/12/New-Project-1.jpg'
+  'tracmax': 'https://www.tyrecenter.net/wp-content/uploads/2020/12/New-Project-1.jpg',
+  'windforce': 'https://ik.imagekit.io/ntvz9dezi1x/blog/windforce-logo.png'
 }
   // Fetch real brands data
   const { data: brandsData, isLoading, error } = useQuery({
@@ -85,6 +88,70 @@ const logos={
     isPremium: isPremiumBrand(brandData.brand)
   })) || [];
 
+  // Check if user is logged in
+  const token = localStorage.getItem('token');
+  const isLoggedIn = !!token;
+
+  // Fetch wishlist data
+  const { data: wishlistData } = useQuery({
+    queryKey: ['wishlist', token],
+    queryFn: () => wishlistApi.getWishlist(token!),
+    enabled: isLoggedIn,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Wishlist mutations
+  const addToWishlistMutation = useMutation({
+    mutationFn: async (productId: number) => {
+      if (!token) throw new Error('Not authenticated');
+      return await wishlistApi.addToWishlist(productId, token);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['wishlist'] });
+      toast({
+        title: t('wishlist.addedToWishlist'),
+        description: t('wishlist.itemAddedSuccessfully'),
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: t('wishlist.addToWishlistFailed'),
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const removeFromWishlistMutation = useMutation({
+    mutationFn: async (productId: number) => {
+      if (!token) throw new Error('Not authenticated');
+      return await wishlistApi.removeFromWishlist(productId, token);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['wishlist'] });
+      toast({
+        title: t('wishlist.removedFromWishlist'),
+        description: t('wishlist.itemRemovedSuccessfully'),
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: t('wishlist.removeFromWishlistFailed'),
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+
+  // Check if product is in wishlist
+  const isWishlisted = useMemo(() => {
+    if (!wishlistData?.wishlist || !isLoggedIn) {
+      return () => false;
+    }
+    return (productId: string) => wishlistData.wishlist.some((item: any) => item.productId === Number(productId));
+  }, [wishlistData?.wishlist, isLoggedIn]);
+
   // Helper functions for brand data
   function getBrandCountry(brand: string): string {
     const countryMap: { [key: string]: string } = {
@@ -97,7 +164,8 @@ const logos={
       'double star': 'China',
       'rotalla': 'China',
       'ovation': 'China',
-      'tracmax': 'China'
+      'tracmax': 'China',
+      "windforce": "USA"  
     };
     return countryMap[brand.toLowerCase()] || 'Unknown';
   }
@@ -113,7 +181,8 @@ const logos={
       'double star': 1996,
       'rotalla': 1996,
       'ovation': 1996,
-      'tracmax': 1996
+      'tracmax': 1996,
+      'windforce': 1996
     };
     return foundedMap[brand.toLowerCase()] || 1900;
   }
@@ -129,7 +198,8 @@ const logos={
       'double star': ['Summer Tires', 'Winter Tires', 'All-Season'],
       'rotalla': ['Summer Tires', 'Winter Tires', 'All-Season'],
       'ovation': ['Summer Tires', 'Winter Tires', 'All-Season'],
-      'tracmax': ['Summer Tires', 'Winter Tires', 'All-Season']
+      'tracmax': ['Summer Tires', 'Winter Tires', 'All-Season'],
+      'windforce': ['Summer Tires', 'Winter Tires', 'All-Season']
     };
     return categoryMap[brand.toLowerCase()] || ['Tires'];
   }
@@ -227,12 +297,8 @@ const logos={
     });
   };
 
-  const addToWishlist = (product: Product) => {
-    // Check if user is logged in
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
-    
-    if (!token || !user) {
+  const handleToggleWishlist = (product: Product) => {
+    if (!isLoggedIn) {
       toast({
         title: t('auth.loginRequired'),
         description: t('auth.loginToAddWishlist'),
@@ -240,22 +306,17 @@ const logos={
       });
       return;
     }
-    
-    // For now, just show a toast. You can implement wishlist functionality later
-    toast({
-      title: t('products.addToWishlist'),
-      description: `${product.name} added to wishlist`,
-    });
+
+    const productId = Number(product.id);
+    if (isWishlisted(product.id)) {
+      removeFromWishlistMutation.mutate(productId);
+    } else {
+      addToWishlistMutation.mutate(productId);
+    }
   };
 
   const isInCart = (productId: string) => {
     return cart.some(item => item.id === productId);
-  };
-
-  const isLoggedIn = () => {
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
-    return !!(token && user);
   };
 
   // Loading state
@@ -529,17 +590,25 @@ const logos={
                       </button>
                       <button 
                         className={`p-2 border rounded-lg transition-colors ${
-                          !isLoggedIn()
+                          !isLoggedIn
                             ? 'border-gray-300 bg-gray-100 cursor-not-allowed'
+                            : isWishlisted(product.id)
+                            ? 'border-red-300 bg-red-50'
                             : 'border-gray-300 hover:bg-gray-50'
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
-                          addToWishlist(product);
+                          handleToggleWishlist(product);
                         }}
-                        disabled={!isLoggedIn()}
+                        disabled={!isLoggedIn || addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
                       >
-                        <Heart className={`h-4 w-4 ${!isLoggedIn() ? 'text-gray-400' : 'text-gray-600'}`} />
+                        <Heart className={`h-4 w-4 ${
+                          !isLoggedIn 
+                            ? 'text-gray-400' 
+                            : isWishlisted(product.id)
+                            ? 'fill-red-500 text-red-500'
+                            : 'text-gray-600'
+                        }`} />
                       </button>
                     </div>
                   </div>
