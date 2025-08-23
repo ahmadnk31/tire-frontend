@@ -57,7 +57,7 @@ export const BottomNav = () => {
           <button
             onClick={() => navigate('/')}
             className={`flex flex-col items-center justify-center w-full h-full transition-colors ${
-              isActive('/') ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'
+              isActive('/') ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             <Home className="h-5 w-5 mb-1" />
@@ -68,7 +68,7 @@ export const BottomNav = () => {
           <button
             onClick={() => navigate('/products')}
             className={`flex flex-col items-center justify-center w-full h-full transition-colors ${
-              isActive('/products') ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'
+              isActive('/products') ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             <Search className="h-5 w-5 mb-1" />
@@ -79,7 +79,7 @@ export const BottomNav = () => {
           <button
             onClick={() => navigate('/cart')}
             className={`flex flex-col items-center justify-center w-full h-full transition-colors relative ${
-              isActive('/cart') ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'
+              isActive('/cart') ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             <div className="relative">
@@ -97,7 +97,7 @@ export const BottomNav = () => {
           <button
             onClick={() => navigate('/wishlist')}
             className={`flex flex-col items-center justify-center w-full h-full transition-colors ${
-              isActive('/wishlist') ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'
+              isActive('/wishlist') ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             <Heart className="h-5 w-5 mb-1" />
@@ -110,7 +110,7 @@ export const BottomNav = () => {
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className={`flex flex-col items-center justify-center w-full h-full transition-colors ${
-              isMenuOpen ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'
+              isMenuOpen ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             <Menu className="h-5 w-5 mb-1" />
@@ -137,8 +137,8 @@ export const BottomNav = () => {
                   onClick={() => { setIsMenuOpen(false); navigate('/categories'); }}
                   className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                 >
-                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <span className="text-blue-600 font-semibold text-sm">C</span>
+                  <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <span className="text-gray-600 font-semibold text-sm">C</span>
                   </div>
                   <div className="text-left">
                     <div className="text-sm font-medium text-gray-900">{t('navigation.categories')}</div>
@@ -188,9 +188,9 @@ export const BottomNav = () => {
 
               {/* Account Section */}
               <div className="border-t border-gray-200 pt-4">
-                <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                    <User className="w-5 h-5 text-blue-600" />
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                    <User className="w-5 h-5 text-gray-600" />
                   </div>
                   <div className="flex-1 text-left">
                     <div className="text-sm font-medium text-gray-900">Account</div>
@@ -198,7 +198,7 @@ export const BottomNav = () => {
                   </div>
                   <button
                     onClick={() => { setIsMenuOpen(false); navigate('/account'); }}
-                    className="text-blue-600 text-sm font-medium"
+                    className="text-gray-600 text-sm font-medium"
                   >
                     View
                   </button>

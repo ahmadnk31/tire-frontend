@@ -241,7 +241,7 @@ export const Header = () => {
                   </PopoverContent>
                 </Popover>
                 <LanguageSwitcher />
-                {user && (
+                {user ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button className="ml-2 p-0 bg-transparent border-none cursor-pointer">
@@ -283,6 +283,26 @@ export const Header = () => {
                         }}
                       >
                         <LogOut className="w-4 h-4 mr-2" /> {t('navigation.logout')}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="ml-2 p-0 bg-transparent border-none cursor-pointer">
+                        <Avatar>
+                          <AvatarFallback>
+                            <UserCircle className="w-6 h-6 text-gray-400" />
+                          </AvatarFallback>
+                        </Avatar>
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem onClick={() => navigate('/login')}>
+                        <User className="w-4 h-4 mr-2" /> {t('auth.loginButton')}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate('/register')}>
+                        <UserCircle className="w-4 h-4 mr-2" /> {t('auth.signUp')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -394,7 +414,7 @@ export const Header = () => {
                   </Popover>
                   
                   {/* User Avatar - Mobile */}
-                  {user && (
+                  {user ? (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button className="p-0 bg-transparent border-none cursor-pointer">
@@ -436,6 +456,26 @@ export const Header = () => {
                           }}
                         >
                           <LogOut className="w-4 h-4 mr-2" /> {t('navigation.logout')}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  ) : (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="p-0 bg-transparent border-none cursor-pointer">
+                          <Avatar className="w-8 h-8">
+                            <AvatarFallback className="text-sm">
+                              <UserCircle className="w-4 h-4 text-gray-400" />
+                            </AvatarFallback>
+                          </Avatar>
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem onClick={() => navigate('/login')}>
+                          <User className="w-4 h-4 mr-2" /> {t('auth.loginButton')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate('/register')}>
+                          <UserCircle className="w-4 h-4 mr-2" /> {t('auth.signUp')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
