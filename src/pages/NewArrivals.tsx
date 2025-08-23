@@ -8,6 +8,7 @@ import { productsApi } from '@/lib/api';
 import { wishlistApi } from '@/lib/wishlistApi';
 import { useToast } from '@/hooks/use-toast';
 import { addNewArrivalNotification } from '@/lib/notifications';
+import { subscribeToNewsletter } from '@/lib/api/contact';
 
 interface Product {
   id: number;
@@ -43,6 +44,10 @@ const NewArrivals: React.FC = () => {
     const stored = localStorage.getItem('cart');
     return stored ? JSON.parse(stored) : [];
   });
+
+  // Newsletter state
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [isSubscribing, setIsSubscribing] = useState(false);
 
   // Fetch real new arrivals
   const { data: newArrivalsData, isLoading, error } = useQuery({
@@ -92,6 +97,45 @@ const NewArrivals: React.FC = () => {
   });
 
   const wishlist = wishlistData || [];
+
+  // Newsletter subscription mutation
+  const newsletterMutation = useMutation({
+    mutationFn: (email: string) => subscribeToNewsletter({ email, source: 'new-arrivals' }),
+    onSuccess: () => {
+      toast({
+        title: t('newArrivals.newsletter.successTitle'),
+        description: t('newArrivals.newsletter.successMessage'),
+      });
+      setNewsletterEmail('');
+    },
+    onError: (error: any) => {
+      toast({
+        title: t('newArrivals.newsletter.errorTitle'),
+        description: error.message || t('newArrivals.newsletter.errorMessage'),
+        variant: 'destructive',
+      });
+    },
+  });
+
+  // Handle newsletter subscription
+  const handleNewsletterSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsletterEmail.trim()) {
+      toast({
+        title: t('newArrivals.newsletter.emailRequired'),
+        description: t('newArrivals.newsletter.emailRequiredDesc'),
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    setIsSubscribing(true);
+    try {
+      await newsletterMutation.mutateAsync(newsletterEmail);
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
 
   // Calculate days until sale ends
   const getDaysUntilEnd = (date: string | null) => {
@@ -486,27 +530,34 @@ const NewArrivals: React.FC = () => {
         </div>
 
         {/* Newsletter Signup */}
-        <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-8 border border-green-200">
+        <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 sm:p-6 lg:p-8 border border-green-200">
           <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <TrendingUp className="h-6 w-6 text-green-600" />
-              <h2 className="text-2xl font-bold text-gray-900">
+            <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
+              <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
                 {t('newArrivals.newsletter.title')}
               </h2>
             </div>
-            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+            <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 max-w-2xl mx-auto px-2">
               {t('newArrivals.newsletter.description')}
             </p>
-            <div className="flex max-w-md mx-auto">
+            <form onSubmit={handleNewsletterSubscribe} className="flex flex-col sm:flex-row max-w-md mx-auto gap-2 px-2">
               <input
                 type="email"
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
                 placeholder={t('newArrivals.newsletter.placeholder')}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="flex-1 px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-l-lg sm:rounded-r-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                disabled={isSubscribing}
               />
-              <button className="px-6 py-2 bg-primary text-white rounded-r-lg hover:bg-primary/90 transition-colors">
-                {t('newArrivals.newsletter.subscribe')}
+              <button 
+                type="submit"
+                disabled={isSubscribing}
+                className="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base bg-primary text-white rounded-lg sm:rounded-l-none sm:rounded-r-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubscribing ? t('newArrivals.newsletter.subscribing') : t('newArrivals.newsletter.subscribe')}
               </button>
-            </div>
+            </form>
           </div>
         </div>
       </div>
