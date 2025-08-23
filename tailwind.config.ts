@@ -1,4 +1,6 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
+import typography from "@tailwindcss/typography";
 
 export default {
 	darkMode: ["class"],
@@ -10,6 +12,11 @@ export default {
 	],
 	prefix: "",
 	theme: {
+		fontFamily: {
+			sans: ['Inter', 'system-ui', 'sans-serif'],
+			serif: ['Georgia', 'serif'],
+			mono: ['JetBrains Mono', 'monospace'],
+		},
 		container: {
 			center: true,
 			padding: '2rem',
@@ -101,5 +108,5 @@ export default {
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+	plugins: [tailwindcssAnimate, typography],
 } satisfies Config;

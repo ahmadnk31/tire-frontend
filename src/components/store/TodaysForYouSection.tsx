@@ -182,13 +182,8 @@ export const TodaysForYouSection = ({
   // Update URL query param for filtering
   // Do not update URL or global state when filtering; keep filter local to section
 
-  // Find selected category object and its ID
-  const selectedCategoryObj = categories.find(cat => cat.slug === selectedCategorySlug);
-  const selectedCategoryId = selectedCategoryObj?.id;
-  // Filter products by categoryIds if a category is selected
-  const filteredProducts = selectedCategoryId
-    ? products.filter(p => Array.isArray(p.categoryIds) && p.categoryIds.includes(selectedCategoryId))
-    : products;
+  // The backend already filters products by category, so we don't need additional filtering
+  const filteredProducts = products;
 
   // Carousel scroll logic
   const carouselRef = useRef<HTMLDivElement>(null);
