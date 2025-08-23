@@ -5,6 +5,21 @@ import { useToast } from "./ui/use-toast";
 import { subscribeToNewsletter } from '../lib/api/contact';
 import BrandsMarquee from "./BrandsMarquee";
 import { useTranslation } from 'react-i18next';
+import { 
+  Shield, 
+  Truck, 
+  RotateCcw, 
+  MessageCircle, 
+  Facebook, 
+  Instagram, 
+  Video, 
+  Phone, 
+  Mail, 
+  MapPin, 
+  Clock, 
+  CreditCard,
+  Heart
+} from 'lucide-react';
 
 const Footer: React.FC = () => {
   const { t } = useTranslation();
@@ -44,16 +59,16 @@ const Footer: React.FC = () => {
   };
 
 const socialLinks = [
-  { href: "https://facebook.com/bandenledegembandenledegem", label: "Facebook", icon: "📘" },
-  { href: "https://instagram.com/arianabandenservice", label: "Instagram", icon: "📷" },
-  { href: "https://tiktok.com/@arianabanden", label: "TikTok", icon: "📺" },
+  { href: "https://facebook.com/share/1FTeGU4ujx", label: "Facebook", icon: Facebook },
+  { href: "https://instagram.com/bandenledegem", label: "Instagram", icon: Instagram },
+  { href: "https://tiktok.com/@arianabanden", label: "TikTok", icon: Video },
 ];
 
   const trustBadges = [
-    { icon: "🔒", text: t('footer.trustBadges.sslSecured') },
-    { icon: "🚚", text: t('footer.trustBadges.freeShipping') },
-    { icon: "↩️", text: t('footer.trustBadges.easyReturns') },
-    { icon: "💬", text: t('footer.trustBadges.support247') },
+    { icon: Shield, text: t('footer.trustBadges.sslSecured') },
+    { icon: Truck, text: t('footer.trustBadges.freeShipping') },
+    { icon: RotateCcw, text: t('footer.trustBadges.easyReturns') },
+    { icon: MessageCircle, text: t('footer.trustBadges.support247') },
   ];
 
   const handleNewsletterSubscribe = async (e: React.FormEvent) => {
@@ -99,14 +114,17 @@ const socialLinks = [
       <div className="bg-muted/30 border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {trustBadges.map((badge, index) => (
-              <div key={index} className="flex items-center justify-center space-x-3 text-center group">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-accent/20 transition-colors duration-300">
-                  <span className="text-xl text-primary group-hover:text-accent transition-colors duration-300" role="img" aria-hidden="true">{badge.icon}</span>
+            {trustBadges.map((badge, index) => {
+              const IconComponent = badge.icon;
+              return (
+                <div key={index} className="flex items-center justify-center space-x-3 text-center group">
+                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-accent/20 transition-colors duration-300">
+                    <IconComponent className="w-6 h-6 text-primary group-hover:text-accent transition-colors duration-300" />
+                  </div>
+                  <span className="text-sm font-medium text-foreground/80 group-hover:text-foreground transition-colors duration-300">{badge.text}</span>
                 </div>
-                <span className="text-sm font-medium text-foreground/80 group-hover:text-foreground transition-colors duration-300">{badge.text}</span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -154,18 +172,21 @@ const socialLinks = [
               <div>
                 <h3 className="font-semibold text-lg mb-4 text-foreground">{t('footer.social.followUs')}</h3>
                 <div className="flex space-x-3">
-                  {socialLinks.map((social) => (
-                    <a
-                      key={social.label}
-                      href={social.href}
-                      className="w-12 h-12 bg-muted hover:bg-accent hover:text-accent-foreground rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-105 hover:shadow-md"
-                      aria-label={social.label}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <span className="text-lg" role="img" aria-hidden="true">{social.icon}</span>
-                    </a>
-                  ))}
+                  {socialLinks.map((social) => {
+                    const IconComponent = social.icon;
+                    return (
+                      <a
+                        key={social.label}
+                        href={social.href}
+                        className="w-12 h-12 bg-muted hover:bg-accent hover:text-accent-foreground rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-105 hover:shadow-md"
+                        aria-label={social.label}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <IconComponent className="w-5 h-5" />
+                      </a>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -251,21 +272,21 @@ const socialLinks = [
             <div className="space-y-4">
               <h3 className="font-semibold text-lg text-primary flex items-center gap-2">
                 <span className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center">
-                  📞
+                  <Phone className="w-4 h-4" />
                 </span>
                 {t('footer.contact.contactInfo')}
               </h3>
               <div className="space-y-3 text-sm text-muted-foreground ml-8">
-                <p className="flex items-center gap-2  transition-colors">
-                  <span>✉️</span>
+                <p className="flex items-center gap-2 transition-colors">
+                  <Mail className="w-4 h-4" />
                   <a href="mailto:info@arianatires.com" className="hover:underline">info@arianatires.com</a>
                 </p>
-                <p className="flex items-center gap-2 ">
-                  <span>📱</span>
+                <p className="flex items-center gap-2">
+                  <Phone className="w-4 h-4" />
                   <a href="tel:+1234567890" className="hover:underline">+32 467 66 21 97</a>
                 </p>
                 <p className="flex items-center gap-2">
-                  <span>📍</span>
+                  <MapPin className="w-4 h-4" />
                   <span>
                     Provinciebaan 192A, Ledegem
                   </span>
@@ -276,7 +297,7 @@ const socialLinks = [
             <div className="space-y-4">
               <h3 className="font-semibold text-lg text-primary flex items-center gap-2">
                 <span className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center">
-                  🕒
+                  <Clock className="w-4 h-4" />
                 </span>
                 {t('footer.contact.businessHours')}
               </h3>
@@ -301,22 +322,22 @@ const socialLinks = [
             <div className="space-y-4">
               <h3 className="font-semibold text-lg text-primary flex items-center gap-2">
                 <span className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center">
-                  💳
+                  <CreditCard className="w-4 h-4" />
                 </span>
                 {t('footer.contact.paymentMethods')}
               </h3>
               <div className="flex flex-wrap gap-3 ml-8">
                 <div className="px-3 py-2 bg-card border border-border rounded-lg text-xs font-medium hover:shadow-md transition-shadow duration-300 flex items-center gap-1">
-                  <span>💳</span> Visa
+                  <CreditCard className="w-3 h-3" /> Visa
                 </div>
                 <div className="px-3 py-2 bg-card border border-border rounded-lg text-xs font-medium hover:shadow-md transition-shadow duration-300 flex items-center gap-1">
-                  <span>💳</span> Mastercard
+                  <CreditCard className="w-3 h-3" /> Mastercard
                 </div>
                 <div className="px-3 py-2 bg-card border border-border rounded-lg text-xs font-medium hover:shadow-md transition-shadow duration-300 flex items-center gap-1">
-                  <span>🅿️</span> PayPal
+                  <CreditCard className="w-3 h-3" /> PayPal
                 </div>
                 <div className="px-3 py-2 bg-card border border-border rounded-lg text-xs font-medium hover:shadow-md transition-shadow duration-300 flex items-center gap-1">
-                  <span>🍎</span> Apple Pay
+                  <CreditCard className="w-3 h-3" /> Apple Pay
                 </div>
               </div>
             </div>
@@ -332,7 +353,7 @@ const socialLinks = [
               <p>© {currentYear} Ariana Banden. {t('footer.bottom.allRightsReserved')}</p>
               <div className="hidden md:block w-1 h-1 bg-muted-foreground/50 rounded-full"></div>
               <p className="flex items-center gap-1">
-                {t('footer.bottom.builtWithLove')} <span className="text-red-500 animate-pulse">❤️</span> {t('footer.bottom.forAutomotiveEnthusiasts')}
+                {t('footer.bottom.builtWithLove')} <Heart className="w-4 h-4 text-red-500 animate-pulse fill-current" /> {t('footer.bottom.forAutomotiveEnthusiasts')}
               </p>
             </div>
             <div className="flex items-center gap-4 text-sm">
