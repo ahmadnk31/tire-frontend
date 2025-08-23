@@ -9,10 +9,12 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { SearchBar } from "@/components/store/SearchBar";
 import { MegaMenu } from "@/components/MegaMenu";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import { useTranslation } from 'react-i18next';
+import { getNotifications } from '@/lib/notifications';
 
 
 export const Header = () => {
@@ -23,6 +25,8 @@ export const Header = () => {
   const [cartCount, setCartCount] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+
+  const [notifications, setNotifications] = useState<any[]>([]);
   // User state
   const [user, setUser] = useState<any>(null);
 
@@ -37,6 +41,20 @@ export const Header = () => {
     return () => {
       window.removeEventListener('storage', update);
       window.removeEventListener('cart-updated', update);
+    };
+  }, []);
+
+  // Load notifications
+  useEffect(() => {
+    const loadNotifications = () => {
+      setNotifications(getNotifications());
+    };
+    loadNotifications();
+    
+    // Listen for notification updates
+    window.addEventListener('notifications-updated', loadNotifications);
+    return () => {
+      window.removeEventListener('notifications-updated', loadNotifications);
     };
   }, []);
 
@@ -150,9 +168,78 @@ export const Header = () => {
                     </span>
                   )}
                 </button>
-                <button className="relative p-2 rounded-full hover:bg-gray-100 transition" aria-label="Notifications">
-                  <Bell className="h-6 w-6 text-gray-400" />
-                </button>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button 
+                      className="relative p-2 rounded-full hover:bg-gray-100 transition" 
+                      aria-label="Notifications"
+                    >
+                      <Bell className="h-6 w-6 text-gray-400" />
+                      {notifications.length > 0 && (
+                        <span className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-full bg-red-500 text-white text-xs font-semibold flex items-center justify-center border-2 border-white">
+                          {notifications.length > 9 ? '9+' : notifications.length}
+                        </span>
+                      )}
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80 p-0" align="end">
+                    <div className="p-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold text-gray-900">{t('navigation.notifications')}</h3>
+                        <button
+                          onClick={() => {
+                            setNotifications([]);
+                            localStorage.removeItem('notifications');
+                          }}
+                          className="text-sm text-red-600 hover:text-red-700"
+                        >
+                          Clear All
+                        </button>
+                      </div>
+                      
+                      {notifications.length === 0 ? (
+                        <div className="text-center py-8 text-gray-500">
+                          <Bell className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                          <p>No notifications yet</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-3 max-h-64 overflow-y-auto">
+                          {notifications.map((notification, index) => (
+                            <div
+                              key={index}
+                              className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg"
+                            >
+                              <div className={`w-2 h-2 rounded-full mt-2 ${
+                                notification.type === 'sale' ? 'bg-red-500' : 'bg-blue-500'
+                              }`} />
+                              <div className="flex-1">
+                                <div className="text-sm font-medium text-gray-900">
+                                  {notification.title}
+                                </div>
+                                <div className="text-xs text-gray-600 mt-1">
+                                  {notification.message}
+                                </div>
+                                <div className="text-xs text-gray-400 mt-1">
+                                  {new Date(notification.timestamp).toLocaleDateString()}
+                                </div>
+                              </div>
+                              <button 
+                                onClick={() => {
+                                  const updatedNotifications = notifications.filter((_, i) => i !== index);
+                                  setNotifications(updatedNotifications);
+                                  localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
+                                }} 
+                                className="text-gray-400 hover:text-gray-600"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
                 <LanguageSwitcher />
                 {user && (
                   <DropdownMenu>
@@ -208,10 +295,10 @@ export const Header = () => {
               <MegaMenu />
             </div>
 
-            {/* Mobile Layout */}
+            {/* Mobile Layout - Simplified for Bottom Nav */}
             <div className="md:hidden">
               {/* Mobile Header Row */}
-              <div className="flex items-center h-16  justify-between">
+              <div className="flex items-center h-16 justify-between">
                 {/* Logo */}
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <a href="/" className="flex items-center">
@@ -221,7 +308,7 @@ export const Header = () => {
                   </a>
                 </div>
 
-                {/* Mobile Actions */}
+                {/* Mobile Actions - Simplified */}
                 <div className="flex items-center gap-2">
                   {/* Search Toggle */}
                   <button
@@ -232,38 +319,129 @@ export const Header = () => {
                     <Search className="h-5 w-5 text-gray-400" />
                   </button>
 
-                  {/* Cart */}
-                  <button
-                    className="relative p-2 rounded-full hover:bg-gray-100 transition"
-                    onClick={() => navigate('/cart')}
-                    aria-label="Cart"
-                  >
-                    <ShoppingCart className="h-5 w-5 text-gray-400" />
-                    {cartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full bg-gray-900 text-white text-xs font-semibold border-2 border-white p-2">
-                        {cartCount > 9 ? '9+' : cartCount}
-                      </span>
-                    )}
-                  </button>
-
                   {/* Notifications */}
-                  <button className="p-2 rounded-full hover:bg-gray-100 transition" aria-label="Notifications">
-                    <Bell className="h-5 w-5 text-gray-400" />
-                  </button>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button 
+                        className="relative p-2 rounded-full hover:bg-gray-100 transition" 
+                        aria-label="Notifications"
+                      >
+                        <Bell className="h-5 w-5 text-gray-400" />
+                        {notifications.length > 0 && (
+                          <span className="absolute -top-1 -right-1 px-1 py-0.5 rounded-full bg-red-500 text-white text-xs font-semibold flex items-center justify-center border border-white">
+                            {notifications.length > 9 ? '9+' : notifications.length}
+                          </span>
+                        )}
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80 p-0" align="end">
+                      <div className="p-4">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-lg font-semibold text-gray-900">{t('navigation.notifications')}</h3>
+                          <button
+                            onClick={() => {
+                              setNotifications([]);
+                              localStorage.removeItem('notifications');
+                            }}
+                            className="text-sm text-red-600 hover:text-red-700"
+                          >
+                            Clear All
+                          </button>
+                        </div>
+                        
+                        {notifications.length === 0 ? (
+                          <div className="text-center py-8 text-gray-500">
+                            <Bell className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                            <p>No notifications yet</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-3 max-h-64 overflow-y-auto">
+                            {notifications.map((notification, index) => (
+                              <div
+                                key={index}
+                                className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg"
+                              >
+                                <div className={`w-2 h-2 rounded-full mt-2 ${
+                                  notification.type === 'sale' ? 'bg-red-500' : 'bg-blue-500'
+                                }`} />
+                                <div className="flex-1">
+                                  <div className="text-sm font-medium text-gray-900">
+                                    {notification.title}
+                                  </div>
+                                  <div className="text-xs text-gray-600 mt-1">
+                                    {notification.message}
+                                  </div>
+                                  <div className="text-xs text-gray-400 mt-1">
+                                    {new Date(notification.timestamp).toLocaleDateString()}
+                                  </div>
+                                </div>
+                                <button 
+                                  onClick={() => {
+                                    const updatedNotifications = notifications.filter((_, i) => i !== index);
+                                    setNotifications(updatedNotifications);
+                                    localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
+                                  }} 
+                                  className="text-gray-400 hover:text-gray-600"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                  
+                  {/* User Avatar - Mobile */}
+                  {user && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="p-0 bg-transparent border-none cursor-pointer">
+                          <Avatar className="w-8 h-8">
+                            <AvatarFallback className="text-sm">{user.name ? user.name[0] : <UserCircle className="w-4 h-4" />}</AvatarFallback>
+                          </Avatar>
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem onClick={() => navigate('/account')}>
+                          <User className="w-4 h-4 mr-2" /> {t('navigation.account')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate('/orders')}>
+                          <List className="w-4 h-4 mr-2" /> {t('navigation.orders')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate('/wishlist')}>
+                          <Heart className="w-4 h-4 mr-2" /> {t('navigation.wishlist')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate('/settings')}>
+                          <Settings className="w-4 h-4 mr-2" /> {t('navigation.settings')}
+                        </DropdownMenuItem>
+                        {/* Dashboard - only for admin users */}
+                        {user && user.role === 'admin' && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+                              <BarChart3 className="w-4 h-4 mr-2" /> {t('navigation.dashboard')}
+                            </DropdownMenuItem>
+                          </>
+                        )}
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => {
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('user');
+                            setUser(null);
+                            window.dispatchEvent(new Event('logout'));
+                            navigate('/login');
+                          }}
+                        >
+                          <LogOut className="w-4 h-4 mr-2" /> {t('navigation.logout')}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                  
                   <LanguageSwitcher />
-
-                  {/* Mobile Menu Toggle */}
-                  <button
-                    className="p-2 rounded-full hover:bg-gray-100 transition"
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    aria-label="Menu"
-                  >
-                    {isMobileMenuOpen ? (
-                      <X className="h-5 w-5 text-gray-400" />
-                    ) : (
-                      <Menu className="h-5 w-5 text-gray-400" />
-                    )}
-                  </button>
                 </div>
               </div>
 
@@ -276,100 +454,14 @@ export const Header = () => {
                 </div>
               )}
 
-              {/* Mobile Menu Dropdown */}
-              {isMobileMenuOpen && (
-                <div className="border-t border-gray-100 bg-white shadow-lg">
-                  <div className="px-4 py-4 space-y-3">
-                    {/* Top bar links for mobile */}
-                    <div className="space-y-2 pb-3 border-b border-gray-100">
-                      <a href="#" className="block text-sm text-gray-600 hover:text-gray-900 py-1">
-                        Download Ariana App
-                      </a>
-                      <a href="#" className="block text-sm text-gray-600 hover:text-gray-900 py-1">
-                        About Ariana
-                      </a>
-                      <a href="#" className="block text-sm text-gray-600 hover:text-gray-900 py-1">
-                        Ariana Plus
-                      </a>
-                      <a href="#" className="block text-sm text-gray-600 hover:text-gray-900 py-1">
-                        Promo
-                      </a>
-                    </div>
-                    
-                    {/* Auth links - only show if user is NOT signed in */}
-                    {!user && (
-                      <div className="space-y-2 pb-3 border-b border-gray-100">
-                        <button onClick={() => { setIsMobileMenuOpen(false); navigate('/register'); }} className="block w-full text-left text-sm font-semibold text-gray-900 hover:text-gray-700 py-2 bg-transparent border-none cursor-pointer">
-                          {t('auth.signUp')}
-                        </button>
-                        <button onClick={() => { setIsMobileMenuOpen(false); navigate('/login'); }} className="block w-full text-left text-sm font-semibold text-gray-900 hover:text-gray-700 py-2 bg-transparent border-none cursor-pointer">
-                          {t('auth.signIn')}
-                        </button>
-                      </div>
-                    )}
 
-                    {/* User menu items - only show if user IS signed in */}
-                    {user && (
-                      <div className="space-y-2 pb-3 border-b border-gray-100">
-                        {/* User info */}
-                        <div className="flex items-center gap-3 py-2">
-                          <Avatar className="w-8 h-8">
-                            <AvatarFallback className="text-sm">{user.name ? user.name[0] : <UserCircle className="w-4 h-4" />}</AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="text-sm font-semibold text-gray-900">{user.name || 'User'}</p>
-                            <p className="text-xs text-gray-500">{user.email}</p>
-                          </div>
-                        </div>
-                        
-                        {/* User menu items */}
-                        <button onClick={() => { setIsMobileMenuOpen(false); navigate('/account'); }} className="flex items-center gap-3 w-full text-left text-sm text-gray-900 hover:text-gray-700 py-2 bg-transparent border-none cursor-pointer">
-                          <User className="w-4 h-4" />
-                          Account
-                        </button>
-                        <button onClick={() => { setIsMobileMenuOpen(false); navigate('/orders'); }} className="flex items-center gap-3 w-full text-left text-sm text-gray-900 hover:text-gray-700 py-2 bg-transparent border-none cursor-pointer">
-                          <List className="w-4 h-4" />
-                          Orders
-                        </button>
-                        <button onClick={() => { setIsMobileMenuOpen(false); navigate('/wishlist'); }} className="flex items-center gap-3 w-full text-left text-sm text-gray-900 hover:text-gray-700 py-2 bg-transparent border-none cursor-pointer">
-                          <Heart className="w-4 h-4" />
-                          Wishlist
-                        </button>
-                        <button onClick={() => { setIsMobileMenuOpen(false); navigate('/settings'); }} className="flex items-center gap-3 w-full text-left text-sm text-gray-900 hover:text-gray-700 py-2 bg-transparent border-none cursor-pointer">
-                          <Settings className="w-4 h-4" />
-                          Settings
-                        </button>
-                        {/* Dashboard - only for admin users */}
-                        {user && user.role === 'admin' && (
-                          <button onClick={() => { setIsMobileMenuOpen(false); navigate('/dashboard'); }} className="flex items-center gap-3 w-full text-left text-sm text-gray-900 hover:text-gray-700 py-2 bg-transparent border-none cursor-pointer">
-                            <BarChart3 className="w-4 h-4" />
-                            Dashboard
-                          </button>
-                        )}
-                        <button 
-                          onClick={() => { 
-                            localStorage.removeItem('token');
-                            localStorage.removeItem('user');
-                            setUser(null);
-                            window.dispatchEvent(new Event('logout'));
-                            setIsMobileMenuOpen(false);
-                            navigate('/login');
-                          }} 
-                          className="flex items-center gap-3 w-full text-left text-sm text-red-600 hover:text-red-700 py-2 bg-transparent border-none cursor-pointer"
-                        >
-                          <LogOut className="w-4 h-4" />
-                          Logout
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
       </div>
       </header>
+
+
     </>
   );
 };

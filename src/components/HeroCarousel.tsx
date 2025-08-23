@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HeroCarouselSkeleton } from "@/components/ui/skeletons";
-import { ChevronLeft, ChevronRight, Play, ArrowRight, Pause } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play, ArrowRight, Pause, Maximize2 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -39,6 +39,7 @@ export function HeroCarousel() {
   
   // Video play state for media section
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const videoPlayerRef = useRef<any>(null);
   const navigate = useNavigate();
 
@@ -100,7 +101,7 @@ console.log('HeroCarousel rendered with slides:', banners);
 
   return (
     <div 
-      className="relative w-full h-[600px] overflow-hidden group"
+      className="relative w-full h-[400px] sm:h-[500px] md:h-[550px] lg:h-[600px] overflow-hidden group"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onTouchStart={(e) => {
@@ -131,7 +132,7 @@ console.log('HeroCarousel rendered with slides:', banners);
           <img
             src={currentSlide.src && currentSlide.src.trim() !== '' ? currentSlide.src : "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=450&fit=crop"}
             alt={currentSlide.headline}
-            className="object-cover w-full h-full h-[600px]"
+            className="object-cover w-full h-full"
             style={{ objectPosition: 'center' }}
             onError={(e) => {
               const target = e.target as HTMLImageElement;
@@ -147,7 +148,7 @@ console.log('HeroCarousel rendered with slides:', banners);
               loop
               muted
               playsInline
-              className="object-cover w-full h-full h-[600px]"
+              className="object-cover w-full h-full"
               controls={false}
               onPause={() => setIsVideoPlaying(false)}
               onPlay={() => setIsVideoPlaying(true)}
@@ -168,43 +169,43 @@ console.log('HeroCarousel rendered with slides:', banners);
 
       {/* Main Content */}
       <div className="relative z-10 w-full h-full flex items-center">
-        <div className="container mx-auto px-6 lg:px-12">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-12">
+          <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
             {/* Text Content */}
-            <div className="space-y-6 text-white">
+            <div className="space-y-4 sm:space-y-6 text-white">
               {currentSlide.subheadline && (
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-                  <div className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-                  <span className="text-sm font-medium text-accent-foreground">{currentSlide.subheadline}</span>
+                <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
+                  <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 bg-accent rounded-full animate-pulse" />
+                  <span className="text-xs sm:text-sm font-medium text-accent-foreground">{currentSlide.subheadline}</span>
                 </div>
               )}
               
-              <h1 className="text-5xl lg:text-7xl font-bold leading-tight bg-gradient-to-r from-white via-accent-foreground to-white bg-clip-text text-transparent animate-fade-in">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-7xl font-bold leading-tight bg-gradient-to-r from-white via-accent-foreground to-white bg-clip-text text-transparent animate-fade-in">
                 {currentSlide.headline}
               </h1>
               
               {currentSlide.description && (
-                <p className="text-xl text-gray-300 max-w-lg leading-relaxed animate-fade-in-delay">
+                <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-300 max-w-lg leading-relaxed animate-fade-in-delay">
                   {currentSlide.description}
                 </p>
               )}
               
               {/* CTA Button */}
-              <div className="flex gap-4 animate-fade-in-delay-2 relative z-[600]">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 animate-fade-in-delay-2 relative z-[600]">
                 <Button 
                   size="lg" 
                   type="button"
-                  className="bg-primary max-sm:px-6 relative z-10 max-sm:py-4 hover:bg-primary/90 text-primary-foreground  font-semibold text-sm md:text-lg shadow-2xl shadow-primary/25 transition-all duration-300 hover:scale-105 hover:shadow-primary/40 pointer-events-auto"
+                  className="bg-primary px-4 sm:px-6 py-2 sm:py-3 relative z-10 hover:bg-primary/90 text-primary-foreground font-semibold text-sm md:text-lg shadow-2xl shadow-primary/25 transition-all duration-300 hover:scale-105 hover:shadow-primary/40 pointer-events-auto"
                   onClick={handlePrimaryCTA}
                 >
                   {t('banner.shopNow')}
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                  <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
                 <Button 
                   variant="outline" 
                   size="lg"
                   type="button"
-                  className="border-white/30 text-primary hover:bg-white/10  font-semibold text-sm md:text-lg backdrop-blur-sm transition-all duration-300 hover:scale-105 pointer-events-auto"
+                  className="border-white/30 text-primary hover:bg-white/10 font-semibold text-sm md:text-lg backdrop-blur-sm transition-all duration-300 hover:scale-105 pointer-events-auto px-4 sm:px-6 py-2 sm:py-3"
                   onClick={handleSecondaryCTA}
                 >
                   {t('banner.learnMore')}
@@ -212,8 +213,8 @@ console.log('HeroCarousel rendered with slides:', banners);
               </div>
             </div>
 
-            {/* Media Content */}
-            <div className="flex justify-center lg:justify-end">
+            {/* Media Content - Hidden on small screens */}
+            <div className="hidden lg:flex justify-center lg:justify-end">
               <div className="relative group/media">
                 {/* Glow Effect */}
                 <div className="absolute -inset-4 bg-gradient-to-r from-primary to-accent blur-2xl opacity-20 group-hover/media:opacity-30 transition-opacity duration-500 pointer-events-none" />
@@ -258,62 +259,82 @@ console.log('HeroCarousel rendered with slides:', banners);
         </div>
       </div>
 
+  {/* Video Controls */}
   {currentSlide.type === "video" && (
-    <button
-      className="absolute bottom-4 left-4 z-10 bg-black/60 hover:bg-black/80 text-white rounded-full p-3 shadow-lg transition pointer-events-auto"
-      onClick={() => {
-        const player = videoPlayerRef.current;
-        if (player) {
-          if (isVideoPlaying) {
-            player.pause();
-          } else {
-            player.play();
+    <>
+      {/* Play/Pause Button */}
+      <button
+        className="absolute bottom-4 left-4 z-10 bg-black/60 hover:bg-black/80 text-white rounded-full p-2 sm:p-3 shadow-lg transition pointer-events-auto"
+        onClick={() => {
+          const player = videoPlayerRef.current;
+          if (player) {
+            if (isVideoPlaying) {
+              player.pause();
+            } else {
+              player.play();
+            }
           }
-        }
-      }}
-      aria-label={isVideoPlaying ? t('banner.pauseVideo') : t('banner.playVideo')}
-      type="button"
-    >
-      {isVideoPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
-    </button>
+        }}
+        aria-label={isVideoPlaying ? t('banner.pauseVideo') : t('banner.playVideo')}
+        type="button"
+      >
+        {isVideoPlaying ? <Pause className="w-4 h-4 sm:w-6 sm:h-6" /> : <Play className="w-4 h-4 sm:w-6 sm:h-6" />}
+      </button>
+      
+      {/* Fullscreen Button */}
+      <button
+        className="absolute bottom-4 left-16 sm:left-20 z-10 bg-black/60 hover:bg-black/80 text-white rounded-full p-2 sm:p-3 shadow-lg transition pointer-events-auto"
+        onClick={() => {
+          const player = videoPlayerRef.current;
+          if (player && player.requestFullscreen) {
+            player.requestFullscreen();
+            setIsFullscreen(true);
+          }
+        }}
+        aria-label={t('banner.fullscreenVideo')}
+        type="button"
+      >
+        <Maximize2 className="w-4 h-4 sm:w-6 sm:h-6" />
+      </button>
+    </>
   )}
       {/* Navigation Controls */}
       {slides.length > 1 && (
         <>
           {/* Chevron Buttons at bottom right, horizontal alignment */}
-          <div className="absolute bottom-8 right-8 flex flex-col md:flex-row gap-4 z-20 sm:flex">
+          <div className="absolute bottom-4 sm:bottom-8 right-4 sm:right-8 flex flex-col sm:flex-row gap-2 sm:gap-4 z-20">
             <Button
               variant="outline"
               size="icon"
               type="button"
-              className="bg-white/10 hover:bg-white/20 border-white/20 text-white backdrop-blur-sm rounded-full w-9 h-9 md:w-12 md:h-12 opacity-80 hover:opacity-100 transition-all duration-300 hover:scale-110"
+              className="bg-white/10 hover:bg-white/20 border-white/20 text-white backdrop-blur-sm rounded-full w-8 h-8 sm:w-9 sm:h-9 md:w-12 md:h-12 opacity-80 hover:opacity-100 transition-all duration-300 hover:scale-110"
               onClick={() => setCurrent((prev) => (prev - 1 + slides.length) % slides.length)}
               aria-label={t('banner.previousSlide')}
             >
-              <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
             </Button>
             <Button
               variant="outline"
               size="icon"
               type="button"
-              className="bg-white/10 hover:bg-white/20 border-white/20 text-white backdrop-blur-sm rounded-full w-9 h-9 md:w-12 md:h-12 opacity-80 hover:opacity-100 transition-all duration-300 hover:scale-110"
+              className="bg-white/10 hover:bg-white/20 border-white/20 text-white backdrop-blur-sm rounded-full w-8 h-8 sm:w-9 sm:h-9 md:w-12 md:h-12 opacity-80 hover:opacity-100 transition-all duration-300 hover:scale-110"
               onClick={() => setCurrent((prev) => (prev + 1) % slides.length)}
               aria-label={t('banner.nextSlide')}
             >
-              <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
             </Button>
           </div>
 
           {/* Dots Indicator */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+          <div className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-20">
             {slides.map((_, idx) => (
               <button
                 key={idx}
                 type="button"
                 className={`transition-all duration-300 rounded-full ${
                   idx === current 
-                    ? "w-8 h-3 bg-gradient-to-r from-primary to-accent shadow-lg shadow-primary/50" 
-                    : "w-3 h-3 bg-white/30 hover:bg-white/50 hover:scale-110"
+                    ? "w-6 sm:w-8 h-2 sm:h-3 bg-gradient-to-r from-primary to-accent shadow-lg shadow-primary/50" 
+                    : "w-2 sm:w-3 h-2 sm:h-3 bg-white/30 hover:bg-white/50 hover:scale-110"
                 }`}
                 onClick={() => setCurrent(idx)}
                 aria-label={t('banner.goToSlide', { number: idx + 1 })}

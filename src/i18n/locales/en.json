@@ -46,6 +46,7 @@
     "categories": "Categories",
     "cart": "Cart",
     "wishlist": "Wishlist",
+    "notifications": "Notifications",
     "account": "Account",
     "login": "Login",
     "register": "Register",
@@ -60,7 +61,10 @@
     "support": "Support",
     "faq": "FAQ",
     "terms": "Terms",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "brands": "Brands",
+    "sale": "Sale",
+    "newArrivals": "New Arrivals"
   },
 
   "products": {
@@ -246,6 +250,7 @@
     "learnMore": "Learn More",
     "pauseVideo": "Pause video",
     "playVideo": "Play video",
+    "fullscreenVideo": "Fullscreen video",
     "previousSlide": "Previous slide",
     "nextSlide": "Next slide",
     "goToSlide": "Go to slide {{number}}"

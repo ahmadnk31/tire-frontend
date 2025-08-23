@@ -160,7 +160,6 @@ export const Store = () => {
         <ProductGrid sectionTitle="Featured Products" showAllButton={true} featuredOnly={true} />
       </div>
       {/* <BrandsMarquee /> --- IGNORE */}
-      
     </div>
   );
 };

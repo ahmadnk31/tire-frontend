@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productsApi } from '@/lib/api';
 import { wishlistApi } from '@/lib/wishlistApi';
 import { useToast } from '@/hooks/use-toast';
+import { addSaleNotification } from '@/lib/notifications';
 
 interface Product {
   id: number;
@@ -51,6 +52,13 @@ const Sale: React.FC = () => {
   });
 
   const products: Product[] = saleData?.products?.map((product: any) => {
+    const discount = product.comparePrice ? Math.round(((Number(product.comparePrice) - Number(product.price)) / Number(product.comparePrice)) * 100) : 0;
+    
+    // Add notification for products with significant discounts
+    if (discount >= 20) {
+      addSaleNotification(product.name, discount, product.id);
+    }
+    
     return {
       id: product.id,
       name: product.name,
@@ -61,7 +69,7 @@ const Sale: React.FC = () => {
       rating: Number(product.rating) || 0,
       reviewCount: 0, // Not available in current schema
       category: product.seasonType || product.tireType || 'tires',
-      discount: product.comparePrice ? Math.round(((Number(product.comparePrice) - Number(product.price)) / Number(product.comparePrice)) * 100) : 0,
+      discount,
       isOnSale: true,
       saleEndDate: product.saleEndDate || null,
       features: typeof product.features === 'string' ? product.features.split(',').map(f => f.trim()) : (Array.isArray(product.features) ? product.features : []),
@@ -256,7 +264,7 @@ const Sale: React.FC = () => {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gray-50 py-8 pb-20 md:pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
@@ -286,7 +294,7 @@ const Sale: React.FC = () => {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gray-50 py-8 pb-20 md:pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
@@ -307,7 +315,7 @@ const Sale: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 py-8 pb-20 md:pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">

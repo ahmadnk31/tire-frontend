@@ -135,7 +135,7 @@ const Wishlist = () => {
   }
 
   return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center bg-background py-12">
+    <div className="min-h-[60vh] flex flex-col items-center justify-center bg-background py-12 pb-20 md:pb-12">
       <Card className="w-full max-w-5xl shadow-xl border border-primary/20">
         <CardHeader>
           <CardTitle className="text-primary">{t('wishlist.title')}</CardTitle>

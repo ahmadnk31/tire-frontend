@@ -43,7 +43,7 @@ const Products = () => {
           </div>
           
           {/* Products Grid */}
-          <main className="p-4 sm:p-6 lg:p-8">
+          <main className="p-4 sm:p-6 lg:p-8 pb-20 md:pb-8">
             <ProductGrid 
               sectionTitle={featuredOnly ? "Best Sellers" : "All Products"} 
               featuredOnly={featuredOnly}

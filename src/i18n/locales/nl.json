@@ -46,6 +46,7 @@
     "categories": "Categorieën",
     "cart": "Winkelwagen",
     "wishlist": "Verlanglijst",
+    "notifications": "Meldingen",
     "account": "Account",
     "login": "Inloggen",
     "register": "Registreren",
@@ -60,7 +61,10 @@
     "support": "Ondersteuning",
     "faq": "FAQ",
     "terms": "Voorwaarden",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "brands": "Merken",
+    "sale": "Aanbieding",
+    "newArrivals": "Nieuwe Aankomsten"
   },
   
   "products": {
@@ -245,6 +249,7 @@
     "learnMore": "Meer Leren",
     "pauseVideo": "Video pauzeren",
     "playVideo": "Video afspelen",
+    "fullscreenVideo": "Video volledig scherm",
     "previousSlide": "Vorige dia",
     "nextSlide": "Volgende dia",
     "goToSlide": "Ga naar dia {{number}}"

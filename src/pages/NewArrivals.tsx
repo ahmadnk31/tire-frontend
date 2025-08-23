@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productsApi } from '@/lib/api';
 import { wishlistApi } from '@/lib/wishlistApi';
 import { useToast } from '@/hooks/use-toast';
+import { addNewArrivalNotification } from '@/lib/notifications';
 
 interface Product {
   id: number;
@@ -50,24 +51,29 @@ const NewArrivals: React.FC = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const products: Product[] = newArrivalsData?.products?.map((product: any) => ({
-    id: product.id,
-    name: product.name,
-    brand: product.brand,
-    price: Number(product.price),
-    originalPrice: product.comparePrice ? Number(product.comparePrice) : undefined,
-    image: product.images?.[0]?.imageUrl || product.productImages?.[0]?.imageUrl || '/placeholder.svg',
-    rating: Number(product.rating) || 0,
-    reviewCount: 0, // Not available in current schema
-    category: product.seasonType || 'tires',
-    arrivalDate: product.createdAt,
-    isNew: true,
-    isOnSale: product.isOnSale || (product.comparePrice ? Number(product.comparePrice) > Number(product.price) : false),
-    discount: product.comparePrice ? Math.round(((Number(product.comparePrice) - Number(product.price)) / Number(product.comparePrice)) * 100) : undefined,
-    features: typeof product.features === 'string' ? product.features.split(',').map(f => f.trim()) : (Array.isArray(product.features) ? product.features : []),
-    size: product.size,
-    saleEndDate: product.saleEndDate || null
-  })) || [];
+  const products: Product[] = newArrivalsData?.products?.map((product: any) => {
+    // Add notification for new arrivals
+    addNewArrivalNotification(product.name, product.id);
+    
+    return {
+      id: product.id,
+      name: product.name,
+      brand: product.brand,
+      price: Number(product.price),
+      originalPrice: product.comparePrice ? Number(product.comparePrice) : undefined,
+      image: product.images?.[0]?.imageUrl || product.productImages?.[0]?.imageUrl || '/placeholder.svg',
+      rating: Number(product.rating) || 0,
+      reviewCount: 0, // Not available in current schema
+      category: product.seasonType || 'tires',
+      arrivalDate: product.createdAt,
+      isNew: true,
+      isOnSale: product.isOnSale || (product.comparePrice ? Number(product.comparePrice) > Number(product.price) : false),
+      discount: product.comparePrice ? Math.round(((Number(product.comparePrice) - Number(product.price)) / Number(product.comparePrice)) * 100) : undefined,
+      features: typeof product.features === 'string' ? product.features.split(',').map(f => f.trim()) : (Array.isArray(product.features) ? product.features : []),
+      size: product.size,
+      saleEndDate: product.saleEndDate || null
+    };
+  }) || [];
 
   // Wishlist query
   const {
@@ -227,7 +233,7 @@ const NewArrivals: React.FC = () => {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gray-50 py-8 pb-20 md:pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
@@ -257,7 +263,7 @@ const NewArrivals: React.FC = () => {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gray-50 py-8 pb-20 md:pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
@@ -278,7 +284,7 @@ const NewArrivals: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 py-8 pb-20 md:pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">

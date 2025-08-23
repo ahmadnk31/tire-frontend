@@ -732,10 +732,62 @@ export default function ProductPage() {
                         <span className="text-gray-600 font-medium">SKU</span>
                         <span className="text-gray-900 font-semibold">{product.sku}</span>
                       </div>
+                      {product.construction && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">Construction</span>
+                          <span className="text-gray-900 font-semibold capitalize">{product.construction}</span>
+                        </div>
+                      )}
+                      {product.treadDepth && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">Tread Depth</span>
+                          <span className="text-gray-900 font-semibold">{product.treadDepth}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                   
-
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-base text-gray-900 border-b border-gray-200 pb-2">Sale Information</h4>
+                    <div className="space-y-3">
+                      {product.isOnSale && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">Sale Status</span>
+                          <span className="text-green-600 font-semibold">On Sale</span>
+                        </div>
+                      )}
+                      {product.saleStartDate && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">Sale Start Date</span>
+                          <span className="text-gray-900 font-semibold">{new Date(product.saleStartDate).toLocaleDateString()}</span>
+                        </div>
+                      )}
+                      {product.saleEndDate && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">Sale End Date</span>
+                          <span className="text-gray-900 font-semibold">{new Date(product.saleEndDate).toLocaleDateString()}</span>
+                        </div>
+                      )}
+                      {product.comparePrice && product.comparePrice > product.price && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">Original Price</span>
+                          <span className="text-gray-500 font-semibold line-through">{formatEuro(product.comparePrice)}</span>
+                        </div>
+                      )}
+                      {product.comparePrice && product.comparePrice > product.price && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">Discount</span>
+                          <span className="text-red-600 font-semibold">
+                            {Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)}% OFF
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-gray-600 font-medium">Current Price</span>
+                        <span className="text-gray-900 font-semibold">{formatEuro(product.price)}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Performance Specifications */}
@@ -753,6 +805,24 @@ export default function ProductPage() {
                         <div className="flex justify-between items-center py-2 border-b border-gray-100">
                           <span className="text-gray-600 font-medium">{t('products.loadIndex')}</span>
                           <span className="text-gray-900 font-semibold">{product.loadIndex}</span>
+                        </div>
+                      )}
+                      {product.width && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">{t('products.width')}</span>
+                          <span className="text-gray-900 font-semibold">{product.width}</span>
+                        </div>
+                      )}
+                      {product.aspectRatio && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">{t('products.aspectRatio')}</span>
+                          <span className="text-gray-900 font-semibold">{product.aspectRatio}</span>
+                        </div>
+                      )}
+                      {product.diameter && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">{t('products.diameter')}</span>
+                          <span className="text-gray-900 font-semibold">{product.diameter}</span>
                         </div>
                       )}
                     </div>
@@ -773,6 +843,63 @@ export default function ProductPage() {
                           <span className="text-gray-900 font-semibold capitalize">{product.tireType}</span>
                         </div>
                       )}
+                      {product.weight && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">{t('products.weight')}</span>
+                          <span className="text-gray-900 font-semibold">{product.weight}</span>
+                        </div>
+                      )}
+                      {product.warranty && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">{t('products.warranty')}</span>
+                          <span className="text-gray-900 font-semibold">{product.warranty}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stock and Availability */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-base text-gray-900 border-b border-gray-200 pb-2">Stock & Availability</h4>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-gray-600 font-medium">Stock Status</span>
+                        <span className={`font-semibold ${product.stock && product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {product.stock && product.stock > 0 ? `${product.stock} ${t('products.inStock')}` : t('products.outOfStock')}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-gray-600 font-medium">{t('products.availability')}</span>
+                        <span className="text-gray-900 font-semibold">
+                          {product.stock && product.stock > 0 ? 'Available' : 'Out of Stock'}
+                        </span>
+                      </div>
+                      {product.status && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">Status</span>
+                          <span className="text-gray-900 font-semibold capitalize">{product.status}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-base text-gray-900 border-b border-gray-200 pb-2">Shipping & Returns</h4>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-gray-600 font-medium">{t('products.shipping')}</span>
+                        <span className="text-gray-900 font-semibold">Free Shipping</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-gray-600 font-medium">{t('products.returns')}</span>
+                        <span className="text-gray-900 font-semibold">30 Days Return</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-gray-600 font-medium">Installation</span>
+                        <span className="text-gray-900 font-semibold">Professional Service</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -819,9 +946,9 @@ export default function ProductPage() {
       </div>
        
       {relatedProducts.length > 0 && (
-        <div className="mt-12 sm:mt-16">
+        <div className="mt-12 sm:mt-16 max-w-7xl mx-auto ">
           <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">{t('products.relatedProducts')}</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {relatedProducts.map((related) => {
                 // Cart logic for related products
                 const cart = JSON.parse(localStorage.getItem('cart') || '[]');

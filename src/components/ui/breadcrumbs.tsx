@@ -43,7 +43,7 @@ export function Breadcrumbs() {
             <li key={crumb.path} className="flex items-center">
               {idx > 0 && <span className="mx-1">/</span>}
               {idx < breadcrumbs.length - 1 ? (
-                <Link to={crumb.path} className="hover:underline text-blue-600">
+                <Link to={crumb.path} className="hover:underline text-gray-600 hover:text-gray-900">
                   {crumb.label}
                 </Link>
               ) : (

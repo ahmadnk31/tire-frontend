@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import ProductPage from "./pages/Product";
 import Products from "./pages/Products";
 import { Header } from "@/components/Header";
+import { BottomNav } from "@/components/BottomNav";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Dashboard } from "@/components/dashboard/Dashboard";
 import CartPage from "./pages/Cart";
@@ -76,6 +77,7 @@ const AppContent = () => {
     <>
       {!isAuthRoute && <Header />}
       {!isAuthRoute && <Breadcrumbs />}
+      {!isAuthRoute && <BottomNav />}
       <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/products/:id" element={<ProductPage />} />
