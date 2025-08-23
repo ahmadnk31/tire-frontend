@@ -476,15 +476,17 @@
     }
   },
   "cart": {
-    "title": "Winkelwagen",
-    "empty": "Je winkelwagen is leeg",
+    "title": "Je Winkelwagen",
+    "empty": "Je winkelwagen is leeg.",
+    "size": "Maat",
+    "remove": "Verwijderen",
+    "total": "Totaal",
+    "checkout": "Afrekenen",
     "items": "artikelen",
     "item": "artikel",
     "subtotal": "Subtotaal",
     "tax": "BTW",
     "shipping": "Verzending",
-    "total": "Totaal",
-    "checkout": "Afrekenen",
     "continueShopping": "Verder winkelen",
     "updateCart": "Winkelwagen bijwerken",
     "clearCart": "Winkelwagen legen",
@@ -545,7 +547,53 @@
     "orderComplete": "Bestelling voltooid",
     "thankYou": "Bedankt voor je bestelling!",
     "orderDetails": "Besteldetails",
-    "orderHistory": "Bestelgeschiedenis"
+    "orderHistory": "Bestelgeschiedenis",
+    "steps": {
+      "address": {
+        "title": "Adres",
+        "description": "Verzendinformatie"
+      },
+      "payment": {
+        "title": "Betaling",
+        "description": "Betaalmethode"
+      },
+      "review": {
+        "title": "Beoordeling",
+        "description": "Beoordeling & bestelling plaatsen"
+      }
+    },
+    "loading": {
+      "cart": "Winkelwagen laden...",
+      "payment": "Betaling initialiseren..."
+    },
+    "address": {
+      "title": "Verzendadres",
+      "short": "Adres",
+      "continue": "Doorgaan naar Betaling"
+    },
+    "payment": {
+      "title": "Betaalmethode",
+      "short": "Betaling",
+      "back": "Terug naar Adres",
+      "review": "Bestelling Beoordelen"
+    },
+    "review": {
+      "title": "Beoordeling & Bestelling Plaatsen",
+      "short": "Beoordeling",
+      "orderItems": "Bestelde Artikelen",
+      "back": "Terug naar Betaling",
+      "processing": "Verwerken...",
+      "placeOrder": "Bestelling Plaatsen"
+    },
+    "orderSummary": {
+      "title": "Besteloverzicht",
+      "quantity": "Aantal",
+      "subtotal": "Subtotaal",
+      "tax": "BTW",
+      "shipping": "Verzending",
+      "free": "Gratis",
+      "total": "Totaal"
+    }
   },
   "account": {
     "title": "Mijn account",

@@ -1438,15 +1438,17 @@
     }
   },
   "cart": {
-    "title": "Shopping Cart",
-    "empty": "Your cart is empty",
+    "title": "Your Cart",
+    "empty": "Your cart is empty.",
+    "size": "Size",
+    "remove": "Remove",
+    "total": "Total",
+    "checkout": "Checkout",
     "items": "items",
     "item": "item",
     "subtotal": "Subtotal",
     "tax": "Tax",
     "shipping": "Shipping",
-    "total": "Total",
-    "checkout": "Checkout",
     "continueShopping": "Continue Shopping",
     "updateCart": "Update Cart",
     "clearCart": "Clear Cart",
@@ -1507,7 +1509,53 @@
     "orderComplete": "Order Complete",
     "thankYou": "Thank you for your order!",
     "orderDetails": "Order Details",
-    "orderHistory": "Order History"
+    "orderHistory": "Order History",
+    "steps": {
+      "address": {
+        "title": "Address",
+        "description": "Shipping information"
+      },
+      "payment": {
+        "title": "Payment",
+        "description": "Payment method"
+      },
+      "review": {
+        "title": "Review",
+        "description": "Review & place order"
+      }
+    },
+    "loading": {
+      "cart": "Loading cart...",
+      "payment": "Initializing payment..."
+    },
+    "address": {
+      "title": "Shipping Address",
+      "short": "Address",
+      "continue": "Continue to Payment"
+    },
+    "payment": {
+      "title": "Payment Method",
+      "short": "Payment",
+      "back": "Back to Address",
+      "review": "Review Order"
+    },
+    "review": {
+      "title": "Review & Place Order",
+      "short": "Review",
+      "orderItems": "Order Items",
+      "back": "Back to Payment",
+      "processing": "Processing...",
+      "placeOrder": "Place Order"
+    },
+    "orderSummary": {
+      "title": "Order Summary",
+      "quantity": "Qty",
+      "subtotal": "Subtotal",
+      "tax": "Tax",
+      "shipping": "Shipping",
+      "free": "Free",
+      "total": "Total"
+    }
   },
   "account": {
     "title": "My Account",

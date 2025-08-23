@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, AddressElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { addressApi } from "@/lib/addressApi";
@@ -77,11 +78,12 @@ function OrderSummary({ cart, subtotal, tax, total }: {
   tax: number, 
   total: number 
 }) {
+  const { t } = useTranslation();
   return (
     <div className="bg-gray-50 p-6 rounded-lg">
       <h3 className="text-lg font-semibold mb-4 flex items-center">
         <ShoppingBag className="w-5 h-5 mr-2" />
-        Order Summary
+        {t('checkout.orderSummary.title')}
       </h3>
       
       <div className="space-y-4 mb-4">
@@ -97,7 +99,7 @@ function OrderSummary({ cart, subtotal, tax, total }: {
             <div className="flex-1">
               <div className="text-sm font-medium text-gray-900">{item.name}</div>
               <div className="text-xs text-gray-500">{item.brand} • {item.size}</div>
-              <div className="text-xs text-gray-500">Qty: {item.quantity}</div>
+              <div className="text-xs text-gray-500">{t('checkout.orderSummary.quantity')}: {item.quantity}</div>
             </div>
             <div className="text-sm font-medium text-gray-900">
               €{(item.price * item.quantity).toFixed(2)}
@@ -108,19 +110,19 @@ function OrderSummary({ cart, subtotal, tax, total }: {
       
       <div className="border-t pt-4 space-y-2">
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Subtotal</span>
+          <span className="text-gray-600">{t('checkout.orderSummary.subtotal')}</span>
           <span className="text-gray-900">€{subtotal.toFixed(2)}</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Tax</span>
+          <span className="text-gray-600">{t('checkout.orderSummary.tax')}</span>
           <span className="text-gray-900">€{tax.toFixed(2)}</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Shipping</span>
-          <span className="text-gray-900">Free</span>
+          <span className="text-gray-600">{t('checkout.orderSummary.shipping')}</span>
+          <span className="text-gray-900">{t('checkout.orderSummary.free')}</span>
         </div>
         <div className="border-t pt-2 flex justify-between font-semibold">
-          <span className="text-gray-900">Total</span>
+          <span className="text-gray-900">{t('checkout.orderSummary.total')}</span>
           <span className="text-gray-900">€{total.toFixed(2)}</span>
         </div>
       </div>
@@ -135,6 +137,7 @@ function CheckoutForm({ cart, currentStep, setCurrentStep, steps, setSteps }: {
   steps: CheckoutStep[],
   setSteps: (steps: CheckoutStep[]) => void
 }) {
+  const { t } = useTranslation();
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
@@ -226,8 +229,8 @@ function CheckoutForm({ cart, currentStep, setCurrentStep, steps, setSteps }: {
             <div className="space-y-6">
               <h2 className="text-xl font-semibold flex items-center">
                 <MapPin className="w-6 h-6 mr-3 text-primary" />
-                <span className="hidden sm:inline">Shipping Address</span>
-                <span className="sm:hidden">Address</span>
+                <span className="hidden sm:inline">{t('checkout.address.title')}</span>
+                <span className="sm:hidden">{t('checkout.address.short')}</span>
               </h2>
               <AddressElement 
                 options={{ 
@@ -246,7 +249,7 @@ function CheckoutForm({ cart, currentStep, setCurrentStep, steps, setSteps }: {
                   disabled={!addressComplete}
                   className="w-full sm:w-auto px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
-                  Continue to Payment
+                  {t('checkout.address.continue')}
                 </button>
               </div>
             </div>
@@ -257,8 +260,8 @@ function CheckoutForm({ cart, currentStep, setCurrentStep, steps, setSteps }: {
             <div className="space-y-6">
               <h2 className="text-xl font-semibold flex items-center">
                 <CreditCard className="w-6 h-6 mr-3 text-primary" />
-                <span className="hidden sm:inline">Payment Method</span>
-                <span className="sm:hidden">Payment</span>
+                <span className="hidden sm:inline">{t('checkout.payment.title')}</span>
+                <span className="sm:hidden">{t('checkout.payment.short')}</span>
               </h2>
               <PaymentElement 
                 options={{
@@ -273,14 +276,14 @@ function CheckoutForm({ cart, currentStep, setCurrentStep, steps, setSteps }: {
                   onClick={handlePrevStep}
                   className="w-full sm:w-auto px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
                 >
-                  Back to Address
+                  {t('checkout.payment.back')}
                 </button>
                 <button
                   type="button"
                   onClick={handleNextStep}
                   className="w-full sm:w-auto px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
                 >
-                  Review Order
+                  {t('checkout.payment.review')}
                 </button>
               </div>
             </div>
@@ -291,12 +294,12 @@ function CheckoutForm({ cart, currentStep, setCurrentStep, steps, setSteps }: {
             <div className="space-y-6">
               <h2 className="text-xl font-semibold flex items-center">
                 <Eye className="w-6 h-6 mr-3 text-primary" />
-                <span className="hidden sm:inline">Review & Place Order</span>
-                <span className="sm:hidden">Review</span>
+                <span className="hidden sm:inline">{t('checkout.review.title')}</span>
+                <span className="sm:hidden">{t('checkout.review.short')}</span>
               </h2>
               
               <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-medium mb-2">Order Items</h3>
+                <h3 className="font-medium mb-2">{t('checkout.review.orderItems')}</h3>
                 <div className="space-y-2">
                   {cart.map((item) => (
                     <div key={item.id} className="flex justify-between text-sm">
@@ -330,14 +333,14 @@ function CheckoutForm({ cart, currentStep, setCurrentStep, steps, setSteps }: {
                   onClick={handlePrevStep}
                   className="w-full sm:w-auto px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
                 >
-                  Back to Payment
+                  {t('checkout.review.back')}
                 </button>
                 <button
                   type="submit"
                   disabled={!stripe || loading}
                   className="w-full sm:w-auto px-8 py-2 bg-accent text-accent-foreground rounded-md hover:bg-accent/90 disabled:bg-gray-300 disabled:cursor-not-allowed font-semibold"
                 >
-                  {loading ? "Processing..." : `Place Order - €${total.toFixed(2)}`}
+                  {loading ? t('checkout.review.processing') : `${t('checkout.review.placeOrder')} - €${total.toFixed(2)}`}
                 </button>
               </div>
             </div>
@@ -353,13 +356,14 @@ function CheckoutForm({ cart, currentStep, setCurrentStep, steps, setSteps }: {
 }
 
 export default function CheckoutPage() {
+  const { t } = useTranslation();
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [currentStep, setCurrentStep] = useState(1);
   const [steps, setSteps] = useState<CheckoutStep[]>([
-    { id: 1, title: 'Address', description: 'Shipping information', completed: false },
-    { id: 2, title: 'Payment', description: 'Payment method', completed: false },
-    { id: 3, title: 'Review', description: 'Review & place order', completed: false }
+    { id: 1, title: t('checkout.steps.address.title'), description: t('checkout.steps.address.description'), completed: false },
+    { id: 2, title: t('checkout.steps.payment.title'), description: t('checkout.steps.payment.description'), completed: false },
+    { id: 3, title: t('checkout.steps.review.title'), description: t('checkout.steps.review.description'), completed: false }
   ]);
   
   useEffect(() => {
@@ -408,7 +412,7 @@ export default function CheckoutPage() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-gray-600">
-            {cart.length === 0 ? 'Loading cart...' : 'Initializing payment...'}
+            {cart.length === 0 ? t('checkout.loading.cart') : t('checkout.loading.payment')}
           </p>
         </div>
       </div>

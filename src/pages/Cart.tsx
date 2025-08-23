@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import { CartSkeleton } from "@/components/ui/skeletons";
 
 export default function CartPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [cart, setCart] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,9 +57,9 @@ export default function CartPage() {
 
   return (
     <div className="max-w-3xl mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
+      <h1 className="text-3xl font-bold mb-6">{t('cart.title')}</h1>
       {cart.length === 0 ? (
-        <div className="text-gray-500">Your cart is empty.</div>
+        <div className="text-gray-500">{t('cart.empty')}</div>
       ) : (
         <div className="space-y-6">
           {cart.map((item, idx) => (
@@ -66,26 +68,26 @@ export default function CartPage() {
               <div className="flex-1">
                 <div className="font-semibold text-lg">{item.name}</div>
                 <div className="text-gray-500">{item.brand}</div>
-                <div className="text-sm">Size: {item.size}</div>
+                <div className="text-sm">{t('cart.size')}: {item.size}</div>
                 <div className="flex items-center gap-2 mt-2">
                   <button onClick={() => updateQuantity(idx, -1)} className="px-2 py-1 bg-gray-200 rounded">-</button>
                   <span className="px-2">{item.quantity}</span>
                   <button onClick={() => updateQuantity(idx, 1)} className="px-2 py-1 bg-gray-200 rounded">+</button>
                 </div>
-                <button onClick={() => removeItem(idx)} className="text-xs text-red-500 mt-2">Remove</button>
+                <button onClick={() => removeItem(idx)} className="text-xs text-red-500 mt-2">{t('cart.remove')}</button>
               </div>
               <div className="font-bold text-xl">€{((typeof item.price === 'string' ? parseFloat(item.price.replace('€', '')) : item.price || 0) * item.quantity).toFixed(2)}</div>
             </div>
           ))}
           <div className="flex justify-between items-center pt-6 border-t mt-6">
-            <span className="font-semibold text-lg">Total</span>
+            <span className="font-semibold text-lg">{t('cart.total')}</span>
             <span className="font-bold text-2xl">€{total.toFixed(2)}</span>
           </div>
           <button
             className="w-full py-4 bg-black text-white rounded-xl font-semibold mt-4 hover:bg-gray-900 transition"
             onClick={() => navigate('/checkout')}
           >
-            Checkout
+            {t('cart.checkout')}
           </button>
         </div>
       )}

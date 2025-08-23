@@ -673,8 +673,8 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             onClick={() => {
               const { state } = editor;
               const { selection } = state;
-              const node = selection.node;
-              if (node.type.name === 'image') {
+              const node = state.doc.nodeAt(selection.from);
+              if (node && node.type.name === 'image') {
                 const currentWidth = node.attrs.width || 'auto';
                 const newWidth = currentWidth === 'auto' ? '50%' : 'auto';
                 editor.chain().focus().updateAttributes('image', { width: newWidth }).run();
