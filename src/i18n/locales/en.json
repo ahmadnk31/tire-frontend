@@ -330,7 +330,16 @@
       "backToLogin": "Back to Login"
     },
     "loginRequired": "Login Required",
+    "loginToAddCart": "Please log in to add items to your cart",
     "loginToAddWishlist": "Please log in to add items to your wishlist",
+    "sessionExpired": "Session Expired",
+    "sessionExpiredMessage": "Your session has expired. Please log in again to continue.",
+    "loginSuccess": "Login Successful",
+    "welcomeBack": "Welcome back!",
+    "loginFailed": "Login Failed",
+    "invalidCredentials": "Invalid email or password",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
     "testimonials": {
       "title": "What our customers say",
       "googleReviews": "Google Reviews",
@@ -1697,6 +1706,9 @@
       "summer": "Summer Tires",
       "winter": "Winter Tires",
       "allSeason": "All-Season Tires",
+      "allWeather": "All-Weather Tires",
+      "passenger": "Passenger Tires",
+      "suv": "SUV Tires",
       "truck": "Truck Tires",
       "motorcycle": "Motorcycle Tires"
     },

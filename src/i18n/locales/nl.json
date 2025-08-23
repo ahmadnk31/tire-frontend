@@ -338,6 +338,7 @@
       "backToLogin": "Terug naar Inloggen"
     },
     "loginRequired": "Inloggen vereist",
+    "loginToAddCart": "Log in om artikelen aan je winkelwagen toe te voegen",
     "loginToAddWishlist": "Log in om artikelen aan je verlanglijst toe te voegen",
     "testimonials": {
       "title": "Wat onze klanten zeggen",
@@ -743,6 +744,9 @@
       "summer": "Zomerbanden",
       "winter": "Winterbanden",
       "allSeason": "All-Season Banden",
+      "allWeather": "All-Weather Banden",
+      "passenger": "Personenwagenbanden",
+      "suv": "SUV Banden",
       "truck": "Vrachtwagenbanden",
       "motorcycle": "Motorfietsbanden"
     },

@@ -36,6 +36,8 @@ interface FilterState {
   seasonTypes: string[];
   speedRatings: string[];
   loadIndexes: string[];
+  tireTypes: string[];
+  constructions: string[];
   priceRange: [number, number];
   rating: number;
   inStock: boolean;
@@ -43,9 +45,7 @@ interface FilterState {
   search: string;
 }
 
-const SPEED_RATINGS = ['S', 'T', 'H', 'V', 'W', 'Y', 'Z'];
-const SEASON_TYPES = ['summer', 'winter', 'all-season', 'all-weather'];
-const LOAD_INDEXES = ['91', '95', '99', '103', '107', '111', '115', '119'];
+// Removed hardcoded constants - now using dynamic data from API
 
 export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
@@ -68,6 +68,8 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
     seasonTypes: searchParams.getAll('seasonType'),
     speedRatings: searchParams.getAll('speedRating'),
     loadIndexes: searchParams.getAll('loadIndex'),
+    tireTypes: searchParams.getAll('tireType'),
+    constructions: searchParams.getAll('construction'),
     priceRange: [
       parseInt(searchParams.get('minPrice') || '0'),
       parseInt(searchParams.get('maxPrice') || '1000')
@@ -152,6 +154,28 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
         });
         console.log('🔍 Extracted loadIndexes:', loadIndexes);
 
+        // Extract tire types
+        const tireTypes: string[] = [];
+        products.forEach((p: any, index: number) => {
+          const tireType = p.tireType || p.specifications?.tireType;
+          console.log(`🔍 Product ${index} tireType:`, tireType);
+          if (tireType && !tireTypes.includes(tireType)) {
+            tireTypes.push(tireType);
+          }
+        });
+        console.log('🔍 Extracted tireTypes:', tireTypes);
+
+        // Extract construction types
+        const constructions: string[] = [];
+        products.forEach((p: any, index: number) => {
+          const construction = p.construction || p.specifications?.construction;
+          console.log(`🔍 Product ${index} construction:`, construction);
+          if (construction && !constructions.includes(construction)) {
+            constructions.push(construction);
+          }
+        });
+        console.log('🔍 Extracted constructions:', constructions);
+
         // Extract categories
         const categoryNames: string[] = [];
         categories.forEach((c: any, index: number) => {
@@ -176,6 +200,8 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
           seasonTypes: seasonTypes.sort(),
           speedRatings: speedRatings.sort(),
           loadIndexes: loadIndexes.sort(),
+          tireTypes: tireTypes.sort(),
+          constructions: constructions.sort(),
           maxPrice,
           minPrice
         };
@@ -192,6 +218,8 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
           seasonTypes: [],
           speedRatings: [],
           loadIndexes: [],
+          tireTypes: [],
+          constructions: [],
           maxPrice: 1000,
           minPrice: 0
         };
@@ -223,6 +251,12 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
     }
     if (updatedFilters.loadIndexes.length > 0) {
       updatedFilters.loadIndexes.forEach(index => params.append('loadIndex', index));
+    }
+    if (updatedFilters.tireTypes.length > 0) {
+      updatedFilters.tireTypes.forEach(type => params.append('tireType', type));
+    }
+    if (updatedFilters.constructions.length > 0) {
+      updatedFilters.constructions.forEach(construction => params.append('construction', construction));
     }
     if (updatedFilters.priceRange[0] > 0) {
       params.set('minPrice', updatedFilters.priceRange[0].toString());
@@ -280,6 +314,8 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
       seasonTypes: [],
       speedRatings: [],
       loadIndexes: [],
+      tireTypes: [],
+      constructions: [],
       priceRange: [0, 1000],
       rating: 0,
       inStock: false,
@@ -305,6 +341,8 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
     if (filters.seasonTypes.length > 0) count += filters.seasonTypes.length;
     if (filters.speedRatings.length > 0) count += filters.speedRatings.length;
     if (filters.loadIndexes.length > 0) count += filters.loadIndexes.length;
+    if (filters.tireTypes.length > 0) count += filters.tireTypes.length;
+    if (filters.constructions.length > 0) count += filters.constructions.length;
     if (filters.priceRange[0] > 0 || filters.priceRange[1] < 1000) count += 1;
     if (filters.rating > 0) count += 1;
     if (filters.inStock) count += 1;
@@ -320,15 +358,15 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
       {/* Mobile overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
           onClick={onClose}
         />
       )}
 
       {/* Sidebar */}
       <div className={`
-        fixed lg:sticky lg:top-0 inset-y-0 left-0 z-50 w-80 bg-white border-r border-gray-200 
-        transform transition-transform duration-300 ease-in-out h-screen
+        fixed lg:sticky lg:top-16 inset-y-0 left-0 z-40 w-80 bg-white border-r border-gray-200 
+        transform transition-transform duration-300 ease-in-out h-[calc(100vh-4rem)]
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         lg:block
       `}>
@@ -367,7 +405,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
           </div>
 
           {/* Filter Content */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-6 max-h-[calc(100vh-80px)] sticky top-0">
+          <div className="flex-1 overflow-y-auto p-4 space-y-6 max-h-[calc(100vh-8rem)] sticky top-0">
 
 
             {/* Search */}
@@ -419,7 +457,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
                           htmlFor={`brand-${brand}`}
                           className="text-sm text-gray-700 cursor-pointer"
                         >
-                          {brand}
+                          {brand.charAt(0).toUpperCase() + brand.slice(1)}
                         </Label>
                       </div>
                     ))
@@ -545,30 +583,36 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
                   <div className="space-y-2">
                     <Label className="text-xs font-medium text-gray-700">Season Type</Label>
                     <div className="space-y-2">
-                      {SEASON_TYPES.map((season) => (
-                        <div key={season} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`season-${season}`}
-                            checked={filters.seasonTypes.includes(season)}
-                            onCheckedChange={(checked) => {
-                              const newSeasons = checked
-                                ? [...filters.seasonTypes, season]
-                                : filters.seasonTypes.filter(s => s !== season);
-                              updateURL({ seasonTypes: newSeasons });
-                            }}
-                          />
-                          <Label
-                            htmlFor={`season-${season}`}
-                            className="text-sm text-gray-700 cursor-pointer flex items-center gap-1"
-                          >
-                            {season === 'summer' && <Sun className="h-3 w-3" />}
-                            {season === 'winter' && <Snowflake className="h-3 w-3" />}
-                            {season === 'all-season' && <CloudRain className="h-3 w-3" />}
-                            {season === 'all-weather' && <Zap className="h-3 w-3" />}
-                            {season.replace('-', ' ')}
-                          </Label>
-                        </div>
-                      ))}
+                      {filterOptionsLoading ? (
+                        <div className="text-sm text-gray-500">Loading...</div>
+                      ) : filterOptions?.seasonTypes && filterOptions.seasonTypes.length > 0 ? (
+                        filterOptions.seasonTypes.map((season) => (
+                          <div key={season} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`season-${season}`}
+                              checked={filters.seasonTypes.includes(season)}
+                              onCheckedChange={(checked) => {
+                                const newSeasons = checked
+                                  ? [...filters.seasonTypes, season]
+                                  : filters.seasonTypes.filter(s => s !== season);
+                                updateURL({ seasonTypes: newSeasons });
+                              }}
+                            />
+                            <Label
+                              htmlFor={`season-${season}`}
+                              className="text-sm text-gray-700 cursor-pointer flex items-center gap-1"
+                            >
+                              {season === 'summer' && <Sun className="h-3 w-3" />}
+                              {season === 'winter' && <Snowflake className="h-3 w-3" />}
+                              {season === 'all-season' && <CloudRain className="h-3 w-3" />}
+                              {season === 'all-weather' && <Zap className="h-3 w-3" />}
+                              {season.replace('-', ' ')}
+                            </Label>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-sm text-gray-500">No season types available</div>
+                      )}
                     </div>
                   </div>
 
@@ -576,26 +620,32 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
                   <div className="space-y-2">
                     <Label className="text-xs font-medium text-gray-700">Speed Rating</Label>
                     <div className="grid grid-cols-2 gap-2">
-                      {SPEED_RATINGS.map((rating) => (
-                        <div key={rating} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`speed-${rating}`}
-                            checked={filters.speedRatings.includes(rating)}
-                            onCheckedChange={(checked) => {
-                              const newRatings = checked
-                                ? [...filters.speedRatings, rating]
-                                : filters.speedRatings.filter(r => r !== rating);
-                              updateURL({ speedRatings: newRatings });
-                            }}
-                          />
-                          <Label
-                            htmlFor={`speed-${rating}`}
-                            className="text-sm text-gray-700 cursor-pointer"
-                          >
-                            {rating}
-                          </Label>
-                        </div>
-                      ))}
+                      {filterOptionsLoading ? (
+                        <div className="text-sm text-gray-500">Loading...</div>
+                      ) : filterOptions?.speedRatings && filterOptions.speedRatings.length > 0 ? (
+                        filterOptions.speedRatings.map((rating) => (
+                          <div key={rating} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`speed-${rating}`}
+                              checked={filters.speedRatings.includes(rating)}
+                              onCheckedChange={(checked) => {
+                                const newRatings = checked
+                                  ? [...filters.speedRatings, rating]
+                                  : filters.speedRatings.filter(r => r !== rating);
+                                updateURL({ speedRatings: newRatings });
+                              }}
+                            />
+                            <Label
+                              htmlFor={`speed-${rating}`}
+                              className="text-sm text-gray-700 cursor-pointer"
+                            >
+                              {rating}
+                            </Label>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-sm text-gray-500">No speed ratings available</div>
+                      )}
                     </div>
                   </div>
 
@@ -603,26 +653,98 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
                   <div className="space-y-2">
                     <Label className="text-xs font-medium text-gray-700">Load Index</Label>
                     <div className="grid grid-cols-2 gap-2">
-                      {LOAD_INDEXES.map((index) => (
-                        <div key={index} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`load-${index}`}
-                            checked={filters.loadIndexes.includes(index)}
-                            onCheckedChange={(checked) => {
-                              const newIndexes = checked
-                                ? [...filters.loadIndexes, index]
-                                : filters.loadIndexes.filter(i => i !== index);
-                              updateURL({ loadIndexes: newIndexes });
-                            }}
-                          />
-                          <Label
-                            htmlFor={`load-${index}`}
-                            className="text-sm text-gray-700 cursor-pointer"
-                          >
-                            {index}
-                          </Label>
-                        </div>
-                      ))}
+                      {filterOptionsLoading ? (
+                        <div className="text-sm text-gray-500">Loading...</div>
+                      ) : filterOptions?.loadIndexes && filterOptions.loadIndexes.length > 0 ? (
+                        filterOptions.loadIndexes.map((index) => (
+                          <div key={index} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`load-${index}`}
+                              checked={filters.loadIndexes.includes(index)}
+                              onCheckedChange={(checked) => {
+                                const newIndexes = checked
+                                  ? [...filters.loadIndexes, index]
+                                  : filters.loadIndexes.filter(i => i !== index);
+                                updateURL({ loadIndexes: newIndexes });
+                              }}
+                            />
+                            <Label
+                              htmlFor={`load-${index}`}
+                              className="text-sm text-gray-700 cursor-pointer"
+                            >
+                              {index}
+                            </Label>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-sm text-gray-500">No load indexes available</div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Tire Type */}
+                  <div className="space-y-2">
+                    <Label className="text-xs font-medium text-gray-700">Tire Type</Label>
+                    <div className="space-y-2">
+                      {filterOptionsLoading ? (
+                        <div className="text-sm text-gray-500">Loading...</div>
+                      ) : filterOptions?.tireTypes && filterOptions.tireTypes.length > 0 ? (
+                        filterOptions.tireTypes.map((type) => (
+                          <div key={type} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`tireType-${type}`}
+                              checked={filters.tireTypes.includes(type)}
+                              onCheckedChange={(checked) => {
+                                const newTypes = checked
+                                  ? [...filters.tireTypes, type]
+                                  : filters.tireTypes.filter(t => t !== type);
+                                updateURL({ tireTypes: newTypes });
+                              }}
+                            />
+                            <Label
+                              htmlFor={`tireType-${type}`}
+                              className="text-sm text-gray-700 cursor-pointer"
+                            >
+                              {type}
+                            </Label>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-sm text-gray-500">No tire types available</div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Construction */}
+                  <div className="space-y-2">
+                    <Label className="text-xs font-medium text-gray-700">Construction</Label>
+                    <div className="space-y-2">
+                      {filterOptionsLoading ? (
+                        <div className="text-sm text-gray-500">Loading...</div>
+                      ) : filterOptions?.constructions && filterOptions.constructions.length > 0 ? (
+                        filterOptions.constructions.map((construction) => (
+                          <div key={construction} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`construction-${construction}`}
+                              checked={filters.constructions.includes(construction)}
+                              onCheckedChange={(checked) => {
+                                const newConstructions = checked
+                                  ? [...filters.constructions, construction]
+                                  : filters.constructions.filter(c => c !== construction);
+                                updateURL({ constructions: newConstructions });
+                              }}
+                            />
+                            <Label
+                              htmlFor={`construction-${construction}`}
+                              className="text-sm text-gray-700 cursor-pointer"
+                            >
+                              {construction}
+                            </Label>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-sm text-gray-500">No construction types available</div>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -44,7 +44,10 @@ export default function CartPage() {
     });
   };
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = cart.reduce((sum, item) => {
+    const price = typeof item.price === 'string' ? parseFloat(item.price.replace('€', '')) : item.price;
+    return sum + (price || 0) * item.quantity;
+  }, 0);
 
   if (loading) {
     return <CartSkeleton />;
@@ -58,8 +61,8 @@ export default function CartPage() {
       ) : (
         <div className="space-y-6">
           {cart.map((item, idx) => (
-            <div key={item.id + '-' + item.size} className="flex items-center gap-4 border-b pb-4">
-              <img src={item.imageUrl || '/placeholder.svg'} alt={item.name} className="w-20 h-20 object-cover rounded" />
+            <div key={item.id + '-' + (item.size || 'default')} className="flex items-center gap-4 border-b pb-4">
+              <img src={item.image || item.imageUrl || '/placeholder.svg'} alt={item.name} className="w-20 h-20 object-cover rounded" />
               <div className="flex-1">
                 <div className="font-semibold text-lg">{item.name}</div>
                 <div className="text-gray-500">{item.brand}</div>
@@ -71,7 +74,7 @@ export default function CartPage() {
                 </div>
                 <button onClick={() => removeItem(idx)} className="text-xs text-red-500 mt-2">Remove</button>
               </div>
-              <div className="font-bold text-xl">€{(item.price * item.quantity).toFixed(2)}</div>
+              <div className="font-bold text-xl">€{((typeof item.price === 'string' ? parseFloat(item.price.replace('€', '')) : item.price || 0) * item.quantity).toFixed(2)}</div>
             </div>
           ))}
           <div className="flex justify-between items-center pt-6 border-t mt-6">

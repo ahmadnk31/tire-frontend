@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { Star, Heart, ChevronLeft, ChevronRight, X, ShoppingCart, Zap, Plus, Minus } from "lucide-react";
 import { formatEuro } from "@/lib/currency";
 import { ProductCard } from "@/components/store/ProductCard";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 
 
 export default function ProductPage() {
@@ -682,9 +683,12 @@ export default function ProductPage() {
             <div className="space-y-4 sm:space-y-6 w-full">
               <div>
                 <h3 className="font-bold text-lg sm:text-xl mb-3 sm:mb-4 text-gray-900">{t('products.productDetails')}</h3>
-                <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
-                  {product.description}
-                </p>
+                <RichTextEditor
+                  value={product.description || ''}
+                  onChange={() => {}} // Read-only, no changes allowed
+                  className="border-0 shadow-none bg-transparent"
+                  readOnly={true}
+                />
               </div>
               {product.features && (
                 <div>

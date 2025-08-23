@@ -1,4 +1,4 @@
-import { Star, ShoppingCart, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, ShoppingCart, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { WishlistButton } from "@/components/store/WishlistButton";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
@@ -79,6 +79,10 @@ export interface ProductCardProps {
     featured: boolean;
     images?: Array<string | { imageUrl: string }>;
     productImages?: Array<{ imageUrl: string }>;
+    // Sale fields
+    saleStartDate?: string;
+    saleEndDate?: string;
+    isOnSale?: boolean;
   };
   onClick?: () => void;
   cartItem?: { quantity: number };
@@ -95,6 +99,18 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
+
+  // Calculate days until sale ends
+  const getDaysUntilEnd = (date: string | null | undefined) => {
+    if (!date) return 0;
+    const end = new Date(date);
+    const now = new Date();
+    const diffTime = end.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Math.max(0, diffDays);
+  };
+
+  const daysUntilEnd = getDaysUntilEnd(product.saleEndDate);
 
   // Extract all available images
   const getAllImages = () => {
@@ -299,6 +315,16 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
           <div className="absolute top-2 sm:top-4 right-2 sm:right-4">
             <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-red-500 text-white text-xs font-medium shadow-lg">
               {Math.round(((parseFloat(product.comparePrice) - parseFloat(product.price)) / parseFloat(product.comparePrice)) * 100)}% OFF
+            </span>
+          </div>
+        )}
+        
+        {/* Sale countdown badge */}
+        {product.saleEndDate && daysUntilEnd > 0 && product.isOnSale && (
+          <div className="absolute top-2 sm:top-4 left-2 sm:left-4">
+            <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-orange-500 text-white text-xs font-medium shadow-lg">
+              <Clock className="h-3 w-3 mr-1" />
+              {daysUntilEnd}d
             </span>
           </div>
         )}

@@ -29,6 +29,10 @@ interface Product {
   images?: Array<string | { imageUrl: string }>;
   productImages?: Array<{ imageUrl: string }>;
   showAllButton?: boolean; // Optional prop to show "View All" button
+  // Sale fields
+  saleStartDate?: string;
+  saleEndDate?: string;
+  isOnSale?: boolean;
 }
 
 export const ProductGrid = ({ sectionTitle = "Products", featuredOnly = false, showAllButton = false }: { sectionTitle?: string; featuredOnly?: boolean; showAllButton?: boolean }) => {

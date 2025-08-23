@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -48,6 +48,9 @@ interface Product {
     metaDescription?: string;
   };
   categoryIds?: number[];
+  // Sale fields
+  saleStartDate?: string;
+  saleEndDate?: string;
 }
 
 interface AddProductProps {
@@ -64,10 +67,7 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
     brand: '',
     model: '',
     description: '',
-   
-    
     name: '',
-    features: [''],
     size: '',
     
     speedRating: '',
@@ -86,7 +86,10 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
     tags: '',
     metaTitle: '',
     metaDescription: '',
-    categoryIds: []
+    categoryIds: [],
+    // Sale fields
+    saleStartDate: '',
+    saleEndDate: ''
   });
   const [categories, setCategories] = useState<any[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
@@ -113,11 +116,8 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
         brand: editingProduct.brand || '',
         model: editingProduct.model || '',
         description: editingProduct.description || '',
-        
-        
         name: editingProduct.name || '',
         size: editingProduct.size || '',
-        features: Array.isArray(editingProduct.features) && editingProduct.features.length > 0 ? editingProduct.features : [''],
         
         speedRating: editingProduct.specifications?.speedRating || '',
         loadIndex: editingProduct.specifications?.loadIndex || '',
@@ -135,9 +135,17 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
         tags: Array.isArray(editingProduct.tags) ? editingProduct.tags.join(', ') : (editingProduct.tags || ''),
         metaTitle: editingProduct.seo?.metaTitle || '',
         metaDescription: editingProduct.seo?.metaDescription || '',
-        categoryIds: editingProduct.categoryIds || []
+        categoryIds: editingProduct.categoryIds || [],
+        // Sale fields
+        saleStartDate: editingProduct.saleStartDate || '',
+        saleEndDate: editingProduct.saleEndDate || ''
       });
-      setFeatures(Array.isArray(editingProduct.features) && editingProduct.features.length > 0 ? editingProduct.features : ['']);
+      const productFeatures = Array.isArray(editingProduct.features) && editingProduct.features.length > 0 
+        ? editingProduct.features 
+        : (typeof editingProduct.features === 'string' 
+          ? (editingProduct.features as string).split(',').map(f => f.trim()).filter(f => f)
+          : ['']);
+      setFeatures(productFeatures);
       let imgs = [];
       if (Array.isArray(editingProduct.images) && editingProduct.images.length > 0) {
         imgs = editingProduct.images.map((img: any) =>
@@ -216,6 +224,11 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
         loadIndex: formData.loadIndex,
         seasonType: formData.seasonType,
         tireType: formData.vehicleType, // Map vehicleType to tireType
+        treadDepth: formData.treadDepth,
+        construction: formData.construction,
+        // Sale fields
+        saleStartDate: formData.saleStartDate || null,
+        saleEndDate: formData.saleEndDate || null,
         // Flatten SEO fields
         seoTitle: formData.metaTitle,
         seoDescription: formData.metaDescription,
@@ -232,6 +245,8 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean).join(','),
         categoryIds: formData.categoryIds
       };
+
+
 
       console.log('Submitting images:', productData.images);
       let response;
@@ -260,7 +275,6 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
           description: '',
           name: '',
           size: '',
-          features: [''],
           speedRating: '',
           loadIndex: '',
           seasonType: '',
@@ -277,7 +291,10 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
           tags: '',
           metaTitle: '',
           metaDescription: '',
-          categoryIds: []
+          categoryIds: [],
+          // Sale fields
+          saleStartDate: '',
+          saleEndDate: ''
         });
         setFeatures(['']);
         setUploadedImages([]);
@@ -384,6 +401,7 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
                       <SelectItem value="double-star">Double Star</SelectItem>
                       <SelectItem value="tracmax">Tracmax</SelectItem>
                       <SelectItem value="rotalla">Rotalla</SelectItem>
+                      <SelectItem value="windforce">Windforce</SelectItem>
                       <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>
@@ -410,12 +428,20 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
 
               <div className="space-y-2">
                 <Label htmlFor="description">Product Description</Label>
-                <Textarea 
-                  id="description" 
-                  placeholder="Describe the tire's features, benefits, and ideal use cases..."
-                  rows={4}
+                <RichTextEditor
+                  key={editingProduct?.id || 'new-product'}
                   value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  onChange={(value) => handleInputChange('description', value)}
+                  placeholder="Describe the tire's features, benefits, and ideal use cases..."
+                  uploadImage={async (file) => {
+                    try {
+                      const response = await uploadApi.single(file, 'descriptions');
+                      return response.imageUrl;
+                    } catch (error) {
+                      console.error('Image upload failed:', error);
+                      throw error;
+                    }
+                  }}
                 />
               </div>
 
@@ -612,6 +638,26 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
                 </div>
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="saleStartDate">Sale Start Date</Label>
+                <Input 
+                  id="saleStartDate" 
+                  type="datetime-local"
+                  value={formData.saleStartDate}
+                  onChange={(e) => handleInputChange('saleStartDate', e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="saleEndDate">Sale End Date</Label>
+                <Input 
+                  id="saleEndDate" 
+                  type="datetime-local"
+                  value={formData.saleEndDate}
+                  onChange={(e) => handleInputChange('saleEndDate', e.target.value)}
+                />
+              </div>
+
               <Separator />
 
               <div className="space-y-2">
@@ -715,10 +761,9 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
               
               <div className="space-y-2">
                 <Label htmlFor="metaDescription">Meta Description</Label>
-                <Textarea 
+                <Input 
                   id="metaDescription" 
                   placeholder="Brief description for search engines..." 
-                  rows={3} 
                   value={formData.metaDescription}
                   onChange={(e) => handleInputChange('metaDescription', e.target.value)}
                 />

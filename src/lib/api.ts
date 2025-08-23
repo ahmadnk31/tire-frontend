@@ -50,6 +50,13 @@ const apiClient = {
 
     const response = await fetch(url.toString(), { headers });
     if (!response.ok) {
+      // Handle 401 Unauthorized errors
+      if (response.status === 401) {
+        // Dispatch custom event to trigger re-auth modal
+        window.dispatchEvent(new CustomEvent('tokenExpired'));
+        throw new Error('Authentication required. Please log in again.');
+      }
+      
       const errorText = await response.text();
       let errorMessage = `API Error: ${response.status} ${response.statusText}`;
       
@@ -96,6 +103,13 @@ const apiClient = {
       json = { error: `API Error: ${response.status} ${response.statusText}` };
     }
     if (!response.ok) {
+      // Handle 401 Unauthorized errors
+      if (response.status === 401) {
+        // Dispatch custom event to trigger re-auth modal
+        window.dispatchEvent(new CustomEvent('tokenExpired'));
+        throw new Error('Authentication required. Please log in again.');
+      }
+      
       // Return the error body so the UI can handle unverified, etc.
       throw json;
     }
@@ -115,6 +129,13 @@ const apiClient = {
     });
 
     if (!response.ok) {
+      // Handle 401 Unauthorized errors
+      if (response.status === 401) {
+        // Dispatch custom event to trigger re-auth modal
+        window.dispatchEvent(new CustomEvent('tokenExpired'));
+        throw new Error('Authentication required. Please log in again.');
+      }
+      
       const errorText = await response.text();
       let errorMessage = `API Error: ${response.status} ${response.statusText}`;
       
@@ -151,6 +172,13 @@ const apiClient = {
     });
 
     if (!response.ok) {
+      // Handle 401 Unauthorized errors
+      if (response.status === 401) {
+        // Dispatch custom event to trigger re-auth modal
+        window.dispatchEvent(new CustomEvent('tokenExpired'));
+        throw new Error('Authentication required. Please log in again.');
+      }
+      
       throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
     

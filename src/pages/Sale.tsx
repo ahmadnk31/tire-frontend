@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Star, ShoppingCart, Heart, Filter, Grid, List, Percent, Clock, TrendingDown, Flame } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productsApi } from '@/lib/api';
@@ -49,23 +50,25 @@ const Sale: React.FC = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const products: Product[] = saleData?.products?.map((product: any) => ({
-    id: product.id,
-    name: product.name,
-    brand: product.brand,
-    price: Number(product.price),
-    originalPrice: product.comparePrice ? Number(product.comparePrice) : Number(product.price),
-    image: product.images?.[0]?.imageUrl || product.productImages?.[0]?.imageUrl || '/placeholder.svg',
-    rating: Number(product.rating) || 0,
-    reviewCount: 0, // Not available in current schema
-    category: product.seasonType || 'tires',
-    discount: product.comparePrice ? Math.round(((Number(product.comparePrice) - Number(product.price)) / Number(product.comparePrice)) * 100) : 0,
-    isOnSale: true,
-    saleEndDate: undefined, // Not available in current schema
-    features: typeof product.features === 'string' ? product.features.split(',').map(f => f.trim()) : (Array.isArray(product.features) ? product.features : []),
-    stockLevel: product.stock > 10 ? 'high' : product.stock > 5 ? 'medium' : 'low',
-    size: product.size
-  })) || [];
+  const products: Product[] = saleData?.products?.map((product: any) => {
+    return {
+      id: product.id,
+      name: product.name,
+      brand: product.brand,
+      price: Number(product.price),
+      originalPrice: product.comparePrice ? Number(product.comparePrice) : Number(product.price),
+      image: product.images?.[0]?.imageUrl || product.productImages?.[0]?.imageUrl || '/placeholder.svg',
+      rating: Number(product.rating) || 0,
+      reviewCount: 0, // Not available in current schema
+      category: product.seasonType || product.tireType || 'tires',
+      discount: product.comparePrice ? Math.round(((Number(product.comparePrice) - Number(product.price)) / Number(product.comparePrice)) * 100) : 0,
+      isOnSale: true,
+      saleEndDate: product.saleEndDate || null,
+      features: typeof product.features === 'string' ? product.features.split(',').map(f => f.trim()) : (Array.isArray(product.features) ? product.features : []),
+      stockLevel: product.stock > 10 ? 'high' : product.stock > 5 ? 'medium' : 'low',
+      size: product.size
+    };
+  }) || [];
 
   // Wishlist query
   const {
@@ -173,11 +176,13 @@ const Sale: React.FC = () => {
 
   const categories = [
     { id: 'all', name: t('sale.categories.all') },
-    { id: 'summer-tires', name: t('sale.categories.summer') },
-    { id: 'winter-tires', name: t('sale.categories.winter') },
-    { id: 'all-season-tires', name: t('sale.categories.allSeason') },
-    { id: 'truck-tires', name: t('sale.categories.truck') },
-    { id: 'motorcycle-tires', name: t('sale.categories.motorcycle') }
+    { id: 'summer', name: t('sale.categories.summer') },
+    { id: 'winter', name: t('sale.categories.winter') },
+    { id: 'all-season', name: t('sale.categories.allSeason') },
+    { id: 'all-weather', name: t('sale.categories.allWeather') },
+    { id: 'passenger', name: t('sale.categories.passenger') },
+    { id: 'suv', name: t('sale.categories.suv') },
+    { id: 'truck', name: t('sale.categories.truck') }
   ];
 
   const discountRanges = [
@@ -218,7 +223,8 @@ const Sale: React.FC = () => {
     }
   });
 
-  const getDaysUntilEnd = (date: string) => {
+  const getDaysUntilEnd = (date: string | null) => {
+    if (!date) return 0;
     const end = new Date(date);
     const now = new Date();
     const diffTime = end.getTime() - now.getTime();
@@ -245,7 +251,7 @@ const Sale: React.FC = () => {
   };
 
   const totalSavings = products.reduce((sum, product) => sum + (product.originalPrice - product.price), 0);
-  const averageDiscount = Math.round(products.reduce((sum, product) => sum + product.discount, 0) / products.length);
+  const averageDiscount = products.length > 0 ? Math.round(products.reduce((sum, product) => sum + product.discount, 0) / products.length) : 0;
 
   // Loading state
   if (isLoading) {
@@ -335,7 +341,7 @@ const Sale: React.FC = () => {
             </div>
             <div>
               <div className="text-2xl font-bold mb-1">
-                {Math.min(...products.map(p => getDaysUntilEnd(p.saleEndDate || '')))}
+                {products.length > 0 ? Math.min(...products.map(p => getDaysUntilEnd(p.saleEndDate)).filter(days => days > 0)) : 0}
               </div>
               <div className="text-sm opacity-90">{t('sale.stats.daysLeft')}</div>
             </div>
@@ -357,40 +363,43 @@ const Sale: React.FC = () => {
             </div>
           </div>
           <div className="flex gap-2 overflow-x-auto">
-            <select
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            >
-              {categories.map(category => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-            <select
-              value={filterDiscount}
-              onChange={(e) => setFilterDiscount(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            >
-              {discountRanges.map(range => (
-                <option key={range.id} value={range.id}>
-                  {range.name}
-                </option>
-              ))}
-            </select>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            >
-              <option value="discount">{t('sale.sort.discount')}</option>
-              <option value="price-low">{t('sale.sort.priceLow')}</option>
-              <option value="price-high">{t('sale.sort.priceHigh')}</option>
-              <option value="rating">{t('sale.sort.rating')}</option>
-              <option value="name">{t('sale.sort.name')}</option>
-            </select>
-            <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+            <Select value={filterCategory} onValueChange={setFilterCategory}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map(category => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={filterDiscount} onValueChange={setFilterDiscount}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Discount" />
+              </SelectTrigger>
+              <SelectContent>
+                {discountRanges.map(range => (
+                  <SelectItem key={range.id} value={range.id}>
+                    {range.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="discount">{t('sale.sort.discount')}</SelectItem>
+                <SelectItem value="price-low">{t('sale.sort.priceLow')}</SelectItem>
+                <SelectItem value="price-high">{t('sale.sort.priceHigh')}</SelectItem>
+                <SelectItem value="rating">{t('sale.sort.rating')}</SelectItem>
+                <SelectItem value="name">{t('sale.sort.name')}</SelectItem>
+              </SelectContent>
+            </Select>
+            <div className="flex border border-gray-300 rounded-lg">
               <button
                 onClick={() => setViewMode('grid')}
                 className={`px-3 py-2 ${viewMode === 'grid' ? 'bg-primary text-white' : 'bg-white text-gray-600'}`}
@@ -423,7 +432,7 @@ const Sale: React.FC = () => {
                     -{product.discount}%
                   </span>
                 </div>
-                {product.saleEndDate && (
+                {product.saleEndDate && getDaysUntilEnd(product.saleEndDate) > 0 && (
                   <div className="absolute top-2 right-2">
                     <span className="px-2 py-1 bg-orange-500 text-white text-xs font-medium rounded flex items-center gap-1">
                       <Clock className="h-3 w-3" />
@@ -513,7 +522,7 @@ const Sale: React.FC = () => {
             <div className="flex justify-center gap-4">
               <div className="text-center">
                 <div className="text-3xl font-bold text-red-600 mb-1">
-                  {Math.min(...products.map(p => getDaysUntilEnd(p.saleEndDate || '')))}
+                  {products.length > 0 ? Math.min(...products.map(p => getDaysUntilEnd(p.saleEndDate)).filter(days => days > 0)) : 0}
                 </div>
                 <div className="text-sm text-gray-600">{t('sale.countdown.days')}</div>
               </div>

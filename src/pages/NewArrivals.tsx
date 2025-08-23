@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Star, ShoppingCart, Heart, Filter, Grid, List, Clock, TrendingUp, Sparkles, Percent } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productsApi } from '@/lib/api';
@@ -23,6 +24,7 @@ interface Product {
   discount?: number;
   features: string[];
   size?: string;
+  saleEndDate?: string;
 }
 
 const NewArrivals: React.FC = () => {
@@ -60,10 +62,11 @@ const NewArrivals: React.FC = () => {
     category: product.seasonType || 'tires',
     arrivalDate: product.createdAt,
     isNew: true,
-    isOnSale: product.comparePrice ? Number(product.comparePrice) > Number(product.price) : false,
+    isOnSale: product.isOnSale || (product.comparePrice ? Number(product.comparePrice) > Number(product.price) : false),
     discount: product.comparePrice ? Math.round(((Number(product.comparePrice) - Number(product.price)) / Number(product.comparePrice)) * 100) : undefined,
     features: typeof product.features === 'string' ? product.features.split(',').map(f => f.trim()) : (Array.isArray(product.features) ? product.features : []),
-    size: product.size
+    size: product.size,
+    saleEndDate: product.saleEndDate || null
   })) || [];
 
   // Wishlist query
@@ -83,6 +86,16 @@ const NewArrivals: React.FC = () => {
   });
 
   const wishlist = wishlistData || [];
+
+  // Calculate days until sale ends
+  const getDaysUntilEnd = (date: string | null) => {
+    if (!date) return 0;
+    const end = new Date(date);
+    const now = new Date();
+    const diffTime = end.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Math.max(0, diffDays);
+  };
 
   // Wishlist mutation
   const wishlistMutation = useMutation({
@@ -325,28 +338,30 @@ const NewArrivals: React.FC = () => {
             </div>
           </div>
           <div className="flex gap-2">
-            <select
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            >
-              {categories.map(category => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            >
-              <option value="date">{t('newArrivals.sort.date')}</option>
-              <option value="price-low">{t('newArrivals.sort.priceLow')}</option>
-              <option value="price-high">{t('newArrivals.sort.priceHigh')}</option>
-              <option value="rating">{t('newArrivals.sort.rating')}</option>
-              <option value="name">{t('newArrivals.sort.name')}</option>
-            </select>
+            <Select value={filterCategory} onValueChange={setFilterCategory}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map(category => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="date">{t('newArrivals.sort.date')}</SelectItem>
+                <SelectItem value="price-low">{t('newArrivals.sort.priceLow')}</SelectItem>
+                <SelectItem value="price-high">{t('newArrivals.sort.priceHigh')}</SelectItem>
+                <SelectItem value="rating">{t('newArrivals.sort.rating')}</SelectItem>
+                <SelectItem value="name">{t('newArrivals.sort.name')}</SelectItem>
+              </SelectContent>
+            </Select>
             <div className="flex border border-gray-300 rounded-lg overflow-hidden">
               <button
                 onClick={() => setViewMode('grid')}
@@ -382,6 +397,13 @@ const NewArrivals: React.FC = () => {
                     <span className="px-2 py-1 bg-red-500 text-white text-xs font-medium rounded flex items-center gap-1">
                       <Percent className="h-3 w-3" />
                       -{product.discount}%
+                    </span>
+                  )}
+                  {/* Sale countdown badge */}
+                  {product.saleEndDate && getDaysUntilEnd(product.saleEndDate) > 0 && product.isOnSale && (
+                    <span className="px-2 py-1 bg-orange-500 text-white text-xs font-medium rounded flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {getDaysUntilEnd(product.saleEndDate)}d
                     </span>
                   )}
                 </div>

@@ -98,11 +98,10 @@ export function setupTokenExpirationCheck(): void {
       if (timeToExpiry > 0 && timeToExpiry <= 600) {
         const minutes = Math.ceil(timeToExpiry / 60);
         
-        // Show notification (you can replace this with a proper toast/modal)
-        if (window.confirm(`Your session will expire in ${minutes} minute(s). Would you like to extend your session?`)) {
-          // Redirect to a page that requires authentication to refresh token
-          window.location.href = '/account';
-        }
+        // Dispatch event to show re-auth modal
+        window.dispatchEvent(new CustomEvent('tokenExpired', { 
+          detail: { warning: true, minutes } 
+        }));
         
         clearInterval(warningInterval);
       }

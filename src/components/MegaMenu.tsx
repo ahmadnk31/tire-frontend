@@ -115,6 +115,28 @@ export function MegaMenu() {
 
   // Filtering and URL update
   const handleFilterClick = (type: string, value: string) => {
+    // Handle important links differently
+    if (type === "important") {
+      switch (value) {
+        case t('megaMenu.offers'):
+          navigate('/sale');
+          break;
+        case t('megaMenu.newArrivals'):
+          navigate('/new-arrivals');
+          break;
+        case t('megaMenu.bestSellers'):
+          navigate('/products?featured=true');
+          break;
+        case t('megaMenu.support'):
+          navigate('/contact');
+          break;
+        default:
+          break;
+      }
+      setActive(null);
+      return;
+    }
+
     // Read current params from URL
     const currentParams = new URLSearchParams(window.location.search);
     if (type === "brands") {
@@ -186,25 +208,42 @@ export function MegaMenu() {
             </ul>
           </div>
           <div className="flex-1 p-8">
-            <h3 className="font-bold mb-6 text-lg text-gray-900">{t('megaMenu.relatedParts')}</h3>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {currentItems.map((item) => (
-                <div key={item} className="space-y-3">
-                  <div className="font-semibold text-gray-900 cursor-pointer" onClick={() => handleFilterClick(active!, item)}>{item}</div>
-                  <ul className="space-y-2">
-                    {(active === "brands" && relatedParts[item] && relatedParts[item].length > 0) ? 
-                      relatedParts[item].map((part) => (
-                        <li key={part} className="text-gray-700 hover:text-primary-600 hover:underline cursor-pointer transition-colors text-sm" onClick={() => handleFilterClick("models", part)}>
-                          {part}
-                        </li>
-                      )) : (
-                        <li className="text-gray-400 italic text-sm">{t('megaMenu.noRelatedParts')}</li>
-                      )
-                    }
-                  </ul>
+            {active === "important" ? (
+              <div className="space-y-4">
+                <h3 className="font-bold mb-6 text-lg text-gray-900">Quick Links</h3>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {currentItems.map((item) => (
+                    <div key={item} className="space-y-3">
+                      <div className="font-semibold text-gray-900 cursor-pointer hover:text-primary-600 hover:underline transition-colors" onClick={() => handleFilterClick(active!, item)}>
+                        {item}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            ) : (
+              <>
+                <h3 className="font-bold mb-6 text-lg text-gray-900">{t('megaMenu.relatedParts')}</h3>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {currentItems.map((item) => (
+                    <div key={item} className="space-y-3">
+                      <div className="font-semibold text-gray-900 cursor-pointer" onClick={() => handleFilterClick(active!, item)}>{item}</div>
+                      <ul className="space-y-2">
+                        {(active === "brands" && relatedParts[item] && relatedParts[item].length > 0) ? 
+                          relatedParts[item].map((part) => (
+                            <li key={part} className="text-gray-700 hover:text-primary-600 hover:underline cursor-pointer transition-colors text-sm" onClick={() => handleFilterClick("models", part)}>
+                              {part}
+                            </li>
+                          )) : (
+                            <li className="text-gray-400 italic text-sm">{t('megaMenu.noRelatedParts')}</li>
+                          )
+                        }
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

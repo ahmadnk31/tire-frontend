@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Star, ShoppingCart, Heart, Filter, Grid, List, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Search, Star, ShoppingCart, Heart, Filter, Grid, List, ChevronRight, Clock } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { productsApi } from '@/lib/api';
+import { useToast } from '@/hooks/use-toast';
 
 interface Brand {
   id: string;
@@ -32,15 +33,25 @@ interface Product {
   category: string;
   isNew?: boolean;
   isOnSale?: boolean;
+  saleEndDate?: string;
 }
 
 const Brands: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCountry, setFilterCountry] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  
+  // Cart state
+  const [cart, setCart] = useState<any[]>(() => {
+    if (typeof window === 'undefined') return [];
+    const stored = localStorage.getItem('cart');
+    return stored ? JSON.parse(stored) : [];
+  });
 const logos={
   'michelin': 'https://logos-world.net/wp-content/uploads/2020/09/Michelin-Logo-2017-present.jpg',
   'bridgestone': 'https://bpando.org/wp-content/uploads/New-Bridgestone-Logo-Design-2011-BPO.jpg',
@@ -150,8 +161,9 @@ const logos={
     rating: Number(product.rating) || 0,
     reviewCount: 0, // Not available in current schema
     category: product.seasonType || 'tires',
-    isOnSale: product.comparePrice ? Number(product.comparePrice) > Number(product.price) : false,
-    isNew: false // Would need to check creation date
+    isOnSale: product.isOnSale || (product.comparePrice ? Number(product.comparePrice) > Number(product.price) : false),
+    isNew: false, // Would need to check creation date
+    saleEndDate: product.saleEndDate || null
   })) || [];
 
   const filteredBrands = brands.filter(brand => {
@@ -176,10 +188,75 @@ const logos={
   });
 
   const filteredProducts = products.filter(product => {
-    return !selectedBrand || product.brand.toLowerCase() === selectedBrand;
+    if (!selectedBrand) return true;
+    const selectedBrandData = brands.find(b => b.id === selectedBrand);
+    return selectedBrandData && product.brand.toLowerCase() === selectedBrandData.originalName.toLowerCase();
   });
 
   const countries = Array.from(new Set(brands.map(brand => brand.country)));
+
+  // Calculate days until sale ends
+  const getDaysUntilEnd = (date: string | null) => {
+    if (!date) return 0;
+    const end = new Date(date);
+    const now = new Date();
+    const diffTime = end.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Math.max(0, diffDays);
+  };
+
+  // Cart functions
+  const addToCart = (product: Product) => {
+    const existingItem = cart.find(item => item.id === product.id);
+    if (existingItem) {
+      const updatedCart = cart.map(item =>
+        item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+      );
+      setCart(updatedCart);
+      localStorage.setItem('cart', JSON.stringify(updatedCart));
+    } else {
+      const newCart = [...cart, { ...product, quantity: 1 }];
+      setCart(newCart);
+      localStorage.setItem('cart', JSON.stringify(newCart));
+    }
+    // Dispatch cart-updated event to update cart count in header
+    window.dispatchEvent(new Event('cart-updated'));
+    toast({
+      title: t('products.productAdded'),
+      description: `${product.name} added to cart`,
+    });
+  };
+
+  const addToWishlist = (product: Product) => {
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    
+    if (!token || !user) {
+      toast({
+        title: t('auth.loginRequired'),
+        description: t('auth.loginToAddWishlist'),
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    // For now, just show a toast. You can implement wishlist functionality later
+    toast({
+      title: t('products.addToWishlist'),
+      description: `${product.name} added to wishlist`,
+    });
+  };
+
+  const isInCart = (productId: string) => {
+    return cart.some(item => item.id === productId);
+  };
+
+  const isLoggedIn = () => {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    return !!(token && user);
+  };
 
   // Loading state
   if (isLoading) {
@@ -381,12 +458,15 @@ const logos={
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredProducts.map(product => (
-                <div key={product.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-                  <div className="relative h-48">
+                <div key={product.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow flex flex-col h-full">
+                  <div 
+                    className="relative h-48 bg-gray-100 flex items-center justify-center cursor-pointer"
+                    onClick={() => navigate(`/products/${product.id}`)}
+                  >
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain p-2"
                     />
                     {product.isNew && (
                       <span className="absolute top-2 left-2 px-2 py-1 bg-green-500 text-white text-xs font-medium rounded">
@@ -398,17 +478,27 @@ const logos={
                         {t('brands.sale')}
                       </span>
                     )}
+                    {/* Sale countdown badge */}
+                    {product.saleEndDate && getDaysUntilEnd(product.saleEndDate) > 0 && product.isOnSale && (
+                      <span className="absolute top-2 left-2 px-2 py-1 bg-orange-500 text-white text-xs font-medium rounded flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {getDaysUntilEnd(product.saleEndDate)}d
+                      </span>
+                    )}
                   </div>
-                  <div className="p-4">
+                  <div className="p-4 flex flex-col flex-1">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-sm font-medium text-primary">{product.brand}</span>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1 ml-auto">
                         <Star className="h-4 w-4 text-yellow-400 fill-current" />
                         <span className="text-sm text-gray-600">{product.rating}</span>
                         <span className="text-sm text-gray-500">({product.reviewCount})</span>
                       </div>
                     </div>
-                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+                    <h3 
+                      className="font-semibold text-gray-900 mb-2 line-clamp-2 flex-1 cursor-pointer hover:text-primary transition-colors"
+                      onClick={() => navigate(`/products/${product.id}`)}
+                    >
                       {product.name}
                     </h3>
                     <div className="flex items-center gap-2 mb-3">
@@ -421,13 +511,35 @@ const logos={
                         €{product.price}
                       </span>
                     </div>
-                    <div className="flex gap-2">
-                      <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm">
+                    <div className="flex gap-2 mt-auto">
+                      <button 
+                        className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm ${
+                           isInCart(product.id) 
+                              ? 'bg-green-600 text-white hover:bg-green-700' 
+                              : 'bg-primary text-white hover:bg-primary/90'
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart(product);
+                        }}
+                        
+                      >
                         <ShoppingCart className="h-4 w-4" />
-                        {t('brands.addToCart')}
+                        {isInCart(product.id) ? 'In Cart' : t('brands.addToCart')}
                       </button>
-                      <button className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                        <Heart className="h-4 w-4 text-gray-600" />
+                      <button 
+                        className={`p-2 border rounded-lg transition-colors ${
+                          !isLoggedIn()
+                            ? 'border-gray-300 bg-gray-100 cursor-not-allowed'
+                            : 'border-gray-300 hover:bg-gray-50'
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToWishlist(product);
+                        }}
+                        disabled={!isLoggedIn()}
+                      >
+                        <Heart className={`h-4 w-4 ${!isLoggedIn() ? 'text-gray-400' : 'text-gray-600'}`} />
                       </button>
                     </div>
                   </div>
