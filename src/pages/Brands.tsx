@@ -75,7 +75,8 @@ const Brands: React.FC = () => {
     'ovation': 'https://eshop.tireworld.co.ke/media/manufacturers/Ovation-Tyres-Logo.webp',
     'tracmax': 'https://www.tyrecenter.net/wp-content/uploads/2020/12/New-Project-1.jpg',
     'windforce': 'https://ik.imagekit.io/ntvz9dezi1x/blog/windforce-logo.png',
-    "headway": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3pm5I-aR6QDAcIj5ZHTUpouU2VTK80MNi8Lsaskagov8-vsvEcsxIpNzgFB_UxPJC8z4&usqp=CAU"
+    "headway": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3pm5I-aR6QDAcIj5ZHTUpouU2VTK80MNi8Lsaskagov8-vsvEcsxIpNzgFB_UxPJC8z4&usqp=CAU",
+    "dextero": "https://tirehungry.com/wp-content/uploads/2023/05/Dextero-Review.png"
   }
 
   // Check if user is logged in
@@ -316,7 +317,8 @@ const Brands: React.FC = () => {
       'ovation': 'China',
       'tracmax': 'China',
       "windforce": "USA",
-      "headway": "USA"
+      "headway": "USA",
+      "dextero": "USA"
     };
     return countryMap[brand.toLowerCase()] || 'Unknown';
   }
@@ -334,7 +336,8 @@ const Brands: React.FC = () => {
       'ovation': 1996,
       'tracmax': 1996,
       'windforce': 1996,
-      'headway': 1996
+      'headway': 1996,
+      'dextero': 1993
     };
     return foundedMap[brand.toLowerCase()] || 1900;
   }
@@ -352,7 +355,8 @@ const Brands: React.FC = () => {
       'ovation': ['Summer Tires', 'Winter Tires', 'All-Season'],
       'tracmax': ['Summer Tires', 'Winter Tires', 'All-Season'],
       'windforce': ['Summer Tires', 'Winter Tires', 'All-Season'],
-      'headway': ['Summer Tires', 'Winter Tires', 'All-Season']
+      'headway': ['Summer Tires', 'Winter Tires', 'All-Season'],
+      'dextero': ['Summer Tires', 'Winter Tires', 'All-Season']
     };
     return categoryMap[brand.toLowerCase()] || ['Tires'];
   }
