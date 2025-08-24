@@ -432,6 +432,7 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
                       <SelectItem value="windforce">Windforce</SelectItem>
                       <SelectItem value="headway">Headway</SelectItem>
                       <SelectItem value="dextero">Dextero</SelectItem>
+                      <SelectItem value="leao">Leao</SelectItem>
                       <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>

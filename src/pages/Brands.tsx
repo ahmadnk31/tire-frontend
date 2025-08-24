@@ -76,7 +76,8 @@ const Brands: React.FC = () => {
     'tracmax': 'https://www.tyrecenter.net/wp-content/uploads/2020/12/New-Project-1.jpg',
     'windforce': 'https://ik.imagekit.io/ntvz9dezi1x/blog/windforce-logo.png',
     "headway": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3pm5I-aR6QDAcIj5ZHTUpouU2VTK80MNi8Lsaskagov8-vsvEcsxIpNzgFB_UxPJC8z4&usqp=CAU",
-    "dextero": "https://tirehungry.com/wp-content/uploads/2023/05/Dextero-Review.png"
+    "dextero": "https://tirehungry.com/wp-content/uploads/2023/05/Dextero-Review.png",
+    "leao": "https://leao-tyres.com/sites/default/files/default_images/Leao%20logo.png"
   }
 
   // Check if user is logged in
@@ -318,7 +319,8 @@ const Brands: React.FC = () => {
       'tracmax': 'China',
       "windforce": "USA",
       "headway": "USA",
-      "dextero": "USA"
+      "dextero": "USA",
+      "leao": "China"
     };
     return countryMap[brand.toLowerCase()] || 'Unknown';
   }
@@ -337,7 +339,8 @@ const Brands: React.FC = () => {
       'tracmax': 1996,
       'windforce': 1996,
       'headway': 1996,
-      'dextero': 1993
+      'dextero': 1993,
+      'leao': 1996
     };
     return foundedMap[brand.toLowerCase()] || 1900;
   }
@@ -356,7 +359,8 @@ const Brands: React.FC = () => {
       'tracmax': ['Summer Tires', 'Winter Tires', 'All-Season'],
       'windforce': ['Summer Tires', 'Winter Tires', 'All-Season'],
       'headway': ['Summer Tires', 'Winter Tires', 'All-Season'],
-      'dextero': ['Summer Tires', 'Winter Tires', 'All-Season']
+      'dextero': ['Summer Tires', 'Winter Tires', 'All-Season'],
+      'leao': ['Summer Tires', 'Winter Tires', 'All-Season']
     };
     return categoryMap[brand.toLowerCase()] || ['Tires'];
   }
