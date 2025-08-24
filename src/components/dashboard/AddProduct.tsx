@@ -8,10 +8,53 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ImageDropzone } from "@/components/ui/image-dropzone";
-import { Plus, X, Save, Eye, ArrowLeft } from "lucide-react";
+import { Plus, X, Save, Eye, ArrowLeft, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import apiClient, { uploadApi, productsApi } from "@/lib/api";
 import { CategoryTreeSelector } from "./CategoryTreeSelector";
+
+// Form persistence keys
+const FORM_STORAGE_KEY = 'addProduct_formData';
+const FEATURES_STORAGE_KEY = 'addProduct_features';
+const IMAGES_STORAGE_KEY = 'addProduct_images';
+
+// Helper functions for form persistence
+const saveFormToStorage = (formData: any, features: string[], uploadedImages: any[]) => {
+  try {
+    localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(formData));
+    localStorage.setItem(FEATURES_STORAGE_KEY, JSON.stringify(features));
+    localStorage.setItem(IMAGES_STORAGE_KEY, JSON.stringify(uploadedImages));
+  } catch (error) {
+    console.warn('Failed to save form data to localStorage:', error);
+  }
+};
+
+const loadFormFromStorage = () => {
+  try {
+    const formData = localStorage.getItem(FORM_STORAGE_KEY);
+    const features = localStorage.getItem(FEATURES_STORAGE_KEY);
+    const images = localStorage.getItem(IMAGES_STORAGE_KEY);
+    
+    return {
+      formData: formData ? JSON.parse(formData) : null,
+      features: features ? JSON.parse(features) : null,
+      images: images ? JSON.parse(images) : null,
+    };
+  } catch (error) {
+    console.warn('Failed to load form data from localStorage:', error);
+    return { formData: null, features: null, images: null };
+  }
+};
+
+const clearFormStorage = () => {
+  try {
+    localStorage.removeItem(FORM_STORAGE_KEY);
+    localStorage.removeItem(FEATURES_STORAGE_KEY);
+    localStorage.removeItem(IMAGES_STORAGE_KEY);
+  } catch (error) {
+    console.warn('Failed to clear form data from localStorage:', error);
+  }
+};
 
 interface Product {
   id: number;
@@ -104,9 +147,10 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
   const [categories, setCategories] = useState<any[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const { toast } = useToast();
 
-  // Fetch categories and initialize form data with editing product if provided
+  // Fetch categories and initialize form data
   useEffect(() => {
     const fetchCategories = async () => {
       setCategoriesLoading(true);
@@ -120,7 +164,23 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
       }
     };
     fetchCategories();
-    if (editingProduct) {
+
+    // Load saved form data if not editing a product
+    if (!editingProduct) {
+      const savedData = loadFormFromStorage();
+      if (savedData.formData) {
+        setFormData(savedData.formData);
+        setHasUnsavedChanges(true);
+      }
+      if (savedData.features) {
+        setFeatures(savedData.features);
+      }
+      if (savedData.images) {
+        setUploadedImages(savedData.images);
+      }
+    } else {
+      // If editing, load the product data and clear any saved form data
+      clearFormStorage();
       const sizeParts = editingProduct.size ? editingProduct.size.match(/(\d+)\/(\d+)R(\d+)/) : null;
       setFormData({
         brand: editingProduct.brand || '',
@@ -169,23 +229,60 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
     }
   }, [editingProduct]);
 
+  // Save form data to localStorage whenever it changes (debounced)
+  useEffect(() => {
+    if (!editingProduct && hasUnsavedChanges) {
+      const timeoutId = setTimeout(() => {
+        saveFormToStorage(formData, features, uploadedImages);
+      }, 1000); // Save after 1 second of inactivity
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [formData, features, uploadedImages, editingProduct, hasUnsavedChanges]);
+
+  // Warn user before leaving page with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges && !editingProduct) {
+        e.preventDefault();
+        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+        return e.returnValue;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges, editingProduct]);
+
   const handleInputChange = (field: string, value: any) => {
     console.log(`🔄 handleInputChange: ${field} =`, value, 'Type:', typeof value);
     setFormData(prev => ({ ...prev, [field]: value }));
+    if (!editingProduct) {
+      setHasUnsavedChanges(true);
+    }
   };
 
   const addFeature = () => {
     setFeatures([...features, '']);
+    if (!editingProduct) {
+      setHasUnsavedChanges(true);
+    }
   };
 
   const updateFeature = (index: number, value: string) => {
     const newFeatures = [...features];
     newFeatures[index] = value;
     setFeatures(newFeatures);
+    if (!editingProduct) {
+      setHasUnsavedChanges(true);
+    }
   };
 
   const removeFeature = (index: number) => {
     setFeatures(features.filter((_, i) => i !== index));
+    if (!editingProduct) {
+      setHasUnsavedChanges(true);
+    }
   };
 
   const handleImageUpload = async (files: File[]) => {
@@ -198,11 +295,48 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
       }));
 
       setUploadedImages(prev => [...prev, ...uploadResults]);
+      if (!editingProduct) {
+        setHasUnsavedChanges(true);
+      }
       return uploadResults;
     } catch (error) {
       console.error('Upload error:', error);
       throw new Error('Failed to upload images');
     }
+  };
+
+  const removeImage = (index: number) => {
+    setUploadedImages(prev => prev.filter((_, i) => i !== index));
+    if (!editingProduct) {
+      setHasUnsavedChanges(true);
+    }
+  };
+
+  const restoreSavedData = () => {
+    const savedData = loadFormFromStorage();
+    if (savedData.formData) {
+      setFormData(savedData.formData);
+      setHasUnsavedChanges(true);
+    }
+    if (savedData.features) {
+      setFeatures(savedData.features);
+    }
+    if (savedData.images) {
+      setUploadedImages(savedData.images);
+    }
+    toast({
+      title: "Form restored",
+      description: "Your saved form data has been restored.",
+    });
+  };
+
+  const clearSavedData = () => {
+    clearFormStorage();
+    setHasUnsavedChanges(false);
+    toast({
+      title: "Saved data cleared",
+      description: "All saved form data has been cleared.",
+    });
   };
 
   const handleSubmit = async (isDraft = false) => {
@@ -295,8 +429,10 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
         onSuccess();
       }
 
-      // Reset form if not editing
+      // Clear saved form data and reset form if not editing
       if (!editingProduct) {
+        clearFormStorage();
+        setHasUnsavedChanges(false);
         setFormData({
           brand: '',
           model: '',
@@ -357,6 +493,30 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
             <p className="text-muted-foreground">
               {editingProduct ? 'Update product information' : 'Create a new tire product listing'}
             </p>
+            {/* Show unsaved changes status */}
+            {!editingProduct && hasUnsavedChanges && (
+              <div className="flex items-center gap-2 mt-2">
+                <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-orange-600 font-medium">Unsaved changes</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={restoreSavedData}
+                  className="h-6 px-2 text-xs"
+                >
+                  <RotateCcw className="h-3 w-3 mr-1" />
+                  Restore
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearSavedData}
+                  className="h-6 px-2 text-xs text-red-600 hover:text-red-700"
+                >
+                  Clear
+                </Button>
+              </div>
+            )}
           </div>
         </div>
         <div className="space-x-2">
@@ -612,6 +772,7 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
             <CardContent>
               <ImageDropzone
                 onUpload={handleImageUpload}
+                onRemove={removeImage}
                 maxFiles={8}
                 multiple={true}
                 folder="products"
