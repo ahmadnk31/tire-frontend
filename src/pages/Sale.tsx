@@ -107,6 +107,35 @@ const Sale: React.FC = () => {
       }
       return { productId, isWishlisted };
     },
+    onMutate: async ({ productId, isWishlisted }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['wishlist', token] });
+      
+      // Snapshot the previous value
+      const previousWishlist = queryClient.getQueryData(['wishlist', token]);
+      
+      // Optimistically update to the new value
+      queryClient.setQueryData(['wishlist', token], (old: any) => {
+        if (!old?.wishlist) return old;
+        
+        if (isWishlisted) {
+          // Remove from wishlist
+          return {
+            ...old,
+            wishlist: old.wishlist.filter((item: any) => item.productId !== productId)
+          };
+        } else {
+          // Add to wishlist
+          return {
+            ...old,
+            wishlist: [...old.wishlist, { productId, userId: 1, createdAt: new Date().toISOString() }]
+          };
+        }
+      });
+      
+      // Return a context object with the snapshotted value
+      return { previousWishlist };
+    },
     onSuccess: (data) => {
       // Invalidate both wishlist queries to ensure all wishlist pages update
       queryClient.invalidateQueries({ queryKey: ['wishlist', token] });
@@ -116,16 +145,20 @@ const Sale: React.FC = () => {
       if (data?.isWishlisted) {
         toast({ 
           title: t('wishlist.itemRemoved'), 
-          description: t('wishlist.itemRemoved') 
+          description: t('wishlist.itemRemovedSuccessfully')
         });
       } else {
         toast({ 
           title: t('wishlist.itemAdded'), 
-          description: t('wishlist.itemAdded') 
+          description: t('wishlist.itemAddedSuccessfully')
         });
       }
     },
-    onError: () => {
+    onError: (err, variables, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousWishlist) {
+        queryClient.setQueryData(['wishlist', token], context.previousWishlist);
+      }
       toast({ title: t('common.error'), description: t('errors.wishlistError'), variant: 'destructive' });
     },
   });
@@ -242,7 +275,7 @@ const Sale: React.FC = () => {
 
   const getStockLevelColor = (level: string) => {
     switch (level) {
-      case 'high': return 'text-green-600';
+      case 'high': return 'text-orange-600';
       case 'medium': return 'text-yellow-600';
       case 'low': return 'text-red-600';
       default: return 'text-gray-600';
@@ -482,7 +515,7 @@ const Sale: React.FC = () => {
                   <span className="text-lg font-bold text-red-600">
                     €{product.price}
                   </span>
-                  <span className="text-sm text-green-600 font-medium">
+                  <span className="text-sm text-orange-600 font-medium">
                     {t('sale.save')} €{(product.originalPrice - product.price).toFixed(0)}
                   </span>
                 </div>

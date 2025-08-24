@@ -61,8 +61,8 @@ export const HeroSection = () => {
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
-                  <span className="text-green-600 font-bold text-lg">⚡</span>
+                <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">
+  <span className="text-orange-600 font-bold text-lg">⚡</span>
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900">Fast Installation</p>

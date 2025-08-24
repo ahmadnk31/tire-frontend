@@ -48,7 +48,7 @@ export function CategoryTreeSelector({ categories, selected, onChange }: Categor
               onChange(selected.filter(id => id !== cat.id));
             }
           }}
-          className="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
+          className="form-checkbox h-4 w-4 text-primary rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
         />
         <span className="ml-1 text-sm font-medium text-gray-800">{cat.name}</span>
       </div>

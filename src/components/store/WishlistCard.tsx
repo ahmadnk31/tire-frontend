@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Heart, ShoppingCart, Plus, Minus, Trash2, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { formatEuro } from '@/lib/currency';
 import { useTranslation } from 'react-i18next';
+import { ReviewHoverCard } from '@/components/ui/review-hover-card';
 
 interface WishlistCardProps {
   product: any;
@@ -13,6 +14,7 @@ interface WishlistCardProps {
   updateCartQuantity: (delta: number) => void;
   onRemoveFromWishlist: () => void;
   onClick: () => void;
+  reviewStats?: any;
 }
 
 export const WishlistCard: React.FC<WishlistCardProps> = ({
@@ -21,7 +23,8 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({
   addToCart,
   updateCartQuantity,
   onRemoveFromWishlist,
-  onClick
+  onClick,
+  reviewStats
 }) => {
   const { t } = useTranslation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -134,16 +137,20 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({
     }
   `;
 
+  // Get rating and review count
+  const rating = reviewStats?.averageRating || Number(product?.rating) || 0;
+  const reviewCount = reviewStats?.totalReviews || product?.reviews || 0;
+
   return (
     <>
       <style>{carouselStyles}</style>
       <Card 
-        className="product-card group cursor-pointer"
+        className="product-card group cursor-pointer h-full flex flex-col"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={onClick}
       >
-        <CardContent className="p-0">
+        <CardContent className="p-0 flex flex-col h-full">
           {/* Image Section */}
           <div className="relative aspect-square overflow-hidden rounded-t-lg">
             <div
@@ -218,14 +225,20 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({
           </div>
 
           {/* Content Section */}
-          <div className="p-4">
+          <div className="p-4 flex flex-col flex-grow">
             {/* Brand and Rating */}
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-gray-600">{product.brand}</span>
-              <div className="flex items-center gap-1">
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                <span className="text-sm text-gray-600">{product.rating || '4.5'}</span>
-              </div>
+              <ReviewHoverCard
+                productId={product.id}
+                stats={reviewStats}
+              >
+                <div className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity">
+                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  <span className="text-sm text-gray-600">{rating.toFixed(1)}</span>
+                  <span className="text-sm text-gray-500">({reviewCount})</span>
+                </div>
+              </ReviewHoverCard>
             </div>
 
             {/* Product Name */}
@@ -253,7 +266,7 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({
             )}
 
             {/* Cart Actions */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 mt-auto">
               {cartItem ? (
                 <div className="flex items-center gap-2 flex-1">
                   <Button

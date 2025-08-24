@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { productsApi } from "@/lib/api";
+import { productsApi, reviewsApi } from "@/lib/api";
 import { wishlistApi } from "@/lib/wishlistApi";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,8 @@ import { Star, Heart, ChevronLeft, ChevronRight, X, ShoppingCart, Zap, Plus, Min
 import { formatEuro } from "@/lib/currency";
 import { ProductCard } from "@/components/store/ProductCard";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { ProductReviews } from "@/components/store/ProductReviews";
+import { ReviewHoverCard } from "@/components/ui/review-hover-card";
 
 
 export default function ProductPage() {
@@ -55,6 +57,28 @@ export default function ProductPage() {
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
   });
   const relatedProducts = relatedProductsData?.products || [];
+
+  // TanStack Query for review stats
+  const {
+    data: reviewStats,
+    isLoading: reviewStatsLoading,
+    error: reviewStatsError,
+  } = useQuery({
+    queryKey: ["reviewStats", id],
+    queryFn: () => reviewsApi.getReviewStats(Number(id!)),
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000, // Review stats stay fresh for 5 minutes
+    gcTime: 10 * 60 * 1000, // Cache for 10 minutes
+  });
+
+  // Debug logging for review stats
+  console.log('🔍 [Product Page] Review stats query:', {
+    id,
+    reviewStats,
+    reviewStatsLoading,
+    reviewStatsError,
+    enabled: !!id
+  });
 
   // Check if user is logged in
   const token = localStorage.getItem('token');
@@ -183,19 +207,19 @@ export default function ProductPage() {
     },
     onSuccess: (data) => {
       // Invalidate both wishlist queries to ensure all wishlist pages update
-      queryClient.invalidateQueries({ queryKey: ['wishlist'] });
+      queryClient.invalidateQueries({ queryKey: ['wishlist', token] });
       queryClient.invalidateQueries({ queryKey: ['wishlist-products'] });
       
       // Show success toast
       if (data?.isWishlisted) {
         toast({ 
           title: t('wishlist.itemRemoved'), 
-          description: t('wishlist.itemRemoved') 
+          description: t('wishlist.itemRemovedSuccessfully')
         });
       } else {
         toast({ 
           title: t('wishlist.itemAdded'), 
-          description: t('wishlist.itemAdded') 
+          description: t('wishlist.itemAddedSuccessfully')
         });
       }
     },
@@ -220,8 +244,18 @@ export default function ProductPage() {
 
     wishlistMutation.mutate({ productId: product.id, isWishlisted });
   };
-  const rating = Number(product?.rating) || 0;
-  const reviewCount = product?.reviews || 0;
+  // Use real review data if available, fallback to product data
+  const rating = reviewStats?.stats?.averageRating || Number(product?.rating) || 0;
+  const reviewCount = reviewStats?.stats?.totalReviews || product?.reviews || 0;
+
+  // Debug logging
+  console.log('🔍 [Product Page] Review data:', {
+    reviewStats,
+    productRating: product?.rating,
+    productReviews: product?.reviews,
+    finalRating: rating,
+    finalReviewCount: reviewCount
+  });
 
   const nextImage = () => {
     setImageTransition(true);
@@ -320,7 +354,7 @@ export default function ProductPage() {
                   </div>
                   <div className="w-24 sm:w-32 h-4 bg-gray-200 rounded" />
                 </div>
-                <div className="p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100 flex flex-col gap-2">
+                <div className="p-4 sm:p-6 bg-gradient-to-r from-accent-50 to-purple-50 rounded-xl border border-accent-100 flex flex-col gap-2">
                   <div className="h-8 sm:h-10 w-24 sm:w-32 bg-gray-200 rounded mb-2" />
                   <div className="h-4 sm:h-5 w-16 sm:w-20 bg-gray-200 rounded" />
                 </div>
@@ -517,21 +551,31 @@ export default function ProductPage() {
             <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 flex-1">
               <div className="mb-4 sm:mb-6">
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">{product.name}</h1>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-600 mb-3">
+                <div className="flex flex-col gap-3 text-sm text-gray-600 mb-4">
+                  {/* Stock Status */}
                   <span className="flex items-center gap-1">
                     <div className={`w-2 h-2 rounded-full ${product.stock && product.stock > 0 ? 'bg-green-500' : 'bg-red-500'}`}></div>
                     {product.stock && product.stock > 0 ? `${product.stock} ${t('products.inStock')}` : t('products.outOfStock')}
                   </span>
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className={`w-4 h-4 ${i < Math.floor(rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                    ))}
-                    <span className="font-medium ml-1">{rating.toFixed(1)}</span>
-                    <span className="text-gray-500">({reviewCount} {t('products.reviews')})</span>
+                  
+                  {/* Rating and Reviews */}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    <ReviewHoverCard 
+                      productId={Number(id!)} 
+                      stats={reviewStats?.stats}
+                    >
+                      <div className="flex items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className={`w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 ${i < Math.floor(rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                        ))}
+                        <span className="font-medium text-sm sm:text-base md:text-lg">{rating.toFixed(1)}</span>
+                        <span className="text-gray-500 text-xs sm:text-sm md:text-base">({reviewCount} {t('products.reviews')})</span>
+                      </div>
+                    </ReviewHoverCard>
                   </div>
                 </div>
                 {product.brand && (
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-600 mb-2">
                     {t('products.brand')}: <span className="font-medium text-gray-800">{product.brand}</span>
                   </div>
                 )}
@@ -539,7 +583,7 @@ export default function ProductPage() {
               
 
               {/* Price Section */}
-              <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100">
+              <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gradient-to-r from-accent-50 to-purple-50 rounded-xl border border-accent-100">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
                   <span className="text-3xl sm:text-4xl font-bold text-gray-900">{formatEuro(product.price)}</span>
                   {product.comparePrice && (
@@ -558,7 +602,7 @@ export default function ProductPage() {
                 <div className="mb-6 sm:mb-8">
                   <div className="flex items-center justify-between mb-4">
                     <span className="font-semibold text-base sm:text-lg">{t('products.selectSize')}</span>
-                    <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">{t('products.sizeGuide')}</button>
+                    <button className="text-sm text-accent-600 hover:text-accent-800 font-medium">{t('products.sizeGuide')}</button>
                   </div>
                   <div className="flex gap-2 sm:gap-3 flex-wrap">
                     {product.sizes.map((size: string) => (
@@ -656,9 +700,9 @@ export default function ProductPage() {
     {/* Product Details Tabs - now truly full width below grid */}
     <div className="w-full mt-8 sm:mt-12">
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden max-w-screen-2xl mx-auto">
-        <div className="flex border-b border-gray-100">
+        <div className="flex border-b border-gray-100 overflow-x-auto scrollbar-hide">
           <button
-            className={`flex-1 px-4 sm:px-6 py-3 sm:py-4 font-semibold transition-all duration-200 text-sm sm:text-base ${
+            className={`flex-shrink-0 px-3 sm:px-4 md:px-6 py-3 sm:py-4 font-semibold transition-all duration-200 text-sm sm:text-base whitespace-nowrap ${
               activeTab === 'description'
                 ? 'border-b-3 border-black text-black bg-white' 
                 : 'text-gray-500 hover:text-gray-700 bg-gray-50/50 hover:bg-gray-50'
@@ -668,7 +712,7 @@ export default function ProductPage() {
             {t('products.description')}
           </button>
           <button
-            className={`flex-1 px-4 sm:px-6 py-3 sm:py-4 font-semibold transition-all duration-200 text-sm sm:text-base ${
+            className={`flex-shrink-0 px-3 sm:px-4 md:px-6 py-3 sm:py-4 font-semibold transition-all duration-200 text-sm sm:text-base whitespace-nowrap ${
               activeTab === 'specifications'
                 ? 'border-b-3 border-black text-black bg-white' 
                 : 'text-gray-500 hover:text-gray-700 bg-gray-50/50 hover:bg-gray-50'
@@ -676,6 +720,23 @@ export default function ProductPage() {
             onClick={() => setActiveTab('specifications')}
           >
             {t('products.specifications')}
+          </button>
+          <button
+            className={`flex-shrink-0 px-3 sm:px-4 md:px-6 py-3 sm:py-4 font-semibold transition-all duration-200 text-sm sm:text-base whitespace-nowrap ${
+              activeTab === 'reviews'
+                ? 'border-b-3 border-black text-black bg-white' 
+                : 'text-gray-500 hover:text-gray-700 bg-gray-50/50 hover:bg-gray-50'
+            }`}
+            onClick={() => setActiveTab('reviews')}
+          >
+            <span className="flex items-center gap-1 sm:gap-2">
+              {t('reviews.title')}
+              {product?.rating && product.rating > 0 && (
+                <span className="text-xs bg-gray-200 text-gray-600 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
+                  {product.rating.toFixed(1)}★
+                </span>
+              )}
+            </span>
           </button>
         </div>
         <div className="p-4 sm:p-6 lg:p-8 w-full">
@@ -753,7 +814,7 @@ export default function ProductPage() {
                       {product.isOnSale && (
                         <div className="flex justify-between items-center py-2 border-b border-gray-100">
                           <span className="text-gray-600 font-medium">Sale Status</span>
-                          <span className="text-green-600 font-semibold">On Sale</span>
+                          <span className="text-orange-600 font-semibold">On Sale</span>
                         </div>
                       )}
                       {product.saleStartDate && (
@@ -866,7 +927,7 @@ export default function ProductPage() {
                     <div className="space-y-3">
                       <div className="flex justify-between items-center py-2 border-b border-gray-100">
                         <span className="text-gray-600 font-medium">Stock Status</span>
-                        <span className={`font-semibold ${product.stock && product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        <span className={`font-semibold ${product.stock && product.stock > 0 ? 'text-orange-600' : 'text-red-600'}`}>
                           {product.stock && product.stock > 0 ? `${product.stock} ${t('products.inStock')}` : t('products.outOfStock')}
                         </span>
                       </div>
@@ -938,6 +999,15 @@ export default function ProductPage() {
                   </div>
                 )}
               </div>
+            </div>
+          )}
+          
+          {activeTab === "reviews" && (
+            <div className="w-full">
+              <ProductReviews 
+                productId={product.id} 
+                productName={product.name}
+              />
             </div>
           )}
         </div>

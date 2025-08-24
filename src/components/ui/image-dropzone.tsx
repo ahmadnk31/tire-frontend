@@ -283,7 +283,7 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <Badge className="absolute top-2 left-2 bg-green-500">
+                <Badge className="absolute top-2 left-2 bg-orange-500">
                   Existing
                 </Badge>
               </div>
@@ -312,7 +312,7 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
                 {/* Status Badge */}
                 <Badge 
                   className={`absolute top-2 left-2 ${
-                    file.status === 'success' ? 'bg-green-500' :
+                    file.status === 'success' ? 'bg-orange-500' :
                     file.status === 'error' ? 'bg-red-500' :
                     'bg-blue-500'
                   }`}

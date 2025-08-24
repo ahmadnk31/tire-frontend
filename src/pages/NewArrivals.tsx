@@ -333,8 +333,8 @@ const NewArrivals: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-              <Sparkles className="h-6 w-6 text-green-600" />
+            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+  <Sparkles className="h-6 w-6 text-orange-600" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900">
               {t('newArrivals.title')}
@@ -444,7 +444,7 @@ const NewArrivals: React.FC = () => {
                   className="w-full h-full object-contain"
                 />
                 <div className="absolute top-2 left-2 flex gap-1">
-                  <span className="px-2 py-1 bg-green-500 text-white text-xs font-medium rounded">
+                  <span className="px-2 py-1 bg-orange-500 text-white text-xs font-medium rounded">
                     {t('newArrivals.new')}
                   </span>
                   {product.isOnSale && (
@@ -494,7 +494,7 @@ const NewArrivals: React.FC = () => {
                     €{product.price}
                   </span>
                   {product.originalPrice && (
-                    <span className="text-sm text-green-600 font-medium">
+                    <span className="text-sm text-orange-600 font-medium">
                       Save €{(product.originalPrice - product.price).toFixed(0)}
                     </span>
                   )}
@@ -545,10 +545,10 @@ const NewArrivals: React.FC = () => {
         </div>
 
         {/* Newsletter Signup */}
-        <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 sm:p-6 lg:p-8 border border-green-200">
+        <div className="bg-gradient-to-r from-orange-50 to-blue-50 rounded-xl p-4 sm:p-6 lg:p-8 border border-orange-200">
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
-              <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
+              <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" />
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
                 {t('newArrivals.newsletter.title')}
               </h2>

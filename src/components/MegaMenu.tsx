@@ -34,8 +34,18 @@ export function MegaMenu() {
     const updateNavHeight = () => {
       const header = document.querySelector('header');
       if (header) {
-        const rect = header.getBoundingClientRect();
-        setNavHeight(rect.bottom);
+        // For fixed header, we need to account for the header's height
+        // Check if header is visible (not translated out of view)
+        const transform = window.getComputedStyle(header).transform;
+        const isHeaderVisible = transform === 'none' || transform === 'matrix(1, 0, 0, 1, 0, 0)';
+        
+        if (isHeaderVisible) {
+          const headerHeight = header.offsetHeight;
+          setNavHeight(headerHeight);
+        } else {
+          // Header is hidden, position mega menu at top
+          setNavHeight(0);
+        }
       } else if (navRef.current) {
         // fallback to old behavior
         const rect = navRef.current.getBoundingClientRect();
@@ -44,7 +54,12 @@ export function MegaMenu() {
     };
     updateNavHeight();
     window.addEventListener('resize', updateNavHeight);
-    return () => window.removeEventListener('resize', updateNavHeight);
+    // Also listen for scroll events to update positioning when header visibility changes
+    window.addEventListener('scroll', updateNavHeight);
+    return () => {
+      window.removeEventListener('resize', updateNavHeight);
+      window.removeEventListener('scroll', updateNavHeight);
+    };
   }, []);
 
   // Fetch brands/models/categories from backend
@@ -319,7 +334,7 @@ export function MegaMenu() {
       {/* Full-screen dropdown positioned below navigation */}
       {active && createPortal(
         <div
-          className="fixed left-0 w-full z-50 pointer-events-none"
+          className="fixed left-0 w-full z-40 pointer-events-none"
           style={{ top: `${navHeight}px` }}
         >
           <div

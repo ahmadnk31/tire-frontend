@@ -172,7 +172,7 @@ export const CategorySection = () => {
                 onClick={() => setCurrentIndex(idx * itemsPerPage)}
                 className={`w-2 h-2 rounded-full transition-colors ${
                   Math.floor(currentIndex / itemsPerPage) === idx
-                    ? 'bg-blue-500'
+                    ? 'bg-accent'
                     : 'bg-gray-300 hover:bg-gray-400'
                 }`}
                 aria-label={t('categories.goToPage', { number: idx + 1 })}
@@ -269,7 +269,7 @@ const CategoryItem = ({ category, onClick }: { category: any; onClick: () => voi
       onClick={onClick}
       className="flex flex-col items-center min-w-[90px] cursor-pointer group hover:transform hover:scale-105 transition-transform duration-200"
     >
-      <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-2 border border-gray-200 group-hover:border-blue-300 group-hover:bg-blue-50 transition-colors shadow-sm">
+      <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-2 border border-gray-200 group-hover:border-orange-300 group-hover:bg-orange-50 transition-colors shadow-sm">
         {category.image ? (
           <img 
             src={category.image} 
@@ -282,7 +282,7 @@ const CategoryItem = ({ category, onClick }: { category: any; onClick: () => voi
           getIconForCategory(category.name)
         )}
       </div>
-      <span className="text-sm font-medium text-gray-900 text-center group-hover:text-blue-600 transition-colors">
+      <span className="text-sm font-medium text-gray-900 text-center group-hover:text-orange-600 transition-colors">
         {category.name}
       </span>
     </div>

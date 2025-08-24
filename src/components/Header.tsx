@@ -15,6 +15,8 @@ import { MegaMenu } from "@/components/MegaMenu";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import { useTranslation } from 'react-i18next';
 import { getNotifications } from '@/lib/notifications';
+import { useQuery } from '@tanstack/react-query';
+import { dashboardApi } from '@/lib/api';
 
 
 export const Header = () => {
@@ -25,10 +27,37 @@ export const Header = () => {
   const [cartCount, setCartCount] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   const [notifications, setNotifications] = useState<any[]>([]);
   // User state
   const [user, setUser] = useState<any>(null);
+
+  // Verify admin access with backend
+  const { data: adminStatus, isLoading: adminLoading } = useQuery({
+    queryKey: ['header-admin-verification'],
+    queryFn: async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        return { isAdmin: false };
+      }
+      
+      try {
+        await dashboardApi.getOverview(token);
+        return { isAdmin: true };
+      } catch (error: any) {
+        if (error.message?.includes('403') || error.message?.includes('Forbidden')) {
+          return { isAdmin: false };
+        }
+        // For other errors, we don't want to show admin access
+        return { isAdmin: false };
+      }
+    },
+    retry: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!user, // Only run if user is logged in
+  });
 
   useEffect(() => {
     const update = () => {
@@ -113,9 +142,39 @@ export const Header = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Handle scroll-based navbar visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Always show navbar when at the very top
+      if (currentScrollY === 0) {
+        setIsVisible(false);
+        setLastScrollY(currentScrollY);
+        return;
+      }
+      
+      // Determine scroll direction and show/hide navbar accordingly
+      if (currentScrollY > lastScrollY) {
+        // Scrolling down - hide navbar
+        setIsVisible(false);
+      } else if (currentScrollY < lastScrollY) {
+        // Scrolling up - show navbar
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm px-2 md:px-4">
+      <header className={`fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm px-2 md:px-4 transition-transform duration-300 ${
+        isVisible ? 'translate-y-0' : '-translate-y-full'
+      }`}>
         <div className="w-full flex flex-col">
         {/* Top bar (Download app, links) - Hidden on mobile */}
         <div className="w-full border-b border-gray-100 bg-white hidden md:block">
@@ -264,14 +323,22 @@ export const Header = () => {
                         <Settings className="w-4 h-4 mr-2" /> {t('navigation.settings')}
                       </DropdownMenuItem>
                       {/* Dashboard - only for admin users */}
-                      {user && user.role === 'admin' && (
+                      {adminLoading ? (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem disabled>
+                            <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
+                            Verifying...
+                          </DropdownMenuItem>
+                        </>
+                      ) : adminStatus?.isAdmin ? (
                         <>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => navigate('/dashboard')}>
                             <BarChart3 className="w-4 h-4 mr-2" /> {t('navigation.dashboard')}
                           </DropdownMenuItem>
                         </>
-                      )}
+                      ) : null}
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={() => {
@@ -437,14 +504,22 @@ export const Header = () => {
                           <Settings className="w-4 h-4 mr-2" /> {t('navigation.settings')}
                         </DropdownMenuItem>
                         {/* Dashboard - only for admin users */}
-                        {user && user.role === 'admin' && (
+                        {adminLoading ? (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem disabled>
+                              <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
+                              Verifying...
+                            </DropdownMenuItem>
+                          </>
+                        ) : adminStatus?.isAdmin ? (
                           <>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => navigate('/dashboard')}>
                               <BarChart3 className="w-4 h-4 mr-2" /> {t('navigation.dashboard')}
                             </DropdownMenuItem>
                           </>
-                        )}
+                        ) : null}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           onClick={() => {

@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
+import { ReviewHoverCard } from "@/components/ui/review-hover-card";
+import { useQuery } from "@tanstack/react-query";
+import { reviewsApi } from "@/lib/api";
 
 // Add custom styles for better image display
 const carouselStyles = `
@@ -98,6 +101,17 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
   const [isHovered, setIsHovered] = useState(false);
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
   const touchStartX = useRef<number | null>(null);
+
+  // Fetch review stats for hover card
+  const { data: reviewStats } = useQuery({
+    queryKey: ["reviewStats", product.id],
+    queryFn: () => reviewsApi.getReviewStats(product.id),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+
+  // Debug logging
+  console.log('🔍 [ProductCard] Review stats for product', product.id, ':', reviewStats);
   const touchEndX = useRef<number | null>(null);
 
   // Calculate days until sale ends
@@ -208,7 +222,7 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
 
   return (
     <div
-      className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 overflow-hidden relative w-full max-w-sm mx-auto flex flex-col h-full"
+      className="group bg-white rounded-2xl overflow-visible shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 overflow-hidden relative w-full flex flex-col h-full"
       tabIndex={0}
       aria-label={`Product card for ${product.name}`}
       onClick={onClick}
@@ -344,11 +358,20 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
         </h3>
         <p className="text-gray-600 mb-3 sm:mb-4 text-xs sm:text-sm md:text-base">{product.size}</p>
         <div className="flex items-center mb-4 sm:mb-6 space-x-1 sm:space-x-2">
-          <div className="flex items-center">
-            <Star className="h-4 w-4 sm:h-5 sm:w-5 fill-amber-400 text-amber-400" />
-            <span className="ml-1 text-xs sm:text-sm md:text-base font-medium text-gray-900">{parseFloat(product.rating).toFixed(1)}</span>
-          </div>
-          <span className="text-xs sm:text-sm md:text-base text-gray-500">({product.reviews} {t('products.reviews')})</span>
+          <ReviewHoverCard 
+            productId={product.id} 
+            stats={reviewStats?.stats}
+          >
+            <div className="flex items-center cursor-pointer hover:opacity-80 transition-opacity">
+              <Star className="h-4 w-4 sm:h-5 sm:w-5 fill-amber-400 text-amber-400" />
+              <span className="ml-1 text-xs sm:text-sm md:text-base font-medium text-gray-900">
+                {(reviewStats?.stats?.averageRating || parseFloat(product.rating)).toFixed(1)}
+              </span>
+              <span className="text-xs sm:text-sm md:text-base text-gray-500 ml-1">
+                ({reviewStats?.stats?.totalReviews || product.reviews} {t('products.reviews')})
+              </span>
+            </div>
+          </ReviewHoverCard>
         </div>
         <div className="flex items-center justify-between gap-2 mt-auto">
           <div className="flex flex-col">
@@ -356,7 +379,7 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
             {product.comparePrice && parseFloat(product.comparePrice) > parseFloat(product.price) && (
               <div className="flex items-center gap-2">
                 <span className="text-xs sm:text-sm text-gray-500 line-through">{formatCurrency(product.comparePrice)}</span>
-                <span className="text-xs sm:text-sm font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded">
+                <span className="text-xs sm:text-sm font-medium text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded">
                   {Math.round(((parseFloat(product.comparePrice) - parseFloat(product.price)) / parseFloat(product.comparePrice)) * 100)}% OFF
                 </span>
               </div>

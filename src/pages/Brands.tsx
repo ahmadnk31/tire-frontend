@@ -1,11 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Star, ShoppingCart, Heart, Filter, Grid, List, ChevronRight, Clock } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { productsApi } from '@/lib/api';
+import { productsApi, reviewsApi, getCurrentUserId } from '@/lib/api';
 import { wishlistApi } from '@/lib/wishlistApi';
 import { useToast } from '@/hooks/use-toast';
+import { ProductCard } from '@/components/store/ProductCard';
 
 interface Brand {
   id: string;
@@ -23,18 +24,22 @@ interface Brand {
 }
 
 interface Product {
-  id: string;
+  id: number;
   name: string;
   brand: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  rating: number;
-  reviewCount: number;
-  category: string;
-  isNew?: boolean;
-  isOnSale?: boolean;
+  model: string;
+  size: string;
+  price: string;
+  comparePrice?: string;
+  rating: string;
+  reviews: number;
+  stock: number;
+  featured: boolean;
+  images?: Array<string | { imageUrl: string }>;
+  productImages?: Array<{ imageUrl: string }>;
+  saleStartDate?: string;
   saleEndDate?: string;
+  isOnSale?: boolean;
 }
 
 const Brands: React.FC = () => {
@@ -47,26 +52,55 @@ const Brands: React.FC = () => {
   const [filterCountry, setFilterCountry] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [wishlist, setWishlist] = useState<number[]>([]);
+  const [cart, setCart] = useState<any[]>([]);
   
-  // Cart state
-  const [cart, setCart] = useState<any[]>(() => {
-    if (typeof window === 'undefined') return [];
-    const stored = localStorage.getItem('cart');
-    return stored ? JSON.parse(stored) : [];
+  // Initialize cart from localStorage
+  useEffect(() => {
+    const storedCart = localStorage.getItem('cart');
+    if (storedCart) {
+      setCart(JSON.parse(storedCart));
+    }
+  }, []);
+
+  const logos={
+    'michelin': 'https://logos-world.net/wp-content/uploads/2020/09/Michelin-Logo-2017-present.jpg',
+    'bridgestone': 'https://bpando.org/wp-content/uploads/New-Bridgestone-Logo-Design-2011-BPO.jpg',
+    'continental': 'https://continentaltire.com/themes/custom/nextcontinental/assets/images/Continental_Logo_Social.jpg',
+    'goodyear': 'https://www.goodyear.co.in/wp-content/uploads/GoodYear-Tyres.jpg',
+    'pirelli': 'https://1000logos.net/wp-content/uploads/2021/04/Pirelli-logo.png',
+    'hankook': 'https://www.automotivetestingtechnologyinternational.com/wp-content/uploads/2023/07/Hankook-Logo-1999.png',
+    'double star': 'https://kelucktyre.com/u_file/2007/photo/185a4cb981.jpg',
+    'rotalla': 'https://cdn.buttercms.com/5RvYx5AVS9qnaHY9Nlbz',
+    'ovation': 'https://eshop.tireworld.co.ke/media/manufacturers/Ovation-Tyres-Logo.webp',
+    'tracmax': 'https://www.tyrecenter.net/wp-content/uploads/2020/12/New-Project-1.jpg',
+    'windforce': 'https://ik.imagekit.io/ntvz9dezi1x/blog/windforce-logo.png'
+  }
+
+  // Check if user is logged in
+  const token = localStorage.getItem('token');
+  const isLoggedIn = !!token;
+
+  // Fetch wishlist data
+  const { data: wishlistData } = useQuery({
+    queryKey: ['wishlist', token],
+    queryFn: async () => {
+      if (!token) return { wishlist: [] };
+      const res = await wishlistApi.getWishlist(token);
+      return res;
+    },
+    enabled: !!token,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
   });
-const logos={
-  'michelin': 'https://logos-world.net/wp-content/uploads/2020/09/Michelin-Logo-2017-present.jpg',
-  'bridgestone': 'https://bpando.org/wp-content/uploads/New-Bridgestone-Logo-Design-2011-BPO.jpg',
-  'continental': 'https://continentaltire.com/themes/custom/nextcontinental/assets/images/Continental_Logo_Social.jpg',
-  'goodyear': 'https://www.goodyear.co.in/wp-content/uploads/GoodYear-Tyres.jpg',
-  'pirelli': 'https://1000logos.net/wp-content/uploads/2021/04/Pirelli-logo.png',
-  'hankook': 'https://www.automotivetestingtechnologyinternational.com/wp-content/uploads/2023/07/Hankook-Logo-1999.png',
-  'double star': 'https://kelucktyre.com/u_file/2007/photo/185a4cb981.jpg',
-  'rotalla': 'https://cdn.buttercms.com/5RvYx5AVS9qnaHY9Nlbz',
-  'ovation': 'https://eshop.tireworld.co.ke/media/manufacturers/Ovation-Tyres-Logo.webp',
-  'tracmax': 'https://www.tyrecenter.net/wp-content/uploads/2020/12/New-Project-1.jpg',
-  'windforce': 'https://ik.imagekit.io/ntvz9dezi1x/blog/windforce-logo.png'
-}
+
+  // Update local wishlist state when data changes
+  useEffect(() => {
+    if (wishlistData?.wishlist) {
+      setWishlist(wishlistData.wishlist.map((item: any) => item.productId));
+    }
+  }, [wishlistData]);
+
   // Fetch real brands data
   const { data: brandsData, isLoading, error } = useQuery({
     queryKey: ['brands'],
@@ -88,69 +122,184 @@ const logos={
     isPremium: isPremiumBrand(brandData.brand)
   })) || [];
 
-  // Check if user is logged in
-  const token = localStorage.getItem('token');
-  const isLoggedIn = !!token;
-
-  // Fetch wishlist data
-  const { data: wishlistData } = useQuery({
-    queryKey: ['wishlist', token],
-    queryFn: () => wishlistApi.getWishlist(token!),
-    enabled: isLoggedIn,
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    gcTime: 5 * 60 * 1000, // 5 minutes
+  // Fetch products for selected brand
+  const { data: brandProductsData, isLoading: productsLoading } = useQuery({
+    queryKey: ['brand-products', selectedBrand],
+    queryFn: () => {
+      if (!selectedBrand) return Promise.resolve({ products: [] });
+      // Find the brand by ID to get the original name
+      const selectedBrandData = brands.find(b => b.id === selectedBrand);
+      if (!selectedBrandData) return Promise.resolve({ products: [] });
+      return productsApi.getBrandProducts(selectedBrandData.originalName);
+    },
+    enabled: !!selectedBrand,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Wishlist mutations
-  const addToWishlistMutation = useMutation({
-    mutationFn: async (productId: number) => {
+  // Fetch review stats for products
+  const productIds = brandProductsData?.products?.map((p: any) => p.id) || [];
+  const { data: reviewStatsData } = useQuery({
+    queryKey: ['brand-review-stats', productIds],
+    queryFn: async () => {
+      if (productIds.length === 0) return {};
+      const stats = await Promise.all(
+        productIds.map(async (id: number) => {
+          try {
+            const stats = await reviewsApi.getReviewStats(id);
+            return { [id]: stats.stats };
+          } catch (error) {
+            return { [id]: null };
+          }
+        })
+      );
+      return stats.reduce((acc, stat) => ({ ...acc, ...stat }), {});
+    },
+    enabled: productIds.length > 0,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+
+  // Wishlist mutation with optimistic updates
+  const wishlistMutation = useMutation({
+    mutationFn: async ({ productId, isWishlisted }: { productId: number, isWishlisted: boolean }) => {
       if (!token) throw new Error('Not authenticated');
-      return await wishlistApi.addToWishlist(productId, token);
+      if (isWishlisted) {
+        await wishlistApi.removeFromWishlist(productId, token);
+      } else {
+        await wishlistApi.addToWishlist(productId, token);
+      }
+      return { productId, isWishlisted };
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wishlist'] });
-      toast({
-        title: t('wishlist.addedToWishlist'),
-        description: t('wishlist.itemAddedSuccessfully'),
+    onMutate: async ({ productId, isWishlisted }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['wishlist', token] });
+      
+      // Snapshot the previous value
+      const previousWishlist = queryClient.getQueryData(['wishlist', token]);
+      
+      // Optimistically update to the new value
+      queryClient.setQueryData(['wishlist', token], (old: any) => {
+        if (!old?.wishlist) return old;
+        
+        if (isWishlisted) {
+          // Remove from wishlist
+          return {
+            ...old,
+            wishlist: old.wishlist.filter((item: any) => item.productId !== productId)
+          };
+        } else {
+          // Add to wishlist
+          return {
+            ...old,
+            wishlist: [...old.wishlist, { productId, userId: getCurrentUserId(), createdAt: new Date().toISOString() }]
+          };
+        }
       });
+      
+      // Return a context object with the snapshotted value
+      return { previousWishlist };
     },
-    onError: (error: Error) => {
-      toast({
-        title: t('wishlist.addToWishlistFailed'),
-        description: error.message,
-        variant: 'destructive',
+    onSuccess: (data) => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ['wishlist', token] });
+      queryClient.invalidateQueries({ queryKey: ['wishlist-products'] });
+      
+      // Show success toast
+      if (data?.isWishlisted) {
+        toast({ 
+          title: t('wishlist.itemRemoved'), 
+          description: t('wishlist.itemRemovedSuccessfully')
+        });
+      } else {
+        toast({ 
+          title: t('wishlist.itemAdded'), 
+          description: t('wishlist.itemAddedSuccessfully')
+        });
+      }
+    },
+    onError: (err, variables, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousWishlist) {
+        queryClient.setQueryData(['wishlist', token], context.previousWishlist);
+      }
+      toast({ 
+        title: t('common.error'), 
+        description: t('errors.wishlistError'), 
+        variant: 'destructive' 
       });
     },
   });
 
-  const removeFromWishlistMutation = useMutation({
-    mutationFn: async (productId: number) => {
-      if (!token) throw new Error('Not authenticated');
-      return await wishlistApi.removeFromWishlist(productId, token);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wishlist'] });
+  const handleToggleWishlist = (productId: number) => {
+    if (!token) {
       toast({
-        title: t('wishlist.removedFromWishlist'),
-        description: t('wishlist.itemRemovedSuccessfully'),
+        title: t('auth.loginRequired'),
+        description: t('auth.loginToAddWishlist'),
+        variant: "destructive",
       });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: t('wishlist.removeFromWishlistFailed'),
-        description: error.message,
-        variant: 'destructive',
-      });
-    },
-  });
-
-  // Check if product is in wishlist
-  const isWishlisted = useMemo(() => {
-    if (!wishlistData?.wishlist || !isLoggedIn) {
-      return () => false;
+      navigate('/login');
+      return;
     }
-    return (productId: string) => wishlistData.wishlist.some((item: any) => item.productId === Number(productId));
-  }, [wishlistData?.wishlist, isLoggedIn]);
+    
+    const isWishlisted = wishlist.includes(productId);
+    wishlistMutation.mutate({ productId, isWishlisted });
+  };
+
+  // Add to cart function
+  const addToCart = (product: Product) => {
+    const newCart = [...cart];
+    const existingItemIndex = newCart.findIndex((item: any) => item.id === product.id);
+    
+    if (existingItemIndex !== -1) {
+      // Increment quantity if product already exists
+      newCart[existingItemIndex].quantity += 1;
+    } else {
+      // Get product image
+      let imageUrl = '';
+      if (Array.isArray(product.images) && product.images.length > 0) {
+        if (typeof product.images[0] === 'string') {
+          imageUrl = product.images[0];
+        } else if (product.images[0] && product.images[0].imageUrl) {
+          imageUrl = product.images[0].imageUrl;
+        }
+      } else if (Array.isArray(product.productImages) && product.productImages.length > 0 && product.productImages[0].imageUrl) {
+        imageUrl = product.productImages[0].imageUrl;
+      }
+      
+      // Add new product to cart
+      newCart.push({
+        id: product.id,
+        name: product.name,
+        brand: product.brand,
+        price: parseFloat(product.price),
+        imageUrl: imageUrl || '/placeholder.svg',
+        size: product.size,
+        quantity: 1,
+      });
+    }
+    
+    localStorage.setItem('cart', JSON.stringify(newCart));
+    setCart(newCart);
+    window.dispatchEvent(new Event('cart-updated'));
+    
+    toast({
+      title: t('cart.addedToCart'),
+      description: t('cart.itemAddedSuccessfully'),
+    });
+  };
+
+  // Update cart quantity function
+  const updateCartQuantity = (product: Product, delta: number) => {
+    const newCart = [...cart];
+    const itemIndex = newCart.findIndex((item: any) => item.id === product.id);
+    
+    if (itemIndex !== -1) {
+      newCart[itemIndex].quantity = Math.max(1, newCart[itemIndex].quantity + delta);
+      localStorage.setItem('cart', JSON.stringify(newCart));
+      setCart(newCart);
+      window.dispatchEvent(new Event('cart-updated'));
+    }
+  };
 
   // Helper functions for brand data
   function getBrandCountry(brand: string): string {
@@ -209,33 +358,6 @@ const logos={
     return premiumBrands.includes(brand.toLowerCase());
   }
 
-  // Fetch products for selected brand
-  const { data: brandProductsData } = useQuery({
-    queryKey: ['brand-products', selectedBrand],
-    queryFn: () => {
-      if (!selectedBrand) return Promise.resolve({ products: [] });
-      const selectedBrandData = brands.find(b => b.id === selectedBrand);
-      return selectedBrandData ? productsApi.getBrandProducts(selectedBrandData.originalName) : Promise.resolve({ products: [] });
-    },
-    enabled: !!selectedBrand,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
-
-  const products: Product[] = brandProductsData?.products?.map((product: any) => ({
-    id: product.id.toString(),
-    name: product.name,
-    brand: product.brand,
-    price: Number(product.price),
-    originalPrice: product.comparePrice ? Number(product.comparePrice) : undefined,
-    image: product.images?.[0]?.imageUrl || product.productImages?.[0]?.imageUrl || '/placeholder.svg',
-    rating: Number(product.rating) || 0,
-    reviewCount: 0, // Not available in current schema
-    category: product.seasonType || 'tires',
-    isOnSale: product.isOnSale || (product.comparePrice ? Number(product.comparePrice) > Number(product.price) : false),
-    isNew: false, // Would need to check creation date
-    saleEndDate: product.saleEndDate || null
-  })) || [];
-
   const filteredBrands = brands.filter(brand => {
     const matchesSearch = brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          brand.country.toLowerCase().includes(searchTerm.toLowerCase());
@@ -257,11 +379,34 @@ const logos={
     }
   });
 
-  const filteredProducts = products.filter(product => {
-    if (!selectedBrand) return true;
-    const selectedBrandData = brands.find(b => b.id === selectedBrand);
-    return selectedBrandData && product.brand.toLowerCase() === selectedBrandData.originalName.toLowerCase();
-  });
+  const filteredProducts = brandProductsData?.products?.map((product: any) => ({
+    id: product.id,
+    name: product.name,
+    brand: product.brand,
+    model: product.model,
+    size: product.size,
+    price: product.price,
+    comparePrice: product.comparePrice,
+    rating: product.rating,
+    reviews: product.reviews,
+    stock: product.stock,
+    featured: product.featured,
+    images: product.images,
+    productImages: product.productImages,
+    saleStartDate: product.saleStartDate,
+    saleEndDate: product.saleEndDate,
+    isOnSale: product.isOnSale,
+  })) || [];
+
+  // Check if product is in cart
+  const isInCart = (productId: number) => {
+    return cart.some(item => item.id === productId);
+  };
+
+  // Check if product is wishlisted
+  const isWishlisted = (productId: number) => {
+    return wishlist.includes(productId);
+  };
 
   const countries = Array.from(new Set(brands.map(brand => brand.country)));
 
@@ -275,52 +420,8 @@ const logos={
     return Math.max(0, diffDays);
   };
 
-  // Cart functions
-  const addToCart = (product: Product) => {
-    const existingItem = cart.find(item => item.id === product.id);
-    if (existingItem) {
-      const updatedCart = cart.map(item =>
-        item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-      );
-      setCart(updatedCart);
-      localStorage.setItem('cart', JSON.stringify(updatedCart));
-    } else {
-      const newCart = [...cart, { ...product, quantity: 1 }];
-      setCart(newCart);
-      localStorage.setItem('cart', JSON.stringify(newCart));
-    }
-    // Dispatch cart-updated event to update cart count in header
-    window.dispatchEvent(new Event('cart-updated'));
-    toast({
-      title: t('products.productAdded'),
-      description: `${product.name} added to cart`,
-    });
-  };
-
-  const handleToggleWishlist = (product: Product) => {
-    if (!isLoggedIn) {
-      toast({
-        title: t('auth.loginRequired'),
-        description: t('auth.loginToAddWishlist'),
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    const productId = Number(product.id);
-    if (isWishlisted(product.id)) {
-      removeFromWishlistMutation.mutate(productId);
-    } else {
-      addToWishlistMutation.mutate(productId);
-    }
-  };
-
-  const isInCart = (productId: string) => {
-    return cart.some(item => item.id === productId);
-  };
-
   // Loading state
-  if (isLoading) {
+  if (isLoading || productsLoading) {
     return (
       <div className="min-h-screen bg-gray-50 py-8 pb-20 md:pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -332,7 +433,7 @@ const logos={
               {t('brands.description')}
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="bg-white rounded-lg shadow-md p-6 animate-pulse">
                 <div className="bg-gray-200 h-32 rounded-lg mb-4"></div>
@@ -438,7 +539,7 @@ const logos={
         </div>
 
         {/* Brands Grid */}
-        <div className={`mb-12 ${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8' : 'space-y-4'}`}>
+        <div className={`mb-12 ${viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8' : 'space-y-4'}`}>
           {sortedBrands.map(brand => (
             <div
               key={brand.id}
@@ -517,103 +618,23 @@ const logos={
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               {t('brands.productsBy')} {brands.find(b => b.id === selectedBrand)?.name}
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredProducts.map(product => (
-                <div key={product.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow flex flex-col h-full">
-                  <div 
-                    className="relative h-48 bg-gray-100 flex items-center justify-center cursor-pointer"
-                    onClick={() => navigate(`/products/${product.id}`)}
-                  >
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-contain p-2"
-                    />
-                    {product.isNew && (
-                      <span className="absolute top-2 left-2 px-2 py-1 bg-green-500 text-white text-xs font-medium rounded">
-                        {t('brands.new')}
-                      </span>
-                    )}
-                    {product.isOnSale && (
-                      <span className="absolute top-2 right-2 px-2 py-1 bg-red-500 text-white text-xs font-medium rounded">
-                        {t('brands.sale')}
-                      </span>
-                    )}
-                    {/* Sale countdown badge */}
-                    {product.saleEndDate && getDaysUntilEnd(product.saleEndDate) > 0 && product.isOnSale && (
-                      <span className="absolute top-2 left-2 px-2 py-1 bg-orange-500 text-white text-xs font-medium rounded flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {getDaysUntilEnd(product.saleEndDate)}d
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-4 flex flex-col flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-sm font-medium text-primary">{product.brand}</span>
-                      <div className="flex items-center gap-1 ml-auto">
-                        <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                        <span className="text-sm text-gray-600">{product.rating}</span>
-                        <span className="text-sm text-gray-500">({product.reviewCount})</span>
-                      </div>
-                    </div>
-                    <h3 
-                      className="font-semibold text-gray-900 mb-2 line-clamp-2 flex-1 cursor-pointer hover:text-primary transition-colors"
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {filteredProducts.map(product => {
+                const cartItem = cart.find((item: any) => item.id === product.id);
+                return (
+                  <div key={product.id} className="h-full min-w-0">
+                    <ProductCard
+                      product={product}
                       onClick={() => navigate(`/products/${product.id}`)}
-                    >
-                      {product.name}
-                    </h3>
-                    <div className="flex items-center gap-2 mb-3">
-                      {product.originalPrice && (
-                        <span className="text-sm text-gray-500 line-through">
-                          €{product.originalPrice}
-                        </span>
-                      )}
-                      <span className="text-lg font-bold text-primary">
-                        €{product.price}
-                      </span>
-                    </div>
-                    <div className="flex gap-2 mt-auto">
-                      <button 
-                        className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm ${
-                           isInCart(product.id) 
-                              ? 'bg-green-600 text-white hover:bg-green-700' 
-                              : 'bg-primary text-white hover:bg-primary/90'
-                        }`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          addToCart(product);
-                        }}
-                        
-                      >
-                        <ShoppingCart className="h-4 w-4" />
-                        {isInCart(product.id) ? 'In Cart' : t('brands.addToCart')}
-                      </button>
-                      <button 
-                        className={`p-2 border rounded-lg transition-colors ${
-                          !isLoggedIn
-                            ? 'border-gray-300 bg-gray-100 cursor-not-allowed'
-                            : isWishlisted(product.id)
-                            ? 'border-red-300 bg-red-50'
-                            : 'border-gray-300 hover:bg-gray-50'
-                        }`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleToggleWishlist(product);
-                        }}
-                        disabled={!isLoggedIn || addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
-                      >
-                        <Heart className={`h-4 w-4 ${
-                          !isLoggedIn 
-                            ? 'text-gray-400' 
-                            : isWishlisted(product.id)
-                            ? 'fill-red-500 text-red-500'
-                            : 'text-gray-600'
-                        }`} />
-                      </button>
-                    </div>
+                      cartItem={cartItem}
+                      addToCart={() => addToCart(product)}
+                      updateCartQuantity={(delta) => updateCartQuantity(product, delta)}
+                      isWishlisted={isWishlisted(product.id)}
+                      onToggleWishlist={() => handleToggleWishlist(product.id)}
+                    />
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -623,7 +644,7 @@ const logos={
           <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
             {t('brands.statistics.title')}
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
             <div className="text-center">
               <div className="text-3xl font-bold text-primary mb-2">{brands.length}</div>
               <div className="text-gray-600">{t('brands.statistics.brands')}</div>

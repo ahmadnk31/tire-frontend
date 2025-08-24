@@ -88,7 +88,7 @@ export const ProductGridSkeleton = ({
 // Hero Carousel Skeleton
 export const HeroCarouselSkeleton = () => {
   return (
-    <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[500px] xl:h-[600px] rounded-none sm:rounded-2xl overflow-hidden">
+    <div className="relative w-full h-screen rounded-none overflow-hidden">
       {/* Main image skeleton */}
       <Skeleton variant="shimmer" className="w-full h-full" />
       

@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { ChevronRight, Filter, Grid, List, Search, Star, ShoppingCart, Heart } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { productsApi } from '@/lib/api';
+import { Link, useNavigate } from 'react-router-dom';
+import { productsApi, reviewsApi, getCurrentUserId } from '@/lib/api';
+import { wishlistApi } from '@/lib/wishlistApi';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
+import { ProductCard } from '@/components/store/ProductCard';
+import { CategoriesSkeleton } from '@/components/ui/skeletons';
+import { Button } from '@/components/ui/button';
+import { ChevronRight } from 'lucide-react';
 
 interface Category {
   id: string;
@@ -16,28 +20,62 @@ interface Category {
 }
 
 interface Product {
-  id: string;
+  id: number;
   name: string;
   brand: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  rating: number;
-  reviewCount: number;
-  category: string;
-  isNew?: boolean;
+  model: string;
+  size: string;
+  price: string;
+  comparePrice?: string;
+  rating: string;
+  reviews: number;
+  stock: number;
+  featured: boolean;
+  images?: Array<string | { imageUrl: string }>;
+  productImages?: Array<{ imageUrl: string }>;
+  saleStartDate?: string;
+  saleEndDate?: string;
   isOnSale?: boolean;
 }
 
 const Categories: React.FC = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [sortBy, setSortBy] = useState('name');
-  const [searchTerm, setSearchTerm] = useState('');
+  const token = localStorage.getItem('token');
+  
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [wishlist, setWishlist] = useState<number[]>([]);
+  const [cart, setCart] = useState<any[]>([]);
+
+  // Initialize cart from localStorage
+  useEffect(() => {
+    const storedCart = localStorage.getItem('cart');
+    if (storedCart) {
+      setCart(JSON.parse(storedCart));
+    }
+  }, []);
+
+  // Fetch wishlist data
+  const { data: wishlistData } = useQuery({
+    queryKey: ['wishlist', token],
+    queryFn: async () => {
+      if (!token) return { wishlist: [] };
+      const res = await wishlistApi.getWishlist(token);
+      return res;
+    },
+    enabled: !!token,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Update local wishlist state when data changes
+  useEffect(() => {
+    if (wishlistData?.wishlist) {
+      setWishlist(wishlistData.wishlist.map((item: any) => item.productId));
+    }
+  }, [wishlistData]);
 
   // Fetch real categories data
   const { data: categoriesData, isLoading, error } = useQuery({
@@ -77,193 +115,215 @@ const Categories: React.FC = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Add to cart mutation (localStorage)
-  const addToCartMutation = useMutation({
-    mutationFn: async (product: Product) => {
-      // Get existing cart from localStorage
-      const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
+  // Fetch review stats for products
+  const productIds = categoryProductsData?.products?.map((p: any) => p.id) || [];
+  const { data: reviewStatsData } = useQuery({
+    queryKey: ['category-review-stats', productIds],
+    queryFn: async () => {
+      if (productIds.length === 0) return {};
+      const stats = await Promise.all(
+        productIds.map(async (id: number) => {
+          try {
+            const stats = await reviewsApi.getReviewStats(id);
+            return { [id]: stats.stats };
+          } catch (error) {
+            return { [id]: null };
+          }
+        })
+      );
+      return stats.reduce((acc, stat) => ({ ...acc, ...stat }), {});
+    },
+    enabled: productIds.length > 0,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+
+  // Wishlist mutation with optimistic updates
+  const wishlistMutation = useMutation({
+    mutationFn: async ({ productId, isWishlisted }: { productId: number, isWishlisted: boolean }) => {
+      console.log('🔍 [Categories] Mutation function called with:', { productId, isWishlisted });
+      if (!token) throw new Error('Not authenticated');
       
-      // Check if product already exists in cart
-      const existingItemIndex = existingCart.findIndex((item: any) => item.id === product.id);
+      try {
+        if (isWishlisted) {
+          console.log('🔍 [Categories] Removing from wishlist...');
+          await wishlistApi.removeFromWishlist(productId, token);
+          console.log('🔍 [Categories] Successfully removed from wishlist');
+        } else {
+          console.log('🔍 [Categories] Adding to wishlist...');
+          await wishlistApi.addToWishlist(productId, token);
+          console.log('🔍 [Categories] Successfully added to wishlist');
+        }
+        return { productId, isWishlisted };
+      } catch (error) {
+        console.error('🔍 [Categories] Error in mutation function:', error);
+        throw error;
+      }
+    },
+    onMutate: async ({ productId, isWishlisted }) => {
+      console.log('🔍 [Categories] onMutate called with:', { productId, isWishlisted });
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['wishlist', token] });
       
-      if (existingItemIndex !== -1) {
-        // Increment quantity if product already exists
-        existingCart[existingItemIndex].quantity += 1;
+      // Snapshot the previous value
+      const previousWishlist = queryClient.getQueryData(['wishlist', token]);
+      
+      // Optimistically update to the new value
+      queryClient.setQueryData(['wishlist', token], (old: any) => {
+        if (!old?.wishlist) return old;
+        
+        if (isWishlisted) {
+          // Remove from wishlist
+          return {
+            ...old,
+            wishlist: old.wishlist.filter((item: any) => item.productId !== productId)
+          };
+        } else {
+          // Add to wishlist
+          return {
+            ...old,
+            wishlist: [...old.wishlist, { productId, userId: getCurrentUserId(), createdAt: new Date().toISOString() }]
+          };
+        }
+      });
+      
+      // Return a context object with the snapshotted value
+      return { previousWishlist };
+    },
+    onSuccess: (data) => {
+      console.log('🔍 [Categories] onSuccess called with:', data);
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ['wishlist', token] });
+      queryClient.invalidateQueries({ queryKey: ['wishlist-products'] });
+      
+      // Show success toast
+      if (data?.isWishlisted) {
+        toast({ 
+          title: t('wishlist.itemRemoved'), 
+          description: t('wishlist.itemRemovedSuccessfully')
+        });
       } else {
-                 // Add new product to cart
-         existingCart.push({
-           id: product.id,
-           name: product.name,
-           price: product.price,
-           imageUrl: product.image,
-           quantity: 1,
-           brand: product.brand
-         });
+        toast({ 
+          title: t('wishlist.itemAdded'), 
+          description: t('wishlist.itemAddedSuccessfully')
+        });
       }
-      
-      // Save updated cart to localStorage
-      localStorage.setItem('cart', JSON.stringify(existingCart));
-      
-      return { success: true, cart: existingCart };
     },
-    onSuccess: () => {
-      // Update cart count in header
-      window.dispatchEvent(new Event('cart-updated'));
-      toast({
-        title: t('cart.addedToCart'),
-        description: t('cart.itemAddedSuccessfully'),
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: t('cart.addToCartFailed'),
-        description: error.message,
-        variant: 'destructive',
+    onError: (err, variables, context) => {
+      console.error('🔍 [Categories] onError called with:', err, variables, context);
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousWishlist) {
+        queryClient.setQueryData(['wishlist', token], context.previousWishlist);
+      }
+      toast({ 
+        title: t('common.error'), 
+        description: t('errors.wishlistError'), 
+        variant: 'destructive' 
       });
     },
   });
 
-  // Add to wishlist mutation
-  const addToWishlistMutation = useMutation({
-    mutationFn: async (productId: number) => {
-      const response = await fetch('/api/wishlist/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({
-          productId,
-        }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to add to wishlist');
-      }
-      
-      return response.json();
-    },
-    onSuccess: (data, productId) => {
-      setWishlist(prev => [...prev, productId]);
-      toast({
-        title: t('wishlist.addedToWishlist'),
-        description: t('wishlist.itemAddedSuccessfully'),
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: t('wishlist.addToWishlistFailed'),
-        description: error.message,
-        variant: 'destructive',
-      });
-    },
-  });
-
-  // Remove from wishlist mutation
-  const removeFromWishlistMutation = useMutation({
-    mutationFn: async (productId: number) => {
-      const response = await fetch(`/api/wishlist/remove`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({
-          productId,
-        }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to remove from wishlist');
-      }
-      
-      return response.json();
-    },
-    onSuccess: (data, productId) => {
-      setWishlist(prev => prev.filter(id => id !== productId));
-      toast({
-        title: t('wishlist.removedFromWishlist'),
-        description: t('wishlist.itemRemovedSuccessfully'),
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: t('wishlist.removeFromWishlistFailed'),
-        description: error.message,
-        variant: 'destructive',
-      });
-    },
-  });
-
-  // Debug logging
-  console.log('Selected category:', selectedCategory);
-  console.log('Category products data:', categoryProductsData);
-  console.log('Products loading:', productsLoading);
-
-  const products: Product[] = categoryProductsData?.products?.map((product: any) => ({
-    id: product.id.toString(),
-    name: product.name,
-    brand: product.brand,
-    price: Number(product.price),
-    originalPrice: product.comparePrice ? Number(product.comparePrice) : undefined,
-    image: product.images?.[0]?.imageUrl || product.productImages?.[0]?.imageUrl || '/placeholder.svg',
-    rating: Number(product.rating) || 0,
-    reviewCount: 0, // Not available in current schema
-    category: product.seasonType || 'tires',
-    isOnSale: product.comparePrice ? Number(product.comparePrice) > Number(product.price) : false,
-    isNew: false // Would need to check creation date
-  })) || [];
-
-  // Add cart and wishlist functionality
-  const addToCart = (product: Product) => {
-    addToCartMutation.mutate(product);
-  };
-
-  const handleToggleWishlist = (product: Product) => {
-    const token = localStorage.getItem('token');
+  const handleToggleWishlist = (productId: number) => {
+    console.log('🔍 [Categories] handleToggleWishlist called with productId:', productId);
+    console.log('🔍 [Categories] Token exists:', !!token);
+    console.log('🔍 [Categories] Current wishlist state:', wishlist);
+    
     if (!token) {
+      console.log('🔍 [Categories] No token, redirecting to login');
       toast({
         title: t('auth.loginRequired'),
         description: t('auth.loginToAddWishlist'),
-        variant: 'destructive',
+        variant: "destructive",
       });
+      navigate('/login');
       return;
     }
-
-    const productId = Number(product.id);
-    if (wishlist.includes(productId)) {
-      removeFromWishlistMutation.mutate(productId);
-    } else {
-      addToWishlistMutation.mutate(productId);
+    
+    const isWishlisted = wishlist.includes(productId);
+    console.log('🔍 [Categories] Toggling wishlist for product', productId, 'isWishlisted:', isWishlisted);
+    
+    try {
+      wishlistMutation.mutate({ productId, isWishlisted });
+      console.log('🔍 [Categories] Mutation triggered successfully');
+    } catch (error) {
+      console.error('🔍 [Categories] Error triggering mutation:', error);
     }
   };
 
-  const filteredProducts = products.filter(product => {
-    // Only filter by search term since we're already getting products for the selected category
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.brand.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
-  });
-
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    switch (sortBy) {
-      case 'price-low':
-        return a.price - b.price;
-      case 'price-high':
-        return b.price - a.price;
-      case 'rating':
-        return b.rating - a.rating;
-      case 'name':
-      default:
-        return a.name.localeCompare(b.name);
+  // Add to cart function
+  const addToCart = (product: Product) => {
+    const newCart = [...cart];
+    const existingItemIndex = newCart.findIndex((item: any) => item.id === product.id);
+    
+    if (existingItemIndex !== -1) {
+      // Increment quantity if product already exists
+      newCart[existingItemIndex].quantity += 1;
+    } else {
+      // Get product image
+      let imageUrl = '';
+      if (Array.isArray(product.images) && product.images.length > 0) {
+        if (typeof product.images[0] === 'string') {
+          imageUrl = product.images[0];
+        } else if (product.images[0] && product.images[0].imageUrl) {
+          imageUrl = product.images[0].imageUrl;
+        }
+      } else if (Array.isArray(product.productImages) && product.productImages.length > 0 && product.productImages[0].imageUrl) {
+        imageUrl = product.productImages[0].imageUrl;
+      }
+      
+      // Add new product to cart
+      newCart.push({
+        id: product.id,
+        name: product.name,
+        brand: product.brand,
+        price: parseFloat(product.price),
+        imageUrl: imageUrl || '/placeholder.svg',
+        size: product.size,
+        quantity: 1,
+      });
     }
-  });
+    
+    localStorage.setItem('cart', JSON.stringify(newCart));
+    setCart(newCart);
+    window.dispatchEvent(new Event('cart-updated'));
+    
+    toast({
+      title: t('cart.addedToCart'),
+      description: t('cart.itemAddedSuccessfully'),
+    });
+  };
 
-  // Debug logging for products mapping
-  console.log('Mapped products:', products);
-  console.log('Products array length:', products.length);
-  console.log('Filtered products:', filteredProducts);
-  console.log('Sorted products:', sortedProducts);
+  // Update cart quantity function
+  const updateCartQuantity = (product: Product, delta: number) => {
+    const newCart = [...cart];
+    const itemIndex = newCart.findIndex((item: any) => item.id === product.id);
+    
+    if (itemIndex !== -1) {
+      newCart[itemIndex].quantity = Math.max(1, newCart[itemIndex].quantity + delta);
+      localStorage.setItem('cart', JSON.stringify(newCart));
+      setCart(newCart);
+      window.dispatchEvent(new Event('cart-updated'));
+    }
+  };
+
+  const products: Product[] = categoryProductsData?.products?.map((product: any) => ({
+    id: Number(product.id),
+    name: product.name,
+    brand: product.brand,
+    model: product.model || '',
+    size: product.size || '',
+    price: product.price || '0',
+    comparePrice: product.comparePrice,
+    rating: product.rating || '0',
+    reviews: product.reviews || 0,
+    stock: product.stock || 0,
+    featured: product.featured || false,
+    images: product.images || product.productImages || [],
+    productImages: product.productImages || [],
+    saleStartDate: product.saleStartDate,
+    saleEndDate: product.saleEndDate,
+    isOnSale: product.comparePrice ? Number(product.comparePrice) > Number(product.price) : false
+  })) || [];
 
   // Loading state
   if (isLoading) {
@@ -278,18 +338,7 @@ const Categories: React.FC = () => {
               {t('categories.description')}
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse">
-                <div className="bg-gray-200 h-48"></div>
-                <div className="p-6 space-y-2">
-                  <div className="bg-gray-200 h-6 rounded"></div>
-                  <div className="bg-gray-200 h-4 rounded w-3/4"></div>
-                  <div className="bg-gray-200 h-4 rounded w-1/2"></div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <CategoriesSkeleton />
         </div>
       </div>
     );
@@ -331,48 +380,6 @@ const Categories: React.FC = () => {
           </p>
         </div>
 
-        {/* Search and Filters */}
-        <div className="mb-8 flex flex-col lg:flex-row gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <input
-                type="text"
-                placeholder={t('categories.searchPlaceholder')}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              />
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            >
-              <option value="name">{t('categories.sort.name')}</option>
-              <option value="price-low">{t('categories.sort.priceLow')}</option>
-              <option value="price-high">{t('categories.sort.priceHigh')}</option>
-              <option value="rating">{t('categories.sort.rating')}</option>
-            </select>
-            <div className="flex border border-gray-300 rounded-lg overflow-hidden">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`px-3 py-2 ${viewMode === 'grid' ? 'bg-primary text-white' : 'bg-white text-gray-600'}`}
-              >
-                <Grid className="h-4 w-4" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`px-3 py-2 ${viewMode === 'list' ? 'bg-primary text-white' : 'bg-white text-gray-600'}`}
-              >
-                <List className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-
         {/* Categories Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {categories.map(category => (
@@ -381,7 +388,7 @@ const Categories: React.FC = () => {
               className={`bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer ${
                 selectedCategory === category.id ? 'ring-2 ring-primary' : ''
               }`}
-              onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
+              onClick={() => setSelectedCategory(selectedCategory === category.id ? '' : category.id)}
             >
               <div className="relative">
                 <img
@@ -426,7 +433,7 @@ const Categories: React.FC = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               {t('categories.productsIn')} {categories.find(c => c.id === selectedCategory)?.name}
             </h2>
-            <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-4'}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {productsLoading ? (
                 // Loading skeleton for products
                 [...Array(8)].map((_, i) => (
@@ -439,82 +446,38 @@ const Categories: React.FC = () => {
                     </div>
                   </div>
                 ))
-              ) : sortedProducts.length === 0 ? (
+              ) : products.length === 0 ? (
                 <div className="col-span-full text-center py-12">
                   <p className="text-gray-500 text-lg">
                     {t('categories.noProducts')}
                   </p>
                 </div>
               ) : (
-                sortedProducts.map(product => (
-                  <div key={product.id} className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow flex flex-col h-full ${viewMode === 'list' ? 'flex-row' : ''}`}>
-                    <div className={`relative ${viewMode === 'list' ? 'w-32 h-32' : 'h-48'} flex-shrink-0`}>
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-full object-contain bg-gray-50"
+                products.map(product => {
+                  const isWishlisted = wishlist.includes(product.id);
+                  const cartItem = cart.find((item: any) => item.id === product.id);
+                  
+                  console.log('🔍 [Categories] Rendering ProductCard for product:', product.id, 'isWishlisted:', isWishlisted);
+                  
+                  return (
+                    <div key={product.id} className="h-full">
+                      <ProductCard
+                        product={product}
+                        onClick={() => navigate(`/products/${product.id}`)}
+                        isWishlisted={isWishlisted}
+                        onToggleWishlist={() => handleToggleWishlist(product.id)}
+                        cartItem={cartItem}
+                        addToCart={() => addToCart(product)}
+                        updateCartQuantity={(delta) => updateCartQuantity(product, delta)}
                       />
-                      {product.isNew && (
-                        <span className="absolute top-2 left-2 px-2 py-1 bg-green-500 text-white text-xs font-medium rounded">
-                          {t('categories.new')}
-                        </span>
-                      )}
-                      {product.isOnSale && (
-                        <span className="absolute top-2 right-2 px-2 py-1 bg-red-500 text-white text-xs font-medium rounded">
-                          {t('categories.sale')}
-                        </span>
-                      )}
                     </div>
-                    <div className={`p-4 flex flex-col flex-grow ${viewMode === 'list' ? 'flex-1' : ''}`}>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm font-medium text-primary">{product.brand}</span>
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                          <span className="text-sm text-gray-600">{product.rating}</span>
-                          <span className="text-sm text-gray-500">({product.reviewCount})</span>
-                        </div>
-                      </div>
-                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-                        {product.name}
-                      </h3>
-                      <div className="flex items-center gap-2 mb-3">
-                        {product.originalPrice && (
-                          <span className="text-sm text-gray-500 line-through">
-                            €{product.originalPrice}
-                          </span>
-                        )}
-                        <span className="text-lg font-bold text-primary">
-                          €{product.price}
-                        </span>
-                      </div>
-                      <div className="flex gap-2 mt-auto">
-                        <button 
-                          onClick={() => addToCart(product)}
-                          disabled={addToCartMutation.isPending}
-                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <ShoppingCart className="h-4 w-4" />
-                          {addToCartMutation.isPending ? t('common.loading') : t('categories.addToCart')}
-                        </button>
-                        <button 
-                          onClick={() => handleToggleWishlist(product)}
-                          disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
-                          className={`p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                            wishlist.includes(Number(product.id)) ? 'bg-red-50 border-red-200' : ''
-                          }`}
-                        >
-                          <Heart className={`h-4 w-4 ${
-                            wishlist.includes(Number(product.id)) ? 'fill-red-500 text-red-500' : 'text-gray-600'
-                          }`} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </div>
         )}
+
         {/* Category Navigation */}
         <div className="bg-white rounded-xl p-6 border border-gray-200">
           <h3 className="text-lg font-bold text-gray-900 mb-4">

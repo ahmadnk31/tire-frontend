@@ -27,6 +27,35 @@ export const authApi = {
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
+// Helper function to decode JWT token
+const decodeToken = (token: string) => {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return null;
+  }
+};
+
+// Helper function to get current user ID from token
+export const getCurrentUserId = (): number | undefined => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) return undefined;
+    
+    const decoded = decodeToken(token);
+    return decoded?.id;
+  } catch (error) {
+    console.error('Error getting current user ID:', error);
+    return undefined;
+  }
+};
+
 // Helper function to get auth headers
 const getAuthHeaders = (token?: string) => {
   const authToken = token || localStorage.getItem('token');
@@ -117,15 +146,16 @@ const apiClient = {
   },
 
   async put(endpoint: string, data: any, options?: { headers?: Record<string, string>; token?: string }) {
+    const isFormData = data instanceof FormData;
     const headers: Record<string, string> = {
       ...getAuthHeaders(options?.token),
       ...(options?.headers || {}),
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' })
     };
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'PUT',
       headers,
-      body: JSON.stringify(data),
+      body: isFormData ? data : JSON.stringify(data),
     });
 
     if (!response.ok) {
@@ -462,6 +492,22 @@ export const stripeApi = {
     userName?: string;
     shipping?: any;
   }) => apiClient.post('/stripe/create-payment-intent', data),
+};
+
+// Reviews API
+export const reviewsApi = {
+  getProductReviews: (productId: number, params?: any) => apiClient.get(`/reviews/product/${productId}`, params),
+  getReviewStats: (productId: number) => apiClient.get(`/reviews/stats/${productId}`),
+  createReview: (data: any, token?: string) => apiClient.post('/reviews', data, { token }),
+  updateReview: (reviewId: number, data: any, token?: string) => apiClient.put(`/reviews/${reviewId}`, data, { token }),
+  deleteReview: (reviewId: number, token?: string) => apiClient.delete(`/reviews/${reviewId}`, token),
+  markHelpful: (reviewId: number, token?: string) => apiClient.post(`/reviews/${reviewId}/helpful`, {}, { token }),
+  unmarkHelpful: (reviewId: number, token?: string) => apiClient.delete(`/reviews/${reviewId}/helpful`, token),
+  checkHelpful: (reviewId: number, token?: string) => apiClient.get(`/reviews/${reviewId}/helpful/check`, undefined, token),
+  // Admin routes
+  getPendingReviews: (token?: string, params?: any) => apiClient.get('/reviews/admin/pending', params, token),
+  getAllReviews: (token?: string, params?: any) => apiClient.get('/reviews/admin/all', params, token),
+  updateReviewStatus: (reviewId: number, status: string, token?: string) => apiClient.put(`/reviews/admin/${reviewId}/status`, { status }, { token }),
 };
 
 export default apiClient;

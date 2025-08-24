@@ -88,7 +88,7 @@ console.log('HeroCarousel rendered with slides:', banners);
 
   if (error) {
     return (
-  <div className="relative w-full h-[600px] bg-gradient-to-br from-destructive to-destructive/70 flex items-center justify-center text-white">
+  <div className="relative w-full h-screen bg-gradient-to-br from-destructive to-destructive/70 flex items-center justify-center text-white">
         <div className="text-center">
           <div className="text-xl font-semibold mb-2">{t('banner.loadError')}</div>
           <div className="text-destructive-foreground/80">{t('banner.tryAgain')}</div>
@@ -101,7 +101,7 @@ console.log('HeroCarousel rendered with slides:', banners);
 
   return (
     <div 
-      className="relative w-full h-[400px] sm:h-[500px] md:h-[550px] lg:h-[600px] overflow-hidden group"
+      className="relative w-full h-screen overflow-hidden group"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onTouchStart={(e) => {
