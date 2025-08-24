@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authApi } from '@/lib/api';
+import { isAuthenticated } from '@/lib/auth';
 import { Card, CardContent } from '@/components/ui/card';
 import AuthLayout from '@/components/AuthLayout';
 
@@ -8,6 +9,13 @@ export default function Verify() {
   const [status, setStatus] = useState('Verifying...');
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Check if user is already authenticated
+  useEffect(() => {
+    if (isAuthenticated()) {
+      navigate('/');
+    }
+  }, [navigate]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);

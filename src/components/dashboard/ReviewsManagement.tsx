@@ -232,7 +232,7 @@ export const ReviewsManagement = () => {
             <p className="text-gray-700">{review.comment}</p>
           )}
           
-          {review.images && review.images.length > 0 && (
+          {review.images && Array.isArray(review.images) && review.images.length > 0 && (
             <div className="flex gap-2 overflow-x-auto">
               {review.images.map((image: string, index: number) => (
                 <img

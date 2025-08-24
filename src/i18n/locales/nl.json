@@ -319,7 +319,8 @@
     
   },
   "auth": {
-    "brandName": "Ariana Bandencentraal",
+    "brandName": "TireMax",
+    "backToHome": "Terug naar Home",
     "email": "E-mail",
     "password": "Wachtwoord",
     "name": "Naam",
@@ -931,6 +932,12 @@
     "photos": "Foto's",
     "writeReview": "Schrijf een Review",
     "writeReviewFor": "Schrijf een Review voor",
+    "multipleReviewsHint": "Je kunt meerdere reviews schrijven voor dit product",
+    "editReview": "Review Bewerken",
+    "writeReviewDesc": "Deel je ervaring met dit product",
+    "editReviewDesc": "Update je bestaande review",
+    "yourReviewsCount": "Je hebt {{count}} review(s) geschreven voor dit product",
+    "reviewTitle": "Review Titel",
     "submitReview": "Review Indienen",
     "updateReview": "Review Bijwerken",
     "submitted": "Review Ingediend",

@@ -297,6 +297,19 @@ const ReviewForm: React.FC<{
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Form Header */}
+      <div className="text-center">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          {existingReview ? t('reviews.editReview') : t('reviews.writeReview')}
+        </h3>
+        <p className="text-sm text-gray-600">
+          {existingReview 
+            ? t('reviews.editReviewDesc') 
+            : t('reviews.writeReviewDesc')
+          }
+        </p>
+      </div>
+
       <div>
         <Label className="text-base font-medium">{t('reviews.rating')}</Label>
         <div className="mt-2">
@@ -771,7 +784,8 @@ export const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, produ
 
   const { reviews, stats, pagination } = reviewsData || { reviews: [], stats: { averageRating: 0, totalReviews: 0 }, pagination: { totalPages: 0 } };
   
-
+  // Count user's reviews for this product
+  const userReviewsCount = token ? reviews.filter(review => review.user.id === getCurrentUserId()).length : 0;
 
   return (
     <div className="space-y-6">
@@ -795,53 +809,63 @@ export const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, produ
         </div>
         
         {token ? (
-          <Dialog 
-            open={showReviewForm} 
-            onOpenChange={setShowReviewForm}
-          >
-            <DialogTrigger asChild>
-              <Button 
-                type="button"
-                onClick={() => setShowReviewForm(true)}
-                className="w-full sm:w-auto"
-              >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">{t('reviews.writeReview')}</span>
-                <span className="sm:hidden">Review</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>{t('reviews.writeReviewFor')} {productName}</DialogTitle>
-              </DialogHeader>
-              <ReviewForm
-                productId={productId}
-                productName={productName}
-                onSuccess={() => {
-                  setShowReviewForm(false);
-                  setEditingReview(null);
-                }}
-                onCancel={() => {
-                  setShowReviewForm(false);
-                  setEditingReview(null);
-                }}
-                existingReview={editingReview}
-              />
-            </DialogContent>
-          </Dialog>
+          <div className="flex flex-col gap-2">
+            <Dialog 
+              open={showReviewForm} 
+              onOpenChange={setShowReviewForm}
+            >
+              <DialogTrigger asChild>
+                <Button 
+                  type="button"
+                  onClick={() => setShowReviewForm(true)}
+                  className="w-full sm:w-auto"
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">{t('reviews.writeReview')}</span>
+                  <span className="sm:hidden">Review</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>{t('reviews.writeReviewFor')} {productName}</DialogTitle>
+                </DialogHeader>
+                <ReviewForm
+                  productId={productId}
+                  productName={productName}
+                  onSuccess={() => {
+                    setShowReviewForm(false);
+                    setEditingReview(null);
+                  }}
+                  onCancel={() => {
+                    setShowReviewForm(false);
+                    setEditingReview(null);
+                  }}
+                  existingReview={editingReview}
+                />
+              </DialogContent>
+            </Dialog>
+            <p className="text-xs text-gray-500 text-center sm:text-left">
+              💡 {t('reviews.multipleReviewsHint')}
+            </p>
+            {userReviewsCount > 0 && (
+              <p className="text-xs text-accent-600 text-center sm:text-left">
+                📝 {t('reviews.yourReviewsCount', { count: userReviewsCount })}
+              </p>
+            )}
+          </div>
         ) : (
-          <div className="text-center p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg w-full sm:w-auto">
-            <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mx-auto mb-2" />
-            <p className="text-sm text-blue-800 font-medium mb-2">
+          <div className="text-center p-3 sm:p-4 bg-accent-50 border border-accent-200 rounded-lg w-full sm:w-auto">
+            <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-accent-600 mx-auto mb-2" />
+            <p className="text-sm text-accent-800 font-medium mb-2">
               {t('reviews.loginToReview')}
             </p>
-            <p className="text-xs text-blue-600 mb-3">
+            <p className="text-xs text-accent-600 mb-3">
               {t('reviews.loginToReviewDesc')}
             </p>
             <Button 
               size="sm" 
               variant="outline" 
-              className="text-blue-600 border-blue-300 hover:bg-blue-50 w-full sm:w-auto"
+              className="text-accent-600 border-accent-300 hover:bg-accent-50 w-full sm:w-auto"
               onClick={() => navigate('/login')}
             >
               {t('common.login')}

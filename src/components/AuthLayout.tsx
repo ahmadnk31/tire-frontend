@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { ArrowLeft, Home } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import './auth-layout-animations.css';
 
 const testimonials = [
@@ -46,6 +48,7 @@ const testimonials = [
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
   const [testimonialIdx, setTestimonialIdx] = useState(0);
 
 
@@ -99,6 +102,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <SwitchTransition mode="out-in">
         <CSSTransition key={location.pathname} classNames="fade" timeout={400} nodeRef={formRef}>
           <div ref={formRef} className="flex flex-col justify-center items-center w-full md:w-1/2 py-16 px-4">
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/')}
+              className="absolute top-4 left-4 md:left-auto md:right-4"
+            >
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              {t('auth.backToHome')}
+            </Button>
             {children}
           </div>
         </CSSTransition>

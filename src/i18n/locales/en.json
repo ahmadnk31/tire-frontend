@@ -318,7 +318,8 @@
     "removeFromCartFailed": "Failed to Remove from Cart"
   },
   "auth": {
-    "brandName": "Ariana Bandencentraal",
+    "brandName": "TireMax",
+    "backToHome": "Back to Home",
     "email": "Email",
     "password": "Password",
     "name": "Name",
@@ -1834,6 +1835,10 @@
     "photos": "Photos",
     "writeReview": "Write a Review",
     "writeReviewFor": "Write a Review for",
+    "multipleReviewsHint": "You can write multiple reviews for this product",
+    "editReview": "Edit Review",
+    "writeReviewDesc": "Share your experience with this product",
+    "editReviewDesc": "Update your existing review",
     "submitReview": "Submit Review",
     "updateReview": "Update Review",
     "submitted": "Review Submitted",
@@ -1891,6 +1896,7 @@
     "deleteTitle": "Delete Review",
     "averageRating": "Average Rating",
     "totalReviews": "Total Reviews",
-    "hoverCardMessage": "Click to view all customer reviews and ratings"
+    "hoverCardMessage": "Click to view all customer reviews and ratings",
+    "yourReviewsCount": "You have written {{count}} review(s) for this product"
   }
 }

@@ -1,7 +1,8 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { authApi } from '@/lib/api';
+import { isAuthenticated } from '@/lib/auth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import AuthLayout from '@/components/AuthLayout';
@@ -13,6 +14,13 @@ export default function EmailNotVerified() {
   const { email = '' } = location.state || {};
   const [resent, setResent] = useState(false);
   const [error, setError] = useState('');
+
+  // Check if user is already authenticated
+  useEffect(() => {
+    if (isAuthenticated()) {
+      navigate('/');
+    }
+  }, [navigate]);
 
   const handleResend = async () => {
     setError('');

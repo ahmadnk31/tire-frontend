@@ -17,6 +17,30 @@ declare global {
   }
 }
 
+// Video styling to ensure proper sizing
+const videoStyles = `
+  .hero-video-player {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+  
+  .hero-video-player video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+  
+  .hero-video-player .vds-poster {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+`;
+
 const defaultBanner = {
   type: "image",
   src: "https://www.giosg.com/hubfs/1-2.png",
@@ -123,6 +147,8 @@ console.log('HeroCarousel rendered with slides:', banners);
         window.__carouselTouchStartX = undefined;
       }}
     >
+      {/* Video Styles */}
+      <style dangerouslySetInnerHTML={{ __html: videoStyles }} />
 
       {/* Main Content */}
       {/* Media Content with fade overlay above image/video */}
@@ -148,14 +174,24 @@ console.log('HeroCarousel rendered with slides:', banners);
               loop
               muted
               playsInline
-              className="object-cover w-full h-full"
+              className="hero-video-player w-full h-full"
+              style={{ 
+                objectFit: 'cover',
+                objectPosition: 'center',
+                width: '100%',
+                height: '100%'
+              }}
               controls={false}
               onPause={() => setIsVideoPlaying(false)}
               onPlay={() => setIsVideoPlaying(true)}
             >
               <MediaProvider />
               {currentSlide.poster && (
-                <Poster src={currentSlide.poster} alt={currentSlide.headline} />
+                <Poster 
+                  src={currentSlide.poster} 
+                  alt={currentSlide.headline}
+                  className="w-full h-full object-cover"
+                />
               )}
             </MediaPlayer>
           </div>
@@ -238,12 +274,22 @@ console.log('HeroCarousel rendered with slides:', banners);
                         loop
                         muted
                         playsInline
-                        className="object-cover w-full h-full"
+                        className="hero-video-player w-full h-full"
+                        style={{ 
+                          objectFit: 'cover',
+                          objectPosition: 'center',
+                          width: '100%',
+                          height: '100%'
+                        }}
                         controls={false}
                       >
                         <MediaProvider />
                         {currentSlide.poster && (
-                          <Poster src={currentSlide.poster} alt={currentSlide.headline} />
+                          <Poster 
+                            src={currentSlide.poster} 
+                            alt={currentSlide.headline}
+                            className="w-full h-full object-cover"
+                          />
                         )}
                       </MediaPlayer>
                       {/* Video Play Indicator */}
