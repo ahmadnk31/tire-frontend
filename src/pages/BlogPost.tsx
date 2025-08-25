@@ -25,6 +25,9 @@ const BlogPost: React.FC = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
+  // In-memory cache for viewed posts (fallback when storage is not available)
+  const [viewedPostsCache] = useState<Set<string>>(new Set());
+  
   const [commentForm, setCommentForm] = useState({
     authorName: '',
     authorEmail: '',
@@ -42,14 +45,40 @@ const BlogPost: React.FC = () => {
     enabled: !!slug,
   });
 
+  // Helper function to safely access storage
+  const getViewedPosts = (storage: Storage) => {
+    try {
+      return JSON.parse(storage.getItem('viewedPosts') || '{}');
+    } catch (error) {
+      console.warn('Failed to parse viewed posts from storage:', error);
+      return {};
+    }
+  };
+
+  const setViewedPosts = (storage: Storage, viewedPosts: Record<string, boolean>) => {
+    try {
+      storage.setItem('viewedPosts', JSON.stringify(viewedPosts));
+    } catch (error) {
+      console.warn('Failed to save viewed posts to storage:', error);
+    }
+  };
+
   // Increment view count (only once per visit)
   const incrementViewMutation = useMutation({
     mutationFn: () => blogApi.incrementView(slug!),
     onSuccess: () => {
-      // Mark this post as viewed in localStorage
-      const viewedPosts = JSON.parse(localStorage.getItem('viewedPosts') || '{}');
+      // Mark this post as viewed in both localStorage and sessionStorage
+      const viewedPosts = getViewedPosts(localStorage);
+      const sessionViewedPosts = getViewedPosts(sessionStorage);
+      
       viewedPosts[slug!] = true;
-      localStorage.setItem('viewedPosts', JSON.stringify(viewedPosts));
+      sessionViewedPosts[slug!] = true;
+      
+      setViewedPosts(localStorage, viewedPosts);
+      setViewedPosts(sessionStorage, sessionViewedPosts);
+      
+      // Also add to in-memory cache
+      viewedPostsCache.add(slug!);
     },
   });
 
@@ -78,12 +107,28 @@ const BlogPost: React.FC = () => {
   // Increment view count on first visit
   useEffect(() => {
     if (slug && postData?.post) {
-      const viewedPosts = JSON.parse(localStorage.getItem('viewedPosts') || '{}');
-      if (!viewedPosts[slug]) {
+      // Check localStorage, sessionStorage, and in-memory cache
+      const viewedPosts = getViewedPosts(localStorage);
+      const sessionViewedPosts = getViewedPosts(sessionStorage);
+      const isInMemoryCache = viewedPostsCache.has(slug);
+      
+      console.log('🔍 View tracking check:', {
+        slug,
+        inLocalStorage: !!viewedPosts[slug],
+        inSessionStorage: !!sessionViewedPosts[slug],
+        inMemoryCache: isInMemoryCache,
+        willIncrement: !viewedPosts[slug] && !sessionViewedPosts[slug] && !isInMemoryCache
+      });
+      
+      // Only increment if not viewed in any storage
+      if (!viewedPosts[slug] && !sessionViewedPosts[slug] && !isInMemoryCache) {
+        console.log('📈 Incrementing view count for:', slug);
         incrementViewMutation.mutate();
+      } else {
+        console.log('✅ View already counted for:', slug);
       }
     }
-  }, [slug, postData?.post]);
+  }, [slug, postData?.post, viewedPostsCache]);
 
   // Auto-fill comment form for logged-in users
   useEffect(() => {

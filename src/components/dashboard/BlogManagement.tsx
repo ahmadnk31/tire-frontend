@@ -247,6 +247,14 @@ export const BlogManagement = () => {
                               <Tag className="h-4 w-4" />
                               {post.category}
                             </div>
+                            {post.tags && post.tags.length > 0 && (
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+                                  {post.tags.slice(0, 3).join(', ')}
+                                  {post.tags.length > 3 && ` +${post.tags.length - 3} more`}
+                                </span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>

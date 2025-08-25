@@ -131,7 +131,7 @@ export const BottomNav = () => {
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className={`flex flex-col items-center justify-center w-full h-full transition-colors ${
-              isActive('/profile') || isActive('/dashboard') ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+              isActive('/account') || isActive('/dashboard') ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             <User className="h-5 w-5 mb-1" />

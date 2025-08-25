@@ -43,6 +43,7 @@ export const AddBlogPost: React.FC<AddBlogPostProps> = ({ editingPost, onSuccess
     excerpt: '',
     content: '',
     category: '',
+    tags: '',
     status: 'published' as 'draft' | 'published' | 'archived',
     featured: false,
     readTime: '',
@@ -131,6 +132,7 @@ export const AddBlogPost: React.FC<AddBlogPostProps> = ({ editingPost, onSuccess
         excerpt: editingPost.excerpt,
         content: editingPost.content,
         category: editingPost.category,
+        tags: editingPost.tags ? editingPost.tags.join(', ') : '',
         status: editingPost.status,
         featured: editingPost.featured,
         readTime: editingPost.readTime,
@@ -215,6 +217,7 @@ export const AddBlogPost: React.FC<AddBlogPostProps> = ({ editingPost, onSuccess
       excerpt: formData.excerpt,
       content: formData.content,
       category: formData.category,
+      tags: formData.tags,
       status: formData.status,
       featured: formData.featured,
       readTime: formData.readTime,
@@ -247,6 +250,7 @@ export const AddBlogPost: React.FC<AddBlogPostProps> = ({ editingPost, onSuccess
       excerpt: '',
       content: '',
       category: '',
+      tags: '',
       status: 'published',
       featured: false,
       readTime: '',
@@ -337,6 +341,19 @@ export const AddBlogPost: React.FC<AddBlogPostProps> = ({ editingPost, onSuccess
             onChange={(e) => handleInputChange('readTime', e.target.value)}
             placeholder="e.g., 5 min read"
           />
+        </div>
+
+        <div>
+          <Label htmlFor="tags">Tags</Label>
+          <Input
+            id="tags"
+            value={formData.tags}
+            onChange={(e) => handleInputChange('tags', e.target.value)}
+            placeholder="Enter tags separated by commas (e.g., tires, maintenance, safety)"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Separate multiple tags with commas
+          </p>
         </div>
 
         <div className="flex items-center space-x-2">
