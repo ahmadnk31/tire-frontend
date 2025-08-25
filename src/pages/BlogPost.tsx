@@ -1,0 +1,302 @@
+import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+import { Calendar, Clock, User, Tag, ArrowLeft, Eye, MessageCircle, Send } from 'lucide-react';
+import { blogApi } from '@/lib/api';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { RichTextEditor } from '@/components/ui/rich-text-editor';
+
+interface Comment {
+  id: number;
+  content: string;
+  authorName: string;
+  authorEmail: string;
+  createdAt: string;
+}
+
+const BlogPost: React.FC = () => {
+  const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
+  const [commentForm, setCommentForm] = useState({
+    authorName: '',
+    authorEmail: '',
+    content: ''
+  });
+
+  // Fetch blog post
+  const { data: postData, isLoading, error } = useQuery({
+    queryKey: ['blog-post', slug],
+    queryFn: () => blogApi.getBySlug(slug!),
+    enabled: !!slug,
+  });
+
+  // Add comment mutation
+  const addCommentMutation = useMutation({
+    mutationFn: (data: { content: string; authorName: string; authorEmail: string }) =>
+      blogApi.addComment(postData?.post?.id!, data),
+    onSuccess: () => {
+      toast({
+        title: "Comment submitted",
+        description: "Your comment has been submitted and is awaiting approval.",
+      });
+      setCommentForm({ authorName: '', authorEmail: '', content: '' });
+      // Refetch the post to get updated comments
+      queryClient.invalidateQueries({ queryKey: ['blog-post', slug] });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to submit comment. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const post = postData?.post;
+  const comments = post?.comments || [];
+
+  const handleCommentSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!commentForm.authorName || !commentForm.authorEmail || !commentForm.content) {
+      toast({
+        title: "Missing fields",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    addCommentMutation.mutate(commentForm);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-3/4 mb-8"></div>
+            <div className="h-96 bg-gray-200 rounded mb-8"></div>
+            <div className="space-y-4">
+              <div className="h-4 bg-gray-200 rounded"></div>
+              <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+              <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !post) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center py-12">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Blog post not found
+            </h3>
+            <p className="text-gray-600 mb-4">
+              The blog post you're looking for doesn't exist or has been removed.
+            </p>
+            <Button onClick={() => navigate('/blog')}>
+              Back to Blog
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Back Button */}
+        <Button
+          variant="ghost"
+          onClick={() => navigate('/blog')}
+          className="mb-8 flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Blog
+        </Button>
+
+        {/* Article Header */}
+        <article className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+          {/* Featured Image */}
+          {post.image && (
+            <div className="relative h-64 md:h-96">
+              <img
+                src={post.image}
+                alt={post.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute top-4 left-4">
+                <span className="px-3 py-1 bg-primary text-white text-sm font-medium rounded-full">
+                  {post.category}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Article Content */}
+          <div className="p-8">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              {post.title}
+            </h1>
+            
+            <p className="text-xl text-gray-600 mb-6">
+              {post.excerpt}
+            </p>
+
+            {/* Article Meta */}
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-8 pb-6 border-b border-gray-200">
+              <div className="flex items-center gap-1">
+                <User className="h-4 w-4" />
+                {post.author}
+              </div>
+              <div className="flex items-center gap-1">
+                <Calendar className="h-4 w-4" />
+                {new Date(post.publishedAt).toLocaleDateString()}
+              </div>
+              <div className="flex items-center gap-1">
+                <Clock className="h-4 w-4" />
+                {post.readTime}
+              </div>
+              <div className="flex items-center gap-1">
+                <Eye className="h-4 w-4" />
+                {post.views} views
+              </div>
+            </div>
+
+            {/* Tags */}
+            {post.tags && post.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-8">
+                {post.tags.map(tag => (
+                  <span key={tag} className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Article Content */}
+            <div className="prose prose-lg max-w-none">
+              <RichTextEditor
+                value={post.content}
+                onChange={() => {}} // Read-only
+                readOnly
+                className="border-none shadow-none"
+              />
+            </div>
+          </div>
+        </article>
+
+        {/* Comments Section */}
+        <div className="bg-white rounded-xl shadow-lg p-8">
+          <div className="flex items-center gap-2 mb-6">
+            <MessageCircle className="h-5 w-5 text-primary" />
+            <h2 className="text-2xl font-bold text-gray-900">
+              Comments ({comments.length})
+            </h2>
+          </div>
+
+          {/* Comment Form */}
+          <form onSubmit={handleCommentSubmit} className="mb-8 p-6 bg-gray-50 rounded-lg">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Leave a Comment
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Name *
+                </label>
+                <Input
+                  value={commentForm.authorName}
+                  onChange={(e) => setCommentForm(prev => ({ ...prev, authorName: e.target.value }))}
+                  placeholder="Your name"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email *
+                </label>
+                <Input
+                  type="email"
+                  value={commentForm.authorEmail}
+                  onChange={(e) => setCommentForm(prev => ({ ...prev, authorEmail: e.target.value }))}
+                  placeholder="your.email@example.com"
+                  required
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Comment *
+              </label>
+              <Textarea
+                value={commentForm.content}
+                onChange={(e) => setCommentForm(prev => ({ ...prev, content: e.target.value }))}
+                placeholder="Share your thoughts..."
+                rows={4}
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              disabled={addCommentMutation.isPending}
+              className="mt-4 flex items-center gap-2"
+            >
+              <Send className="h-4 w-4" />
+              {addCommentMutation.isPending ? 'Submitting...' : 'Submit Comment'}
+            </Button>
+          </form>
+
+          {/* Comments List */}
+          <div className="space-y-6">
+            {comments.length === 0 ? (
+              <p className="text-gray-500 text-center py-8">
+                No comments yet. Be the first to share your thoughts!
+              </p>
+            ) : (
+              comments.map(comment => (
+                <div key={comment.id} className="border-b border-gray-200 pb-6 last:border-b-0">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                      <User className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="font-medium text-gray-900">
+                          {comment.authorName}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          {new Date(comment.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <p className="text-gray-700 leading-relaxed">
+                        {comment.content}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default BlogPost;

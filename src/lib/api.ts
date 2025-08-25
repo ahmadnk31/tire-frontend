@@ -510,4 +510,207 @@ export const reviewsApi = {
   updateReviewStatus: (reviewId: number, status: string, token?: string) => apiClient.put(`/reviews/admin/${reviewId}/status`, { status }, { token }),
 };
 
+// Blog API
+export const blogApi = {
+  // Get all blog posts
+  getAll: async (params?: {
+    page?: number;
+    limit?: number;
+    category?: string;
+    search?: string;
+    featured?: boolean;
+  }) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.page) searchParams.append('page', params.page.toString());
+      if (params?.limit) searchParams.append('limit', params.limit.toString());
+      if (params?.category) searchParams.append('category', params.category);
+      if (params?.search) searchParams.append('search', params.search);
+      if (params?.featured) searchParams.append('featured', 'true');
+      
+      const response = await apiClient.get(`/blog?${searchParams.toString()}`);
+      return response.data || { posts: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0, hasNext: false, hasPrev: false } };
+    } catch (error) {
+      console.error('Blog API error:', error);
+      return { posts: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0, hasNext: false, hasPrev: false } };
+    }
+  },
+
+  // Get featured posts
+  getFeatured: async () => {
+    try {
+      const response = await apiClient.get('/blog/featured');
+      return response.data || { posts: [] };
+    } catch (error) {
+      console.error('Featured posts API error:', error);
+      return { posts: [] };
+    }
+  },
+
+  // Get categories
+  getCategories: async () => {
+    try {
+      const response = await apiClient.get('/blog/categories');
+      return response.data || { categories: [] };
+    } catch (error) {
+      console.error('Categories API error:', error);
+      return { categories: [] };
+    }
+  },
+
+  // Get single post by slug
+  getBySlug: async (slug: string) => {
+    try {
+      const response = await apiClient.get(`/blog/${slug}`);
+      return response.data || { post: null };
+    } catch (error) {
+      console.error('Blog post API error:', error);
+      return { post: null };
+    }
+  },
+
+  // Add comment
+  addComment: async (postId: number, data: {
+    content: string;
+    authorName: string;
+    authorEmail: string;
+  }) => {
+    try {
+      const response = await apiClient.post(`/blog/${postId}/comments`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Add comment API error:', error);
+      throw error;
+    }
+  },
+
+  // Subscribe to newsletter
+  subscribe: async (data: { email: string; name?: string }) => {
+    try {
+      const response = await apiClient.post('/blog/subscribe', data);
+      return response.data;
+    } catch (error) {
+      console.error('Subscribe API error:', error);
+      throw error;
+    }
+  },
+
+  // Unsubscribe from newsletter
+  unsubscribe: async (data: { email: string }) => {
+    try {
+      const response = await apiClient.post('/blog/unsubscribe', data);
+      return response.data;
+    } catch (error) {
+      console.error('Unsubscribe API error:', error);
+      throw error;
+    }
+  },
+
+  // Admin functions
+  admin: {
+    // Get all posts (admin)
+    getAllPosts: async (params?: {
+      page?: number;
+      limit?: number;
+      status?: string;
+    }) => {
+      try {
+        const searchParams = new URLSearchParams();
+        if (params?.page) searchParams.append('page', params.page.toString());
+        if (params?.limit) searchParams.append('limit', params.limit.toString());
+        if (params?.status) searchParams.append('status', params.status);
+        
+        const response = await apiClient.get(`/blog/admin/posts?${searchParams.toString()}`);
+        return response.data || { posts: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } };
+      } catch (error) {
+        console.error('Admin posts API error:', error);
+        return { posts: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } };
+      }
+    },
+
+    // Create new post
+    createPost: async (data: FormData) => {
+      try {
+        const response = await apiClient.post('/blog/admin/posts', data, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        return response.data;
+      } catch (error) {
+        console.error('Create post API error:', error);
+        throw error;
+      }
+    },
+
+    // Update post
+    updatePost: async (id: number, data: FormData) => {
+      try {
+        const response = await apiClient.put(`/blog/admin/posts/${id}`, data, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        return response.data;
+      } catch (error) {
+        console.error('Update post API error:', error);
+        throw error;
+      }
+    },
+
+    // Delete post
+    deletePost: async (id: number) => {
+      try {
+        const response = await apiClient.delete(`/blog/admin/posts/${id}`);
+        return response.data;
+      } catch (error) {
+        console.error('Delete post API error:', error);
+        throw error;
+      }
+    },
+
+    // Get all comments (admin)
+    getAllComments: async (params?: {
+      page?: number;
+      limit?: number;
+      status?: string;
+    }) => {
+      try {
+        const searchParams = new URLSearchParams();
+        if (params?.page) searchParams.append('page', params.page.toString());
+        if (params?.limit) searchParams.append('limit', params.limit.toString());
+        if (params?.status) searchParams.append('status', params.status);
+        
+        const response = await apiClient.get(`/blog/admin/comments?${searchParams.toString()}`);
+        return response.data || { comments: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } };
+      } catch (error) {
+        console.error('Admin comments API error:', error);
+        return { comments: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } };
+      }
+    },
+
+    // Update comment status
+    updateCommentStatus: async (id: number, status: 'pending' | 'approved' | 'spam') => {
+      try {
+        const response = await apiClient.put(`/blog/admin/comments/${id}`, { status });
+        return response.data;
+      } catch (error) {
+        console.error('Update comment status API error:', error);
+        throw error;
+      }
+    },
+
+    // Delete comment
+    deleteComment: async (id: number) => {
+      try {
+        const response = await apiClient.delete(`/blog/admin/comments/${id}`);
+        return response.data;
+      } catch (error) {
+        console.error('Delete comment API error:', error);
+        throw error;
+      }
+    },
+  },
+};
+
 export default apiClient;

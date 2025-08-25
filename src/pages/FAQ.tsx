@@ -183,7 +183,7 @@ const FAQ: React.FC = () => {
               </div>
             </a>
             <a
-              href="tel:+32 56 51 28 29"
+              href="tel:+32 467 66 21 97"
               className="flex items-center justify-center gap-3 p-4 border border-gray-300 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors"
             >
               <Phone className="h-6 w-6 text-primary" />

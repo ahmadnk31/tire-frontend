@@ -251,7 +251,7 @@ const SizeGuide = () => {
           <p className="mb-4">
             Our tire experts are here to help you find the perfect tire size for your vehicle.
           </p>
-          <button className="bg-white text-primary px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+          <button onClick={() => window.location.href = "/contact"} className="bg-white text-primary px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
             Contact Our Experts
           </button>
         </div>
