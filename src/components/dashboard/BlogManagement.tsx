@@ -16,10 +16,13 @@ interface BlogPost {
   title: string;
   slug: string;
   excerpt: string;
+  content: string;
   author: string;
   status: 'draft' | 'published' | 'archived';
   category: string;
   featured: boolean;
+  readTime: string;
+  image: string;
   views: number;
   publishedAt: string;
   createdAt: string;
