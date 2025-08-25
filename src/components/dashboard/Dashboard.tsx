@@ -17,13 +17,14 @@ import CampaignManagement from "./CampaignManagement";
 import BulkImport from "./BulkImport";
 import { ReviewsManagement } from "./ReviewsManagement";
 import { BlogManagement } from "./BlogManagement";
+import CommentsManagement from "./CommentsManagement";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, Package, Plus, Settings, Users, ShoppingCart, Shield, Upload, Mail, MessageSquare, LogOut, Menu, X, Star, FileText } from "lucide-react";
+import { BarChart3, Package, Plus, Settings, Users, ShoppingCart, Shield, Upload, Mail, MessageSquare, LogOut, Menu, X, Star, FileText, MessageCircle } from "lucide-react";
 
 import { CategoryManagement } from "./CategoryManagement";
 import { BannerManagement } from './BannerManagement';
-type DashboardView = 'overview' | 'products' | 'add-product' | 'orders' | 'customers' | 'security' | 'settings' | 'categories' | 'banners' | 'bulk-import' | 'contacts' | 'newsletter' | 'campaigns' | 'upload-diagnostics' | 'reviews' | 'blog';
+type DashboardView = 'overview' | 'products' | 'add-product' | 'orders' | 'customers' | 'security' | 'settings' | 'categories' | 'banners' | 'bulk-import' | 'contacts' | 'newsletter' | 'campaigns' | 'upload-diagnostics' | 'reviews' | 'blog' | 'comments';
 
 interface NavigationItem {
   id: string;
@@ -41,6 +42,7 @@ const navigation: NavigationItem[] = [
   { id: 'customers', label: 'Customers', icon: Users },
   { id: 'reviews', label: 'Reviews', icon: Star },
   { id: 'blog', label: 'Blog', icon: FileText },
+  { id: 'comments', label: 'Comments', icon: MessageCircle },
   { id: 'contacts', label: 'Contacts', icon: MessageSquare },
   { id: 'newsletter', label: 'Newsletter', icon: Mail },
   { id: 'campaigns', label: 'Campaigns', icon: Mail },
@@ -181,6 +183,8 @@ export const Dashboard = () => {
           return <SettingsManagement />;
         case 'upload-diagnostics':
           return <UploadDiagnostics />;
+      case 'comments':
+        return <CommentsManagement />;
       default:
         return <DashboardOverview />;
     }

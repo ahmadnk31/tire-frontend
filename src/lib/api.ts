@@ -595,6 +595,8 @@ export const blogApi = {
     featured?: boolean;
   }) => {
     try {
+      console.log('🔍 Frontend: Fetching blog posts with params:', params);
+      
       const searchParams = new URLSearchParams();
       if (params?.page) searchParams.append('page', params.page.toString());
       if (params?.limit) searchParams.append('limit', params.limit.toString());
@@ -602,10 +604,19 @@ export const blogApi = {
       if (params?.search) searchParams.append('search', params.search);
       if (params?.featured) searchParams.append('featured', 'true');
       
-      const response = await apiClient.get(`/blog?${searchParams.toString()}`);
-      return response.data || { posts: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0, hasNext: false, hasPrev: false } };
+      const url = `/blog?${searchParams.toString()}`;
+      console.log('🔗 Frontend: Making API call to:', url);
+      
+      const response = await apiClient.get(url);
+      console.log('✅ Frontend: API response received:', response);
+      
+      // apiClient.get returns JSON directly, not wrapped in data property
+      const result = response || { posts: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0, hasNext: false, hasPrev: false } };
+      console.log('📊 Frontend: Returning blog data:', result);
+      
+      return result;
     } catch (error) {
-      console.error('Blog API error:', error);
+      console.error('❌ Frontend: Blog API error:', error);
       return { posts: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0, hasNext: false, hasPrev: false } };
     }
   },
@@ -614,7 +625,8 @@ export const blogApi = {
   getFeatured: async () => {
     try {
       const response = await apiClient.get('/blog/featured');
-      return response.data || { posts: [] };
+      // apiClient.get returns JSON directly, not wrapped in data property
+      return response || { posts: [] };
     } catch (error) {
       console.error('Featured posts API error:', error);
       return { posts: [] };
@@ -625,7 +637,8 @@ export const blogApi = {
   getCategories: async () => {
     try {
       const response = await apiClient.get('/blog/categories');
-      return response.data || { categories: [] };
+      // apiClient.get returns JSON directly, not wrapped in data property
+      return response || { categories: [] };
     } catch (error) {
       console.error('Categories API error:', error);
       return { categories: [] };
@@ -636,10 +649,23 @@ export const blogApi = {
   getBySlug: async (slug: string) => {
     try {
       const response = await apiClient.get(`/blog/${slug}`);
-      return response.data || { post: null };
+      // apiClient.get returns JSON directly, not wrapped in data property
+      return response || { post: null };
     } catch (error) {
       console.error('Blog post API error:', error);
       return { post: null };
+    }
+  },
+
+  // Increment view count (called once per visit)
+  incrementView: async (slug: string) => {
+    try {
+      const response = await apiClient.post(`/blog/${slug}/view`, {});
+      // apiClient.post returns JSON directly, not wrapped in data property
+      return response;
+    } catch (error) {
+      console.error('View increment API error:', error);
+      return { success: false };
     }
   },
 
@@ -673,7 +699,8 @@ export const blogApi = {
   unsubscribe: async (data: { email: string }) => {
     try {
       const response = await apiClient.post('/blog/unsubscribe', data);
-      return response.data;
+      // apiClient.post returns JSON directly, not wrapped in data property
+      return response;
     } catch (error) {
       console.error('Unsubscribe API error:', error);
       throw error;
@@ -689,28 +716,36 @@ export const blogApi = {
       status?: string;
     }) => {
       try {
+        console.log('🔍 Admin: Fetching blog posts with params:', params);
+        
         const searchParams = new URLSearchParams();
         if (params?.page) searchParams.append('page', params.page.toString());
         if (params?.limit) searchParams.append('limit', params.limit.toString());
         if (params?.status) searchParams.append('status', params.status);
         
-        const response = await apiClient.get(`/blog/admin/posts?${searchParams.toString()}`);
-        return response.data || { posts: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } };
+        const url = `/blog/admin/posts?${searchParams.toString()}`;
+        console.log('🔗 Admin: Making API call to:', url);
+        
+        const response = await apiClient.get(url);
+        console.log('✅ Admin: API response received:', response);
+        
+        // apiClient.get returns JSON directly, not wrapped in data property
+        const result = response || { posts: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } };
+        console.log('📊 Admin: Returning blog data:', result);
+        
+        return result;
       } catch (error) {
-        console.error('Admin posts API error:', error);
+        console.error('❌ Admin: Admin posts API error:', error);
         return { posts: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } };
       }
     },
 
     // Create new post
-    createPost: async (data: FormData) => {
+    createPost: async (data: any) => {
       try {
-        const response = await apiClient.post('/blog/admin/posts', data, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        return response.data;
+        const response = await apiClient.post('/blog/admin/posts', data);
+        // apiClient.post returns JSON directly, not wrapped in data property
+        return response;
       } catch (error) {
         console.error('Create post API error:', error);
         throw error;
@@ -718,14 +753,11 @@ export const blogApi = {
     },
 
     // Update post
-    updatePost: async (id: number, data: FormData) => {
+    updatePost: async (id: number, data: any) => {
       try {
-        const response = await apiClient.put(`/blog/admin/posts/${id}`, data, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        return response.data;
+        const response = await apiClient.put(`/blog/admin/posts/${id}`, data);
+        // apiClient.put returns JSON directly, not wrapped in data property
+        return response;
       } catch (error) {
         console.error('Update post API error:', error);
         throw error;
@@ -736,7 +768,8 @@ export const blogApi = {
     deletePost: async (id: number) => {
       try {
         const response = await apiClient.delete(`/blog/admin/posts/${id}`);
-        return response.data;
+        // apiClient.delete returns JSON directly, not wrapped in data property
+        return response;
       } catch (error) {
         console.error('Delete post API error:', error);
         throw error;
@@ -756,7 +789,8 @@ export const blogApi = {
         if (params?.status) searchParams.append('status', params.status);
         
         const response = await apiClient.get(`/blog/admin/comments?${searchParams.toString()}`);
-        return response.data || { comments: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } };
+        // apiClient.get returns JSON directly, not wrapped in data property
+        return response || { comments: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } };
       } catch (error) {
         console.error('Admin comments API error:', error);
         return { comments: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } };
@@ -767,7 +801,8 @@ export const blogApi = {
     updateCommentStatus: async (id: number, status: 'pending' | 'approved' | 'spam') => {
       try {
         const response = await apiClient.put(`/blog/admin/comments/${id}`, { status });
-        return response.data;
+        // apiClient.put returns JSON directly, not wrapped in data property
+        return response;
       } catch (error) {
         console.error('Update comment status API error:', error);
         throw error;
@@ -778,7 +813,8 @@ export const blogApi = {
     deleteComment: async (id: number) => {
       try {
         const response = await apiClient.delete(`/blog/admin/comments/${id}`);
-        return response.data;
+        // apiClient.delete returns JSON directly, not wrapped in data property
+        return response;
       } catch (error) {
         console.error('Delete comment API error:', error);
         throw error;

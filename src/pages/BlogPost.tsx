@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -31,11 +31,26 @@ const BlogPost: React.FC = () => {
     content: ''
   });
 
+  // Check if user is logged in
+  const isLoggedIn = !!localStorage.getItem('token');
+  const currentUser = isLoggedIn ? JSON.parse(localStorage.getItem('user') || '{}') : null;
+
   // Fetch blog post
   const { data: postData, isLoading, error } = useQuery({
     queryKey: ['blog-post', slug],
     queryFn: () => blogApi.getBySlug(slug!),
     enabled: !!slug,
+  });
+
+  // Increment view count (only once per visit)
+  const incrementViewMutation = useMutation({
+    mutationFn: () => blogApi.incrementView(slug!),
+    onSuccess: () => {
+      // Mark this post as viewed in localStorage
+      const viewedPosts = JSON.parse(localStorage.getItem('viewedPosts') || '{}');
+      viewedPosts[slug!] = true;
+      localStorage.setItem('viewedPosts', JSON.stringify(viewedPosts));
+    },
   });
 
   // Add comment mutation
@@ -60,16 +75,47 @@ const BlogPost: React.FC = () => {
     },
   });
 
+  // Increment view count on first visit
+  useEffect(() => {
+    if (slug && postData?.post) {
+      const viewedPosts = JSON.parse(localStorage.getItem('viewedPosts') || '{}');
+      if (!viewedPosts[slug]) {
+        incrementViewMutation.mutate();
+      }
+    }
+  }, [slug, postData?.post]);
+
+  // Auto-fill comment form for logged-in users
+  useEffect(() => {
+    if (isLoggedIn && currentUser) {
+      setCommentForm(prev => ({
+        ...prev,
+        authorName: currentUser.name || '',
+        authorEmail: currentUser.email || ''
+      }));
+    }
+  }, [isLoggedIn, currentUser]);
+
   const post = postData?.post;
   const comments = post?.comments || [];
 
   const handleCommentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!commentForm.authorName || !commentForm.authorEmail || !commentForm.content) {
+    if (!commentForm.content) {
+      toast({
+        title: "Missing comment",
+        description: "Please enter your comment.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // For logged-in users, use their info; for guests, require name and email
+    if (!isLoggedIn && (!commentForm.authorName || !commentForm.authorEmail)) {
       toast({
         title: "Missing fields",
-        description: "Please fill in all required fields.",
+        description: "Please fill in your name and email.",
         variant: "destructive",
       });
       return;
@@ -215,31 +261,45 @@ const BlogPost: React.FC = () => {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Leave a Comment
             </h3>
-            <div className="grid md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Name *
-                </label>
-                <Input
-                  value={commentForm.authorName}
-                  onChange={(e) => setCommentForm(prev => ({ ...prev, authorName: e.target.value }))}
-                  placeholder="Your name"
-                  required
-                />
+            
+            {/* Show name/email fields only for guests */}
+            {!isLoggedIn && (
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Name *
+                  </label>
+                  <Input
+                    value={commentForm.authorName}
+                    onChange={(e) => setCommentForm(prev => ({ ...prev, authorName: e.target.value }))}
+                    placeholder="Your name"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email *
+                  </label>
+                  <Input
+                    type="email"
+                    value={commentForm.authorEmail}
+                    onChange={(e) => setCommentForm(prev => ({ ...prev, authorEmail: e.target.value }))}
+                    placeholder="your.email@example.com"
+                    required
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email *
-                </label>
-                <Input
-                  type="email"
-                  value={commentForm.authorEmail}
-                  onChange={(e) => setCommentForm(prev => ({ ...prev, authorEmail: e.target.value }))}
-                  placeholder="your.email@example.com"
-                  required
-                />
+            )}
+            
+            {/* Show user info for logged-in users */}
+            {isLoggedIn && currentUser && (
+              <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-700">
+                  Commenting as: <strong>{currentUser.name}</strong> ({currentUser.email})
+                </p>
               </div>
-            </div>
+            )}
+            
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Comment *

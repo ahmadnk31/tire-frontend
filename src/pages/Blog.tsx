@@ -40,12 +40,26 @@ const Blog: React.FC = () => {
   // Fetch blog posts
   const { data: blogData, isLoading, error } = useQuery({
     queryKey: ['blog-posts', currentPage, selectedCategory, searchTerm],
-    queryFn: () => blogApi.getAll({
-      page: currentPage,
-      limit: 9,
-      category: selectedCategory === 'all' ? undefined : selectedCategory,
-      search: searchTerm || undefined,
-    }),
+    queryFn: () => {
+      console.log('🔄 Blog page: React Query fetching with params:', {
+        page: currentPage,
+        category: selectedCategory === 'all' ? undefined : selectedCategory,
+        search: searchTerm || undefined,
+      });
+      return blogApi.getAll({
+        page: currentPage,
+        limit: 9,
+        category: selectedCategory === 'all' ? undefined : selectedCategory,
+        search: searchTerm || undefined,
+      });
+    },
+  });
+
+  console.log('📄 Blog page: React Query state:', {
+    isLoading,
+    error,
+    blogData,
+    postsCount: blogData?.posts?.length || 0
   });
 
   // Fetch categories
@@ -224,7 +238,8 @@ const Blog: React.FC = () => {
                   </div>
                   <Button 
                     onClick={() => handleReadMore(featuredPost)}
-                    className="flex items-center gap-2 text-primary font-medium hover:text-primary/80 transition-colors"
+                    variant='outline'
+                    className="flex items-center gap-2 text-white font-medium hover:text-primary/80 transition-colors"
                   >
                     {t('blog.readMore')}
                     <ChevronRight className="h-4 w-4" />
@@ -324,7 +339,8 @@ const Blog: React.FC = () => {
                     </div>
                     <Button 
                       onClick={() => handleReadMore(post)}
-                      className="flex items-center gap-2 text-primary font-medium hover:text-primary/80 transition-colors"
+                      variant='outline'
+                      className="flex items-center gap-2 font-medium transition-colors"
                     >
                       {t('blog.readMore')}
                       <ChevronRight className="h-4 w-4" />

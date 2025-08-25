@@ -39,13 +39,28 @@ export const BlogManagement = () => {
   const queryClient = useQueryClient();
 
   // Fetch blog posts
-  const { data: postsData, isLoading } = useQuery({
+  const { data: postsData, isLoading, refetch } = useQuery({
     queryKey: ['admin-blog-posts', currentPage, statusFilter, searchTerm],
-    queryFn: () => blogApi.admin.getAllPosts({
-      page: currentPage,
-      limit: 10,
-      status: statusFilter === 'all' ? undefined : statusFilter as any,
-    }),
+    queryFn: () => {
+      console.log('🔄 BlogManagement: React Query fetching with params:', {
+        page: currentPage,
+        status: statusFilter === 'all' ? undefined : statusFilter,
+        search: searchTerm
+      });
+      return blogApi.admin.getAllPosts({
+        page: currentPage,
+        limit: 10,
+        status: statusFilter === 'all' ? undefined : statusFilter as any,
+      });
+    },
+    staleTime: 0, // Always consider data stale to ensure fresh data
+  });
+
+  console.log('📄 BlogManagement: React Query state:', {
+    isLoading,
+    postsData,
+    postsCount: postsData?.posts?.length || 0,
+    pagination: postsData?.pagination
   });
 
   // Delete post mutation
@@ -56,7 +71,11 @@ export const BlogManagement = () => {
         title: 'Post deleted',
         description: 'Blog post has been deleted successfully.',
       });
-      queryClient.invalidateQueries({ queryKey: ['admin-blog-posts'] });
+      // Invalidate all blog post queries regardless of parameters
+      queryClient.invalidateQueries({ 
+        queryKey: ['admin-blog-posts'],
+        exact: false 
+      });
     },
     onError: () => {
       toast({
@@ -119,7 +138,11 @@ export const BlogManagement = () => {
               onSuccess={() => {
                 setShowAddDialog(false);
                 setEditingPost(null);
-                queryClient.invalidateQueries({ queryKey: ['admin-blog-posts'] });
+                queryClient.invalidateQueries({ 
+                  queryKey: ['admin-blog-posts'],
+                  exact: false 
+                });
+                refetch();
               }}
               onCancel={() => {
                 setShowAddDialog(false);
