@@ -448,7 +448,6 @@ export const uploadApi = {
       console.log('🔄 Using fallback multiple upload method');
       
       const results = [];
-      
       for (const file of files) {
         const result = await uploadApi.fallbackSingle(file, folder);
         results.push(result);
@@ -456,12 +455,87 @@ export const uploadApi = {
       
       return {
         success: true,
-        message: `${results.length} files uploaded successfully (fallback method)`,
-        results
+        message: 'Files uploaded successfully (fallback method)',
+        files: results
       };
     } catch (error) {
       console.error('❌ Fallback multiple upload failed:', error);
+      throw new Error(`Fallback multiple upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+
+  // Video upload methods
+  video: async (file: File, folder = 'videos') => {
+    try {
+      console.log('📤 Starting video upload:', {
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type,
+        folder,
+        apiUrl: `${API_BASE_URL}/upload/video`
+      });
+
+      const formData = new FormData();
+      formData.append('video', file);
+      formData.append('folder', folder);
+      
+      const response = await apiClient.post('/upload/video', formData);
+      
+      console.log('✅ Video upload successful:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ Video upload failed:', error);
+      
+      // Try fallback method for deployment issues
+      if (error instanceof Error && error.message.includes('Failed to fetch')) {
+        console.log('🔄 Trying fallback video upload method...');
+        return await uploadApi.fallbackVideo(file, folder);
+      }
+      
       throw error;
+    }
+  },
+
+  fallbackVideo: async (file: File, folder = 'videos') => {
+    try {
+      console.log('🔄 Using fallback video upload method');
+      
+      // Get presigned URL for video
+      const presignedResponse = await apiClient.get('/upload/presigned-url', { 
+        fileName: file.name, 
+        folder,
+        fileType: 'video'
+      });
+      
+      if (!presignedResponse.presignedUrl) {
+        throw new Error('Failed to get presigned URL for video');
+      }
+      
+      // Upload directly to S3
+      const uploadResponse = await fetch(presignedResponse.presignedUrl, {
+        method: 'PUT',
+        body: file,
+        headers: {
+          'Content-Type': file.type,
+        },
+      });
+      
+      if (!uploadResponse.ok) {
+        throw new Error(`S3 video upload failed: ${uploadResponse.statusText}`);
+      }
+      
+      const videoUrl = `https://${process.env.VITE_S3_BUCKET || 'tire-store-images'}.s3.${process.env.VITE_AWS_REGION || 'us-east-1'}.amazonaws.com/${presignedResponse.key}`;
+      
+      return {
+        success: true,
+        message: 'Video uploaded successfully (fallback method)',
+        videoUrl,
+        originalName: file.name,
+        size: file.size
+      };
+    } catch (error) {
+      console.error('❌ Fallback video upload failed:', error);
+      throw new Error(`Fallback video upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   },
 

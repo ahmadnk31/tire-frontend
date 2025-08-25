@@ -362,25 +362,25 @@ const Blog: React.FC = () => {
         )}
 
         {/* Newsletter Signup */}
-        <div className="mt-16 bg-primary/5 rounded-xl p-8 border border-primary/20">
+        <div className="mt-16 bg-primary/5 rounded-xl p-4 sm:p-8 border border-primary/20">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
               {t('blog.newsletter.title')}
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 px-2">
               {t('blog.newsletter.description')}
             </p>
-            <div className="flex max-w-md mx-auto">
+            <div className="flex flex-col sm:flex-row w-full max-w-md mx-auto gap-2 sm:gap-0">
               <input
                 type="email"
                 placeholder={t('blog.newsletter.placeholder')}
                 value={newsletterEmail}
                 onChange={(e) => setNewsletterEmail(e.target.value)}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-l-lg sm:rounded-r-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
               <Button 
                 onClick={handleNewsletterSubscribe}
-                className="px-6 py-2 bg-primary rounded-none text-white rounded-r-lg hover:bg-primary/90 transition-colors"
+                className="px-4 sm:px-6 py-2 bg-primary text-sm sm:text-base text-white rounded-lg sm:rounded-l-none sm:rounded-r-lg hover:bg-primary/90 transition-colors"
               >
                 {t('blog.newsletter.subscribe')}
               </Button>

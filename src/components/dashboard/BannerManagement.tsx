@@ -8,7 +8,10 @@ import { bannersApi } from '@/lib/bannersApi';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { ImageDropzone } from '@/components/ui/image-dropzone';
+import { VideoDropzone } from '@/components/ui/video-dropzone';
 import { uploadApi } from '@/lib/api';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 interface Banner {
   id: number;
@@ -21,8 +24,6 @@ interface Banner {
   sortOrder: number;
 }
 
-
-
 export const BannerManagement = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -30,6 +31,7 @@ export const BannerManagement = () => {
   const [editBanner, setEditBanner] = useState<Banner | null>(null);
   const [form, setForm] = useState<Partial<Banner>>({ type: 'image', isActive: true, sortOrder: 0 });
   const [uploading, setUploading] = useState(false);
+  const [videoUploadType, setVideoUploadType] = useState<'upload' | 'url'>('upload');
 
   // Fetch banners
   const {
@@ -61,7 +63,7 @@ export const BannerManagement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['banners'] });
-  setShowForm(false);
+      setShowForm(false);
       setForm({ type: 'image', isActive: true, sortOrder: 0 });
       toast({ title: 'Banner created' });
     },
@@ -79,7 +81,7 @@ export const BannerManagement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['banners'] });
-  setShowForm(false);
+      setShowForm(false);
       setEditBanner(null);
       setForm({ type: 'image', isActive: true, sortOrder: 0 });
       toast({ title: 'Banner updated' });
@@ -106,17 +108,25 @@ export const BannerManagement = () => {
   const openCreate = () => {
     setEditBanner(null);
     setForm({ type: 'image', isActive: true, sortOrder: 0 });
+    setVideoUploadType('upload');
     setShowForm(true);
   };
+  
   const openEdit = (banner: Banner) => {
     setEditBanner(banner);
     setForm(banner);
+    // Determine video upload type based on existing src
+    if (banner.type === 'video') {
+      setVideoUploadType(banner.src.startsWith('http') ? 'url' : 'upload');
+    }
     setShowForm(true);
   };
+  
   const closeForm = () => {
     setShowForm(false);
     setEditBanner(null);
     setForm({ type: 'image', isActive: true, sortOrder: 0 });
+    setVideoUploadType('upload');
   };
 
   // Handle image upload
@@ -134,10 +144,25 @@ export const BannerManagement = () => {
     }
   };
 
+  // Handle video upload
+  const handleVideoUpload = async (files: File[]) => {
+    setUploading(true);
+    try {
+      const uploaded = await uploadApi.video(files[0], 'banners');
+      setForm(f => ({ ...f, src: uploaded.videoUrl }));
+      return [{ imageUrl: uploaded.videoUrl, originalName: files[0].name }];
+    } catch (err: any) {
+      toast({ title: 'Upload failed', description: err?.message || 'Failed to upload video', variant: 'destructive' });
+      return [];
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.src) {
-      toast({ title: 'Image required', description: 'Please upload a banner image.', variant: 'destructive' });
+      toast({ title: 'Media required', description: 'Please upload a banner image/video or provide a video URL.', variant: 'destructive' });
       return;
     }
     if (editBanner) updateBanner.mutate(form);
@@ -160,20 +185,29 @@ export const BannerManagement = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Type</label>
-                <select
-                  className="w-full border rounded px-2 py-1"
+                <Label htmlFor="type">Type</Label>
+                <Select
                   value={form.type || 'image'}
-                  onChange={e => setForm(f => ({ ...f, type: e.target.value, src: '' }))}
-                  required
+                  onValueChange={(value) => {
+                    setForm(f => ({ ...f, type: value, src: '' }));
+                    if (value === 'video') {
+                      setVideoUploadType('upload');
+                    }
+                  }}
                 >
-                  <option value="image">Image</option>
-                  <option value="video">Video</option>
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="image">Image</SelectItem>
+                    <SelectItem value="video">Video</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
+
               {form.type === 'image' ? (
                 <div>
-                  <label className="block text-sm font-medium mb-1">Banner Image</label>
+                  <Label>Banner Image</Label>
                   <ImageDropzone
                     onUpload={handleImageUpload}
                     maxFiles={1}
@@ -184,56 +218,106 @@ export const BannerManagement = () => {
                   />
                 </div>
               ) : (
-                <div>
-                  <label className="block text-sm font-medium mb-1">Video URL</label>
-                  <Input
-                    value={form.src || ''}
-                    onChange={e => setForm(f => ({ ...f, src: e.target.value }))}
-                    placeholder="https://..."
-                    required={form.type === 'video'}
-                  />
+                <div className="space-y-4">
+                  <div>
+                    <Label>Video Source</Label>
+                    <Select
+                      value={videoUploadType}
+                      onValueChange={(value: 'upload' | 'url') => {
+                        setVideoUploadType(value);
+                        setForm(f => ({ ...f, src: '' }));
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="upload">Upload Video File</SelectItem>
+                        <SelectItem value="url">Video URL</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {videoUploadType === 'upload' ? (
+                    <div>
+                      <Label>Upload Video</Label>
+                      <VideoDropzone
+                        onUpload={handleVideoUpload}
+                        maxFiles={1}
+                        multiple={false}
+                        folder="banners"
+                        existingVideos={form.src ? [{ imageUrl: form.src, originalName: 'Uploaded Video' }] : []}
+                        className="mb-2"
+                        maxSize={100}
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      <Label htmlFor="videoUrl">Video URL</Label>
+                      <Input
+                        id="videoUrl"
+                        value={form.src || ''}
+                        onChange={e => setForm(f => ({ ...f, src: e.target.value }))}
+                        placeholder="https://example.com/video.mp4"
+                        required={form.type === 'video'}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Supported formats: MP4, MOV, AVI, WEBM, MKV
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
+
               <div>
-                <label className="block text-sm font-medium mb-1">Headline</label>
+                <Label htmlFor="headline">Headline</Label>
                 <Input
+                  id="headline"
                   value={form.headline || ''}
                   onChange={e => setForm(f => ({ ...f, headline: e.target.value }))}
                 />
               </div>
+
               <div>
-                <label className="block text-sm font-medium mb-1">Subheadline</label>
+                <Label htmlFor="subheadline">Subheadline</Label>
                 <Input
+                  id="subheadline"
                   value={form.subheadline || ''}
                   onChange={e => setForm(f => ({ ...f, subheadline: e.target.value }))}
                 />
               </div>
+
               <div>
-                <label className="block text-sm font-medium mb-1">Description</label>
+                <Label htmlFor="description">Description</Label>
                 <Input
+                  id="description"
                   value={form.description || ''}
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                 />
               </div>
+
               <div>
-                <label className="block text-sm font-medium mb-1">Sort Order</label>
+                <Label htmlFor="sortOrder">Sort Order</Label>
                 <Input
+                  id="sortOrder"
                   type="number"
                   value={form.sortOrder || 0}
                   onChange={e => setForm(f => ({ ...f, sortOrder: Number(e.target.value) }))}
                 />
               </div>
-              <div className="flex items-center gap-2">
+
+              <div className="flex items-center space-x-2">
                 <input
                   type="checkbox"
                   checked={!!form.isActive}
                   onChange={e => setForm(f => ({ ...f, isActive: e.target.checked }))}
                   id="isActive"
                 />
-                <label htmlFor="isActive" className="text-sm">Active</label>
+                <Label htmlFor="isActive" className="text-sm">Active</Label>
               </div>
+
               <div className="flex gap-2 mt-4">
-                <Button type="submit" disabled={createBanner.status === 'pending' || updateBanner.status === 'pending'}>
+                <Button type="submit" disabled={createBanner.isPending || updateBanner.isPending}>
                   {editBanner ? 'Update' : 'Create'}
                 </Button>
                 <Button type="button" variant="outline" onClick={closeForm}>
@@ -244,6 +328,7 @@ export const BannerManagement = () => {
           </CardContent>
         </Card>
       )}
+
       {isLoading ? (
         <div className="py-12 text-center">Loading banners...</div>
       ) : isError ? (
@@ -279,8 +364,6 @@ export const BannerManagement = () => {
           ))}
         </div>
       )}
-
-  {/* Removed modal dialog, now using inline form above */}
     </div>
   );
 };
