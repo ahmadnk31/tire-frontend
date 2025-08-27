@@ -242,7 +242,30 @@
     "filterByBrand": "Filter by Brand",
     "selectBrand": "Select brand",
     "allBrands": "All Brands",
-    "noResults": "No results found"
+    "noResults": "No results found",
+    "noResultsDescription": "We couldn't find any products matching your search. Try adjusting your keywords or browse our categories.",
+    "clearFilters": "Clear Filters"
+  },
+  
+  "noResults": {
+    "suggestions": "Suggestions:",
+    "errorSuggestions": [
+      "Check your internet connection",
+      "Try refreshing the page",
+      "Contact support if the problem persists"
+    ],
+    "noResultsSuggestions": [
+      "Try different keywords",
+      "Check your spelling",
+      "Use broader search terms",
+      "Browse categories instead"
+    ],
+    "emptySuggestions": [
+      "Check back later for new products",
+      "Browse our featured categories",
+      "Sign up for notifications"
+    ],
+    "needHelp": "Need help? Contact our support team"
   },
   "banner": {
     "loadError": "Failed to load banners",

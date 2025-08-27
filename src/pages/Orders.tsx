@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Eye } from 'lucide-react';
-import apiClient from '@/lib/api';
+import { ordersApi } from '@/lib/api';
 
 const Orders = () => {
   const [orders, setOrders] = useState<any[]>([]);
@@ -16,9 +16,7 @@ const Orders = () => {
       setLoading(true);
       setError('');
       try {
-        const token = localStorage.getItem('token');
-        if (!token) throw new Error('Not authenticated');
-        const res = await apiClient.get('/orders', undefined, token);
+        const res = await ordersApi.getAll();
         setOrders(res.orders || []);
       } catch (err: any) {
         setError(err.message || 'Failed to load orders');

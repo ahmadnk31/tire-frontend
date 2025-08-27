@@ -1,11 +1,11 @@
 // Cache version should be updated with each deployment
-const CACHE_VERSION = '2025-08-27T07-02-05'; // Update this version number with each deployment
+const CACHE_VERSION = '2025-08-27T23-28-17'; // Update this version number with each deployment
 const CACHE_NAME = `ariana-tires-v${CACHE_VERSION}`;
 const STATIC_CACHE_NAME = `ariana-tires-static-v${CACHE_VERSION}`;
 const DYNAMIC_CACHE_NAME = `ariana-tires-dynamic-v${CACHE_VERSION}`;
 
 // Build timestamp for additional cache busting
-const BUILD_TIMESTAMP = 1756278125754;
+const BUILD_TIMESTAMP = 1756337297049;
 
 // Assets to cache on install
 const STATIC_ASSETS = [

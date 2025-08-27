@@ -242,7 +242,30 @@
     "filterByBrand": "Filter op merk",
     "selectBrand": "Selecteer merk",
     "allBrands": "Alle merken",
-    "noResults": "Geen resultaten gevonden"
+    "noResults": "Geen resultaten gevonden",
+    "noResultsDescription": "We konden geen producten vinden die overeenkomen met je zoekopdracht. Probeer je zoekwoorden aan te passen of blader door onze categorieën.",
+    "clearFilters": "Filters wissen"
+  },
+  
+  "noResults": {
+    "suggestions": "Suggesties:",
+    "errorSuggestions": [
+      "Controleer je internetverbinding",
+      "Probeer de pagina te vernieuwen",
+      "Neem contact op met support als het probleem aanhoudt"
+    ],
+    "noResultsSuggestions": [
+      "Probeer andere zoekwoorden",
+      "Controleer je spelling",
+      "Gebruik bredere zoektermen",
+      "Blader door categorieën in plaats daarvan"
+    ],
+    "emptySuggestions": [
+      "Kom later terug voor nieuwe producten",
+      "Blader door onze uitgelichte categorieën",
+      "Meld je aan voor meldingen"
+    ],
+    "needHelp": "Hulp nodig? Neem contact op met ons supportteam"
   },
   "banner": {
     "loadError": "Kan banners niet laden",
