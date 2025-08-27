@@ -9,6 +9,7 @@ import { ProductCard } from '@/components/store/ProductCard';
 import { CategoriesSkeleton } from '@/components/ui/skeletons';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
+import { NoProductsFound, ProductsError, ProductsLoading } from '@/components/ui/NoProductsFound';
 
 interface Category {
   id: string;
@@ -17,6 +18,7 @@ interface Category {
   image: string;
   productCount: number;
   subcategories: string[];
+  slug: string;
 }
 
 interface Product {
@@ -31,6 +33,7 @@ interface Product {
   reviews: number;
   stock: number;
   featured: boolean;
+  slug?: string;
   images?: Array<string | { imageUrl: string }>;
   productImages?: Array<{ imageUrl: string }>;
   saleStartDate?: string;
@@ -99,21 +102,45 @@ const Categories: React.FC = () => {
   }
 
   const categories: Category[] = (Array.isArray(categoriesData) ? categoriesData : categoriesData?.categories || [])?.map((category: any) => ({
-    id: category.slug || category.name.toLowerCase().replace(/\s+/g, '-'),
+    id: category.id || category.slug || category.name.toLowerCase().replace(/\s+/g, '-'),
     name: category.name,
     description: category.description || `${category.name} tires`,
     image: category.image || `https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop&crop=center`,
     productCount: category.productCount || 0,
-    subcategories: getCategorySubcategories(category.name)
+    subcategories: getCategorySubcategories(category.name),
+    slug: category.slug || category.name.toLowerCase().replace(/\s+/g, '-')
   })) || [];
 
+  // Debug: Log the categories data
+  useEffect(() => {
+    if (categoriesData) {
+      console.log('🔍 [Categories] Categories data received:', categoriesData);
+      console.log('🔍 [Categories] Mapped categories:', categories.map(c => ({ id: c.id, name: c.name, slug: c.slug })));
+    }
+  }, [categoriesData, categories]);
+
   // Fetch products for selected category
-  const { data: categoryProductsData, isLoading: productsLoading } = useQuery({
+  const { data: categoryProductsData, isLoading: productsLoading, refetch } = useQuery({
     queryKey: ['category-products', selectedCategory],
-    queryFn: () => selectedCategory ? productsApi.getCategoryProducts(selectedCategory) : Promise.resolve({ products: [] }),
+    queryFn: () => {
+      console.log('🔍 [Categories] Fetching products for category:', selectedCategory);
+      return selectedCategory ? productsApi.getCategoryProducts(selectedCategory) : Promise.resolve({ products: [] });
+    },
     enabled: !!selectedCategory,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  // Debug: Log the received data
+  useEffect(() => {
+    if (categoryProductsData?.products) {
+      console.log('🔍 [Categories] Received category products data:', categoryProductsData.products.map(p => ({ id: p.id, name: p.name, slug: p.slug })));
+      // Check for products without slugs
+      const productsWithoutSlugs = categoryProductsData.products.filter(p => !p.slug);
+      if (productsWithoutSlugs.length > 0) {
+        console.warn('⚠️ [Categories] Products without slugs:', productsWithoutSlugs.map(p => ({ id: p.id, name: p.name })));
+      }
+    }
+  }, [categoryProductsData]);
 
   // Fetch review stats for products
   const productIds = categoryProductsData?.products?.map((p: any) => p.id) || [];
@@ -318,6 +345,7 @@ const Categories: React.FC = () => {
     reviews: product.reviews || 0,
     stock: product.stock || 0,
     featured: product.featured || false,
+    slug: product.slug,
     images: product.images || product.productImages || [],
     productImages: product.productImages || [],
     saleStartDate: product.saleStartDate,
@@ -338,7 +366,7 @@ const Categories: React.FC = () => {
               {t('categories.description')}
             </p>
           </div>
-          <CategoriesSkeleton />
+          <ProductsLoading />
         </div>
       </div>
     );
@@ -357,11 +385,7 @@ const Categories: React.FC = () => {
               {t('categories.description')}
             </p>
           </div>
-          <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">
-              {t('common.errorLoading')}
-            </p>
-          </div>
+          <ProductsError onRetry={() => window.location.reload()} />
         </div>
       </div>
     );
@@ -386,15 +410,23 @@ const Categories: React.FC = () => {
             <div
               key={category.id}
               className={`bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer ${
-                selectedCategory === category.id ? 'ring-2 ring-primary' : ''
+                selectedCategory === category.slug ? 'ring-2 ring-primary' : ''
               }`}
-              onClick={() => setSelectedCategory(selectedCategory === category.id ? '' : category.id)}
+              onClick={() => {
+                const newCategory = selectedCategory === category.slug ? '' : category.slug;
+                console.log('🔍 [Categories] Category clicked:', { 
+                  categoryName: category.name, 
+                  categorySlug: category.slug, 
+                  newSelectedCategory: newCategory 
+                });
+                setSelectedCategory(newCategory);
+              }}
             >
               <div className="relative">
                 <img
                   src={category.image}
                   alt={category.name}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-48 object-contain"
                 />
                 <div className="absolute top-4 right-4">
                   <span className="px-3 py-1 bg-primary text-white text-sm font-medium rounded-full">
@@ -430,9 +462,32 @@ const Categories: React.FC = () => {
         {/* Products Section */}
         {selectedCategory && (
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              {t('categories.productsIn')} {categories.find(c => c.id === selectedCategory)?.name}
-            </h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">
+                {t('categories.productsIn')} {categories.find(c => c.slug === selectedCategory)?.name}
+              </h2>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={() => refetch()} 
+                  variant="outline" 
+                  size="sm"
+                  disabled={productsLoading}
+                >
+                  {productsLoading ? 'Loading...' : 'Refresh'}
+                </Button>
+                <Button 
+                  onClick={() => {
+                    queryClient.invalidateQueries({ queryKey: ['category-products', selectedCategory] });
+                    refetch();
+                  }} 
+                  variant="outline" 
+                  size="sm"
+                  disabled={productsLoading}
+                >
+                  Clear Cache
+                </Button>
+              </div>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {productsLoading ? (
                 // Loading skeleton for products
@@ -447,23 +502,30 @@ const Categories: React.FC = () => {
                   </div>
                 ))
               ) : products.length === 0 ? (
-                <div className="col-span-full text-center py-12">
-                  <p className="text-gray-500 text-lg">
-                    {t('categories.noProducts')}
-                  </p>
+                <div className="col-span-full">
+                  <NoProductsFound
+                    type="no-results"
+                    title={t('categories.noProductsInCategory')}
+                    description={t('categories.noProductsInCategoryDescription')}
+                    onClearFilters={() => setSelectedCategory('')}
+                  />
                 </div>
               ) : (
                 products.map(product => {
                   const isWishlisted = wishlist.includes(product.id);
                   const cartItem = cart.find((item: any) => item.id === product.id);
                   
-                  console.log('🔍 [Categories] Rendering ProductCard for product:', product.id, 'isWishlisted:', isWishlisted);
+                  console.log('🔍 [Categories] Rendering ProductCard for product:', product.id, 'slug:', product.slug, 'isWishlisted:', isWishlisted);
                   
                   return (
                     <div key={product.id} className="h-full">
                       <ProductCard
                         product={product}
-                        onClick={() => navigate(`/products/${product.id}`)}
+                        onClick={() => {
+                          const url = `/products/${product.slug || product.id}`;
+                          console.log('🔍 [Categories] Navigating to:', url, 'for product:', { id: product.id, slug: product.slug });
+                          navigate(url);
+                        }}
                         isWishlisted={isWishlisted}
                         onToggleWishlist={() => handleToggleWishlist(product.id)}
                         cartItem={cartItem}
@@ -487,7 +549,7 @@ const Categories: React.FC = () => {
             {categories.map(category => (
               <Link
                 key={category.id}
-                to={`/products?category=${category.id}`}
+                to={`/products?category=${category.slug}`}
                 className="flex flex-col items-center p-4 rounded-lg hover:bg-gray-50 transition-colors text-center"
               >
                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">

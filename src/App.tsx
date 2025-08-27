@@ -81,7 +81,7 @@ const AppContent = () => {
       {!isAuthRoute && <BottomNav />}
       <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/products/:id" element={<ProductPage />} />
+            <Route path="/products/:slug" element={<ProductPage />} />
             <Route path="/products" element={<Products />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/cart" element={<CartPage />} />

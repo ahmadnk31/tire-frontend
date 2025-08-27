@@ -8,6 +8,7 @@ import { productsApi } from '@/lib/api';
 import { wishlistApi } from '@/lib/wishlistApi';
 import { useToast } from '@/hooks/use-toast';
 import { addSaleNotification } from '@/lib/notifications';
+import { NoProductsFound, ProductsError, ProductsLoading } from '@/components/ui/NoProductsFound';
 
 interface Product {
   id: number;
@@ -25,6 +26,7 @@ interface Product {
   features: string[];
   stockLevel: 'high' | 'medium' | 'low';
   size?: string;
+  slug?: string;
 }
 
 const Sale: React.FC = () => {
@@ -74,7 +76,8 @@ const Sale: React.FC = () => {
       saleEndDate: product.saleEndDate || null,
       features: typeof product.features === 'string' ? product.features.split(',').map(f => f.trim()) : (Array.isArray(product.features) ? product.features : []),
       stockLevel: product.stock > 10 ? 'high' : product.stock > 5 ? 'medium' : 'low',
-      size: product.size
+      size: product.size,
+      slug: product.slug
     };
   }) || [];
 
@@ -94,7 +97,7 @@ const Sale: React.FC = () => {
     gcTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
-  const wishlist = wishlistData || [];
+  const wishlist = Array.isArray(wishlistData) ? wishlistData : [];
 
   // Wishlist mutation
   const wishlistMutation = useMutation({
@@ -307,18 +310,7 @@ const Sale: React.FC = () => {
               {t('sale.description')}
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="bg-white rounded-lg shadow-md p-4 animate-pulse">
-                <div className="bg-gray-200 h-48 rounded-lg mb-4"></div>
-                <div className="space-y-2">
-                  <div className="bg-gray-200 h-4 rounded"></div>
-                  <div className="bg-gray-200 h-4 rounded w-3/4"></div>
-                  <div className="bg-gray-200 h-6 rounded w-1/2"></div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <ProductsLoading />
         </div>
       </div>
     );
@@ -337,11 +329,7 @@ const Sale: React.FC = () => {
               {t('sale.description')}
             </p>
           </div>
-          <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">
-              {t('common.errorLoading')}
-            </p>
-          </div>
+          <ProductsError onRetry={() => window.location.reload()} />
         </div>
       </div>
     );
@@ -458,13 +446,22 @@ const Sale: React.FC = () => {
         </div>
 
         {/* Products Grid */}
-        <div className={`mb-12 ${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-4'}`}>
-          {sortedProducts.map(product => (
+        {sortedProducts.length === 0 ? (
+          <div className="mb-12">
+            <NoProductsFound
+              type="empty"
+              title={t('sale.noSaleProducts')}
+              description={t('sale.noSaleProductsDescription')}
+            />
+          </div>
+        ) : (
+          <div className={`mb-12 ${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-4'}`}>
+            {sortedProducts.map(product => (
             <div key={product.id} className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full cursor-pointer ${viewMode === 'list' ? 'flex-row' : ''}`}>
               {/* Clickable Image Area */}
               <div 
                 className={`relative ${viewMode === 'list' ? 'w-48 h-32' : 'h-48'} cursor-pointer`}
-                onClick={() => navigate(`/products/${product.id}`)}
+                onClick={() => navigate(`/products/${product.slug || product.id}`)}
               >
                 <img
                   src={product.image}
@@ -495,7 +492,7 @@ const Sale: React.FC = () => {
               {/* Clickable Content Area */}
               <div 
                 className={`p-4 flex flex-col flex-grow ${viewMode === 'list' ? 'flex-1' : ''} cursor-pointer`}
-                onClick={() => navigate(`/products/${product.id}`)}
+                onClick={() => navigate(`/products/${product.slug || product.id}`)}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-sm font-medium text-primary">{product.brand}</span>
@@ -565,7 +562,8 @@ const Sale: React.FC = () => {
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        )}
 
         {/* Sale Countdown */}
         <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-8 border border-red-200">

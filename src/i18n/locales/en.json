@@ -1568,11 +1568,16 @@
       "short": "Address",
       "continue": "Continue to Payment"
     },
+    "shipping": {
+      "title": "Shipping Information"
+    },
     "payment": {
       "title": "Payment Method",
       "short": "Payment",
       "back": "Back to Address",
-      "review": "Review Order"
+      "review": "Review Order",
+      "processing": "Processing...",
+      "pay": "Pay"
     },
     "review": {
       "title": "Review & Place Order",
@@ -1590,6 +1595,47 @@
       "shipping": "Shipping",
       "free": "Free",
       "total": "Total"
+    },
+    "summary": {
+      "title": "Order Summary",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "total": "Total"
+    },
+    "navigation": {
+      "back": "Back",
+      "next": "Next"
+    },
+    "addressForm": {
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Enter your full name",
+      "addressLine1": "Address Line 1",
+      "addressLine1Placeholder": "Street address",
+      "city": "City",
+      "cityPlaceholder": "City",
+      "postalCode": "Postal Code",
+      "postalCodePlaceholder": "Postal code",
+      "country": "Country",
+      "selectCountry": "Select country",
+      "belgium": "Belgium",
+      "netherlands": "Netherlands",
+      "germany": "Germany",
+      "france": "France"
+    },
+    "debug": {
+      "clientSecret": "Client Secret",
+      "cart": "Cart",
+      "items": "items",
+      "debug": "Debug",
+      "cartDataLength": "Cart data length",
+      "clientSecretExists": "ClientSecret exists",
+      "currentStep": "Current Step",
+      "yes": "Yes",
+      "no": "No",
+      "addTestItem": "Add Test Item to Cart",
+      "reloadPage": "Reload Page",
+      "createPaymentIntent": "Create Payment Intent",
+      "creatingPaymentSession": "Creating payment session..."
     }
   },
   "account": {
@@ -1616,6 +1662,24 @@
     "deleteAccount": "Delete Account",
     "deleteAccountWarning": "This action cannot be undone",
     "confirmDelete": "Are you sure you want to delete your account?"
+  },
+  
+  "orders": {
+    "noOrdersFound": "No Orders Found",
+    "noOrdersDescription": "No orders match your current filters. Try adjusting your search criteria or filters.",
+    "clearFilters": "Clear Filters",
+    "orderDetails": "Order Details",
+    "orderNumber": "Order Number",
+    "orderDate": "Order Date",
+    "orderStatus": "Order Status",
+    "paymentStatus": "Payment Status",
+    "orderTotal": "Order Total",
+    "shippingAddress": "Shipping Address",
+    "billingAddress": "Billing Address",
+    "trackingNumber": "Tracking Number",
+    "orderItems": "Order Items",
+    "quantity": "Quantity",
+    "totalPrice": "Total Price"
   },
   
   "errors": {

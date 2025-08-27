@@ -4,6 +4,7 @@ import { Search, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useTranslation } from 'react-i18next';
+import { NoSearchResults } from "@/components/ui/NoProductsFound";
 
 export function SearchBar() {
   const { t } = useTranslation();
@@ -57,12 +58,11 @@ export function SearchBar() {
     });
   }, []);
 
-  const handleSelect = (id: number) => {
+  const handleSelect = (product: any) => {
     setShowDropdown(false);
     setQuery("");
-    if (typeof id === 'number' && Number.isFinite(id) && !isNaN(id)) {
-      navigate(`/products/${id}`);
-    }
+    console.log('🔍 [SearchBar] Navigating to product:', { id: product.id, name: product.name, slug: product.slug });
+    navigate(`/products/${product.slug || product.id}`);
   };
 
   return (
@@ -175,7 +175,7 @@ export function SearchBar() {
               <button
                 key={product.id}
                 className="w-full text-left px-3 py-3 md:px-4 hover:bg-gray-50 transition-colors flex items-center gap-3"
-                onMouseDown={() => handleSelect(product.id)}
+                                  onMouseDown={() => handleSelect(product)}
                 tabIndex={-1}
               >
                 <img
@@ -198,8 +198,14 @@ export function SearchBar() {
       
       {/* No Results - Responsive */}
       {showDropdown && !loading && results.length === 0 && (
-        <div className="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-50 px-3 py-3 md:px-4 text-sm text-gray-500">
-          {t('searchBar.noResults')}
+        <div className="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+          <NoSearchResults 
+            onClearFilters={() => {
+              setQuery("");
+              setSelectedBrand("all");
+              setShowDropdown(false);
+            }}
+          />
         </div>
       )}
     </div>

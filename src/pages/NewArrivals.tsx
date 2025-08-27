@@ -8,6 +8,7 @@ import { productsApi } from '@/lib/api';
 import { wishlistApi } from '@/lib/wishlistApi';
 import { useToast } from '@/hooks/use-toast';
 import { addNewArrivalNotification } from '@/lib/notifications';
+import { NoProductsFound, ProductsError, ProductsLoading } from '@/components/ui/NoProductsFound';
 import { subscribeToNewsletter } from '@/lib/api/contact';
 
 interface Product {
@@ -27,6 +28,7 @@ interface Product {
   features: string[];
   size?: string;
   saleEndDate?: string;
+  slug?: string;
 }
 
 const NewArrivals: React.FC = () => {
@@ -76,7 +78,8 @@ const NewArrivals: React.FC = () => {
       discount: product.comparePrice ? Math.round(((Number(product.comparePrice) - Number(product.price)) / Number(product.comparePrice)) * 100) : undefined,
       features: typeof product.features === 'string' ? product.features.split(',').map(f => f.trim()) : (Array.isArray(product.features) ? product.features : []),
       size: product.size,
-      saleEndDate: product.saleEndDate || null
+      saleEndDate: product.saleEndDate || null,
+      slug: product.slug
     };
   }) || [];
 
@@ -96,7 +99,7 @@ const NewArrivals: React.FC = () => {
     gcTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
-  const wishlist = wishlistData || [];
+  const wishlist = Array.isArray(wishlistData) ? wishlistData : [];
 
   // Newsletter subscription mutation
   const newsletterMutation = useMutation({
@@ -287,18 +290,7 @@ const NewArrivals: React.FC = () => {
               {t('newArrivals.description')}
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="bg-white rounded-lg shadow-md p-4 animate-pulse">
-                <div className="bg-gray-200 h-48 rounded-lg mb-4"></div>
-                <div className="space-y-2">
-                  <div className="bg-gray-200 h-4 rounded"></div>
-                  <div className="bg-gray-200 h-4 rounded w-3/4"></div>
-                  <div className="bg-gray-200 h-6 rounded w-1/2"></div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <ProductsLoading />
         </div>
       </div>
     );
@@ -317,11 +309,7 @@ const NewArrivals: React.FC = () => {
               {t('newArrivals.description')}
             </p>
           </div>
-          <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">
-              {t('common.errorLoading')}
-            </p>
-          </div>
+          <ProductsError onRetry={() => window.location.reload()} />
         </div>
       </div>
     );
@@ -430,13 +418,22 @@ const NewArrivals: React.FC = () => {
         </div>
 
         {/* Products Grid */}
-        <div className={`mb-12 ${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-4'}`}>
-          {sortedProducts.map(product => (
+        {sortedProducts.length === 0 ? (
+          <div className="mb-12">
+            <NoProductsFound
+              type="empty"
+              title={t('newArrivals.noNewProducts')}
+              description={t('newArrivals.noNewProductsDescription')}
+            />
+          </div>
+        ) : (
+          <div className={`mb-12 ${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-4'}`}>
+            {sortedProducts.map(product => (
             <div key={product.id} className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full cursor-pointer ${viewMode === 'list' ? 'flex-row' : ''}`}>
               {/* Clickable Image Area */}
               <div 
                 className={`relative ${viewMode === 'list' ? 'w-48 h-32' : 'h-48'} cursor-pointer`}
-                onClick={() => navigate(`/products/${product.id}`)}
+                onClick={() => navigate(`/products/${product.slug || product.id}`)}
               >
                 <img
                   src={product.image}
@@ -471,7 +468,7 @@ const NewArrivals: React.FC = () => {
               {/* Clickable Content Area */}
               <div 
                 className={`p-4 flex flex-col flex-grow ${viewMode === 'list' ? 'flex-1' : ''} cursor-pointer`}
-                onClick={() => navigate(`/products/${product.id}`)}
+                onClick={() => navigate(`/products/${product.slug || product.id}`)}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-sm font-medium text-primary">{product.brand}</span>
@@ -542,7 +539,8 @@ const NewArrivals: React.FC = () => {
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        )}
 
         {/* Newsletter Signup */}
         <div className="bg-gradient-to-r from-orange-50 to-blue-50 rounded-xl p-4 sm:p-6 lg:p-8 border border-orange-200">

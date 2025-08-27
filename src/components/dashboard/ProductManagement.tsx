@@ -22,6 +22,7 @@ interface Product {
   status: string;
   featured: boolean;
   sku: string;
+  slug?: string;
   rating?: string;
   reviews?: number;
   images?: Array<string | { imageUrl: string }>;
@@ -109,8 +110,10 @@ export const ProductManagement = () => {
 
   // View product
   const handleViewProduct = (product: Product) => {
-    if (typeof product.id === 'number' && Number.isFinite(product.id)) {
-      navigate(`/products/${product.id}`);
+    if (product.slug) {
+      navigate(`/products/${product.slug}`);
+    } else if (typeof product.id === 'number' && Number.isFinite(product.id)) {
+              navigate(`/products/${product.slug || product.id}`);
     } else {
       toast({
         title: "Error",

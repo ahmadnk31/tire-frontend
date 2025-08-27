@@ -19,7 +19,7 @@ export default function ProductPage() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const queryClient = useQueryClient();
   const [fullscreen, setFullscreen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -39,9 +39,9 @@ export default function ProductPage() {
     isLoading: loading,
     error,
   } = useQuery({
-    queryKey: ["product", id],
-    queryFn: () => productsApi.getById(id!),
-    enabled: !!id,
+    queryKey: ["product", slug],
+    queryFn: () => productsApi.getBySlug(slug!),
+    enabled: !!slug,
     staleTime: 5 * 60 * 1000, // Product data stays fresh for 5 minutes
     gcTime: 10 * 60 * 1000, // Cache for 10 minutes
   });
@@ -50,9 +50,9 @@ export default function ProductPage() {
   const {
     data: relatedProductsData,
   } = useQuery({
-    queryKey: ["relatedProducts", id],
-    queryFn: () => productsApi.getRelated(id!),
-    enabled: !!id,
+    queryKey: ["relatedProducts", slug],
+    queryFn: () => productsApi.getRelated(product?.id || 0),
+    enabled: !!slug && !!product?.id,
     staleTime: 10 * 60 * 1000, // Related products stay fresh for 10 minutes
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
   });
@@ -64,20 +64,20 @@ export default function ProductPage() {
     isLoading: reviewStatsLoading,
     error: reviewStatsError,
   } = useQuery({
-    queryKey: ["reviewStats", id],
-    queryFn: () => reviewsApi.getReviewStats(Number(id!)),
-    enabled: !!id,
+    queryKey: ["reviewStats", product?.id],
+    queryFn: () => reviewsApi.getReviewStats(Number(product!.id)),
+    enabled: !!product?.id,
     staleTime: 5 * 60 * 1000, // Review stats stay fresh for 5 minutes
     gcTime: 10 * 60 * 1000, // Cache for 10 minutes
   });
 
   // Debug logging for review stats
   console.log('🔍 [Product Page] Review stats query:', {
-    id,
+    productId: product?.id,
     reviewStats,
     reviewStatsLoading,
     reviewStatsError,
-    enabled: !!id
+    enabled: !!product?.id
   });
 
   // Check if user is logged in
@@ -561,7 +561,7 @@ export default function ProductPage() {
                   {/* Rating and Reviews */}
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                     <ReviewHoverCard 
-                      productId={Number(id!)} 
+                      productId={product?.id || 0} 
                       stats={reviewStats?.stats}
                     >
                       <div className="flex items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-80 transition-opacity">
@@ -886,6 +886,12 @@ export default function ProductPage() {
                           <span className="text-gray-900 font-semibold">{product.diameter}</span>
                         </div>
                       )}
+                      {product.tireSoundVolume && (
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">Tire Sound Volume</span>
+                          <span className="text-gray-900 font-semibold capitalize">{product.tireSoundVolume}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                   
@@ -1030,7 +1036,7 @@ export default function ProductPage() {
                       ...related,
                       price: formatEuro(related.price)
                     }}
-                    onClick={() => navigate(`/products/${related.id}`)}
+                    onClick={() => navigate(`/products/${related.slug}`)}
                     cartItem={cartItem}
                     addToCart={() => {
                       const newCart = [...cart];

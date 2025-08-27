@@ -606,11 +606,16 @@
       "short": "Adres",
       "continue": "Doorgaan naar Betaling"
     },
+    "shipping": {
+      "title": "Verzendinformatie"
+    },
     "payment": {
       "title": "Betaalmethode",
       "short": "Betaling",
       "back": "Terug naar Adres",
-      "review": "Bestelling Beoordelen"
+      "review": "Bestelling Beoordelen",
+      "processing": "Verwerken...",
+      "pay": "Betalen"
     },
     "review": {
       "title": "Beoordeling & Bestelling Plaatsen",
@@ -628,6 +633,47 @@
       "shipping": "Verzending",
       "free": "Gratis",
       "total": "Totaal"
+    },
+    "summary": {
+      "title": "Besteloverzicht",
+      "subtotal": "Subtotaal",
+      "shipping": "Verzending",
+      "total": "Totaal"
+    },
+    "navigation": {
+      "back": "Terug",
+      "next": "Volgende"
+    },
+    "addressForm": {
+      "fullName": "Volledige naam",
+      "fullNamePlaceholder": "Voer uw volledige naam in",
+      "addressLine1": "Adresregel 1",
+      "addressLine1Placeholder": "Straatadres",
+      "city": "Stad",
+      "cityPlaceholder": "Stad",
+      "postalCode": "Postcode",
+      "postalCodePlaceholder": "Postcode",
+      "country": "Land",
+      "selectCountry": "Selecteer land",
+      "belgium": "België",
+      "netherlands": "Nederland",
+      "germany": "Duitsland",
+      "france": "Frankrijk"
+    },
+    "debug": {
+      "clientSecret": "Client Secret",
+      "cart": "Winkelwagen",
+      "items": "items",
+      "debug": "Debug",
+      "cartDataLength": "Winkelwagen data lengte",
+      "clientSecretExists": "ClientSecret bestaat",
+      "currentStep": "Huidige Stap",
+      "yes": "Ja",
+      "no": "Nee",
+      "addTestItem": "Test Item toevoegen aan winkelwagen",
+      "reloadPage": "Pagina herladen",
+      "createPaymentIntent": "Betaling Intent maken",
+      "creatingPaymentSession": "Betaling sessie maken..."
     }
   },
   "account": {
@@ -654,6 +700,24 @@
     "deleteAccount": "Account verwijderen",
     "deleteAccountWarning": "Deze actie kan niet ongedaan worden gemaakt",
     "confirmDelete": "Weet je zeker dat je je account wilt verwijderen?"
+  },
+  
+  "orders": {
+    "noOrdersFound": "Geen bestellingen gevonden",
+    "noOrdersDescription": "Geen bestellingen komen overeen met je huidige filters. Probeer je zoekcriteria of filters aan te passen.",
+    "clearFilters": "Filters wissen",
+    "orderDetails": "Bestelgegevens",
+    "orderNumber": "Bestelnummer",
+    "orderDate": "Besteldatum",
+    "orderStatus": "Bestelstatus",
+    "paymentStatus": "Betaalstatus",
+    "orderTotal": "Besteltotaal",
+    "shippingAddress": "Verzendadres",
+    "billingAddress": "Factuuradres",
+    "trackingNumber": "Trackingnummer",
+    "orderItems": "Bestelde artikelen",
+    "quantity": "Aantal",
+    "totalPrice": "Totale prijs"
   },
  
   "errors": {

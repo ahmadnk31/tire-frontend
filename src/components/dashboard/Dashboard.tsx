@@ -20,11 +20,12 @@ import { BlogManagement } from "./BlogManagement";
 import CommentsManagement from "./CommentsManagement";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, Package, Plus, Settings, Users, ShoppingCart, Shield, Upload, Mail, MessageSquare, LogOut, Menu, X, Star, FileText, MessageCircle } from "lucide-react";
+import { BarChart3, Package, Plus, Settings, Users, ShoppingCart, Shield, Upload, Mail, MessageSquare, LogOut, Menu, X, Star, FileText, MessageCircle, Gauge } from "lucide-react";
 
 import { CategoryManagement } from "./CategoryManagement";
 import { BannerManagement } from './BannerManagement';
-type DashboardView = 'overview' | 'products' | 'add-product' | 'orders' | 'customers' | 'security' | 'settings' | 'categories' | 'banners' | 'bulk-import' | 'contacts' | 'newsletter' | 'campaigns' | 'upload-diagnostics' | 'reviews' | 'blog' | 'comments';
+import RateLimitManagement from './RateLimitManagement';
+type DashboardView = 'overview' | 'products' | 'add-product' | 'orders' | 'customers' | 'security' | 'settings' | 'categories' | 'banners' | 'bulk-import' | 'contacts' | 'newsletter' | 'campaigns' | 'upload-diagnostics' | 'reviews' | 'blog' | 'comments' | 'rate-limits';
 
 interface NavigationItem {
   id: string;
@@ -47,6 +48,7 @@ const navigation: NavigationItem[] = [
   { id: 'newsletter', label: 'Newsletter', icon: Mail },
   { id: 'campaigns', label: 'Campaigns', icon: Mail },
   { id: 'security', label: 'Security', icon: Shield },
+  { id: 'rate-limits', label: 'Rate Limits', icon: Gauge },
   { id: 'bulk-import', label: 'Bulk Import', icon: Upload },
   { id: 'settings', label: 'Settings', icon: Settings },
   { id: 'upload-diagnostics', label: 'Upload Diagnostics', icon: Upload },
@@ -177,12 +179,14 @@ export const Dashboard = () => {
         return <CampaignManagement />;
       case 'security':
         return <SecurityManagement />;
+      case 'rate-limits':
+        return <RateLimitManagement />;
       case 'bulk-import':
         return <BulkImport />;
-              case 'settings':
-          return <SettingsManagement />;
-        case 'upload-diagnostics':
-          return <UploadDiagnostics />;
+      case 'settings':
+        return <SettingsManagement />;
+      case 'upload-diagnostics':
+        return <UploadDiagnostics />;
       case 'comments':
         return <CommentsManagement />;
       default:

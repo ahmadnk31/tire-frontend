@@ -35,6 +35,7 @@ interface Product {
   reviews: number;
   stock: number;
   featured: boolean;
+  slug?: string;
   images?: Array<string | { imageUrl: string }>;
   productImages?: Array<{ imageUrl: string }>;
   saleStartDate?: string;
@@ -403,6 +404,7 @@ const Brands: React.FC = () => {
     reviews: product.reviews,
     stock: product.stock,
     featured: product.featured,
+    slug: product.slug,
     images: product.images,
     productImages: product.productImages,
     saleStartDate: product.saleStartDate,
@@ -637,7 +639,7 @@ const Brands: React.FC = () => {
                   <div key={product.id} className="h-full min-w-0">
                     <ProductCard
                       product={product}
-                      onClick={() => navigate(`/products/${product.id}`)}
+                      onClick={() => navigate(`/products/${product.slug || product.id}`)}
                       cartItem={cartItem}
                       addToCart={() => addToCart(product)}
                       updateCartQuantity={(delta) => updateCartQuantity(product, delta)}

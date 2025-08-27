@@ -313,7 +313,7 @@ export const TodaysForYouSection = ({
                       updateCartQuantity={(delta) => updateCartQuantity(product, delta)}
                       isWishlisted={isWishlisted}
                       onToggleWishlist={() => handleToggleWishlist(product.id)}
-                      onClick={() => navigate(`/products/${product.id}`)}
+                      onClick={() => navigate(`/products/${product.slug || product.id}`)}
                     />
                   </div>
                 );

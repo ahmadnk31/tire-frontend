@@ -23,8 +23,16 @@ class PWAManager {
   }
 
   private async registerServiceWorker() {
+    // Temporarily disable service worker to fix checkout issues
+    console.log('PWA: Service Worker registration disabled for checkout testing');
+    return null;
+    
     if ('serviceWorker' in navigator) {
       try {
+        // First, unregister any existing service workers to avoid conflicts
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map(registration => registration.unregister()));
+        
         const registration = await navigator.serviceWorker.register('/sw.js', {
           scope: '/'
         });
@@ -61,6 +69,7 @@ class PWAManager {
         return registration;
       } catch (error) {
         console.error('PWA: Service Worker registration failed:', error);
+        // Don't throw error, just log it to avoid breaking the app
       }
     }
   }

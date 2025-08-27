@@ -80,6 +80,7 @@ export interface ProductCardProps {
     reviews: number;
     stock: number;
     featured: boolean;
+    slug?: string;
     images?: Array<string | { imageUrl: string }>;
     productImages?: Array<{ imageUrl: string }>;
     // Sale fields
@@ -97,6 +98,9 @@ export interface ProductCardProps {
 
 export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQuantity, isWishlisted, onToggleWishlist }: ProductCardProps) => {
   const { t } = useTranslation();
+  
+  // Debug: Log the product data received
+  console.log('🔍 [ProductCard] Received product:', { id: product.id, name: product.name, slug: product.slug });
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);

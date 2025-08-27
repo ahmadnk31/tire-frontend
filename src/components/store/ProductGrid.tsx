@@ -25,6 +25,7 @@ interface Product {
   status: string;
   featured: boolean;
   sku: string;
+  slug?: string;
   tags: string[] | null;
   images?: Array<string | { imageUrl: string }>;
   productImages?: Array<{ imageUrl: string }>;
@@ -273,8 +274,10 @@ export const ProductGrid = ({ sectionTitle = "Products", featuredOnly = false, s
                   product={product}
                   cartItem={cartItem}
                   onClick={() => {
-                    if (typeof product.id === 'number' && Number.isFinite(product.id) && !isNaN(product.id)) {
-                      navigate(`/products/${product.id}`);
+                    if (product.slug) {
+                      navigate(`/products/${product.slug}`);
+                    } else if (typeof product.id === 'number' && Number.isFinite(product.id) && !isNaN(product.id)) {
+                      navigate(`/products/${product.slug || product.id}`);
                     } else {
                       console.warn('[ProductGrid] Tried to navigate to invalid product id:', product.id);
                     }

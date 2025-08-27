@@ -3,6 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ordersApi } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { formatEuro } from '@/lib/currency';
+import { NoProductsFound } from '@/components/ui/NoProductsFound';
+import { useTranslation } from 'react-i18next';
 import {
   Table,
   TableBody,
@@ -52,6 +54,10 @@ interface Order {
   total: string;
   createdAt: string;
   updatedAt: string;
+  shippingAddress?: any;
+  billingAddress?: any;
+  trackingNumber?: string;
+  orderItems?: any[];
 }
 
 const statusOptions = [
@@ -88,6 +94,7 @@ const getStatusBadgeVariant = (status: string) => {
 export const OrdersManagement = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState('all');
   const [paymentStatusFilter, setPaymentStatusFilter] = useState('all');
@@ -136,6 +143,10 @@ export const OrdersManagement = () => {
   const orders = ordersData?.orders || [];
   const pagination = ordersData?.pagination;
   const stats = statsData || {};
+
+  // Debug logging
+  console.log('🔍 [OrdersManagement] Orders data:', orders);
+  console.log('🔍 [OrdersManagement] First order:', orders[0]);
 
   const handleUpdateOrder = (status: string, paymentStatus?: string) => {
     if (!selectedOrder) return;
@@ -276,7 +287,17 @@ export const OrdersManagement = () => {
               {orders.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-8">
-                    No orders found
+                    <NoProductsFound 
+                      type="no-results"
+                      title={t('orders.noOrdersFound')}
+                      description={t('orders.noOrdersDescription')}
+                      onClearFilters={() => {
+                        setStatusFilter('all');
+                        setPaymentStatusFilter('all');
+                        setSearchTerm('');
+                        setCurrentPage(1);
+                      }}
+                    />
                   </TableCell>
                 </TableRow>
               ) : (
@@ -313,7 +334,7 @@ export const OrdersManagement = () => {
                           </DialogTrigger>
                           <DialogContent className="max-w-2xl">
                             <DialogHeader>
-                              <DialogTitle>Order Details - {order.orderNumber}</DialogTitle>
+                              <DialogTitle>{t('orders.orderDetails')} - {order.orderNumber}</DialogTitle>
                             </DialogHeader>
                             <div className="space-y-4">
                               <div className="grid grid-cols-2 gap-4">
@@ -323,11 +344,11 @@ export const OrdersManagement = () => {
                                   <p className="text-sm text-muted-foreground">{order.userEmail}</p>
                                 </div>
                                 <div>
-                                  <label className="text-sm font-medium">Order Date</label>
+                                  <label className="text-sm font-medium">{t('orders.orderDate')}</label>
                                   <p>{new Date(order.createdAt).toLocaleString()}</p>
                                 </div>
                                 <div>
-                                  <label className="text-sm font-medium">Status</label>
+                                  <label className="text-sm font-medium">{t('orders.orderStatus')}</label>
                                   <p>
                                     <Badge variant={getStatusBadgeVariant(order.status)}>
                                       {order.status}
@@ -335,7 +356,7 @@ export const OrdersManagement = () => {
                                   </p>
                                 </div>
                                 <div>
-                                  <label className="text-sm font-medium">Payment Status</label>
+                                  <label className="text-sm font-medium">{t('orders.paymentStatus')}</label>
                                   <p>
                                     <Badge variant={getStatusBadgeVariant(order.paymentStatus)}>
                                       {order.paymentStatus}
@@ -343,10 +364,60 @@ export const OrdersManagement = () => {
                                   </p>
                                 </div>
                                 <div>
-                                  <label className="text-sm font-medium">Total</label>
+                                  <label className="text-sm font-medium">{t('orders.orderTotal')}</label>
                                   <p className="text-lg font-bold">{formatEuro(parseFloat(order.total))}</p>
                                 </div>
                               </div>
+
+                              {/* Shipping Address */}
+                              {order.shippingAddress && (
+                                <div>
+                                  <label className="text-sm font-medium">{t('orders.shippingAddress')}</label>
+                                  <div className="mt-1 p-3 bg-gray-50 rounded-md">
+                                    <p>{order.shippingAddress.name}</p>
+                                    <p className="text-sm text-muted-foreground">
+                                      {order.shippingAddress.address?.line1}
+                                      {order.shippingAddress.address?.line2 && <br />}
+                                      {order.shippingAddress.address?.line2}
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">
+                                      {order.shippingAddress.address?.city}, {order.shippingAddress.address?.postal_code}
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">
+                                      {order.shippingAddress.address?.country}
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Order Items */}
+                              {order.orderItems && order.orderItems.length > 0 && (
+                                <div>
+                                  <label className="text-sm font-medium">{t('orders.orderItems')}</label>
+                                  <div className="mt-2 space-y-2">
+                                    {order.orderItems.map((item: any, index: number) => (
+                                      <div key={index} className="flex items-center gap-3 p-2 bg-gray-50 rounded-md">
+                                        <div className="flex-1">
+                                          <p className="text-sm font-medium">{item.productName}</p>
+                                          <p className="text-xs text-muted-foreground">{item.productSize}</p>
+                                        </div>
+                                        <div className="text-right">
+                                          <p className="text-sm">{t('orders.quantity')}: {item.quantity}</p>
+                                          <p className="text-sm font-medium">€{parseFloat(item.totalPrice).toFixed(2)}</p>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Tracking Number */}
+                              {order.trackingNumber && (
+                                <div>
+                                  <label className="text-sm font-medium">{t('orders.trackingNumber')}</label>
+                                  <p className="font-mono text-sm bg-gray-100 p-2 rounded">{order.trackingNumber}</p>
+                                </div>
+                              )}
                             </div>
                           </DialogContent>
                         </Dialog>
@@ -417,7 +488,7 @@ export const OrdersManagement = () => {
           {selectedOrder && (
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Order Status</label>
+                <label className="text-sm font-medium">{t('orders.orderStatus')}</label>
                 <div className="flex gap-2 mt-2">
                   {statusOptions.slice(1).map((status) => (
                     <Button

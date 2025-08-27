@@ -119,18 +119,27 @@ const apiClient = {
       ...(isFormData ? {} : { 'Content-Type': 'application/json' })
     };
 
+    console.log('🌐 API POST request:', `${API_BASE_URL}${endpoint}`);
+    console.log('📦 Request data:', data);
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'POST',
       headers,
       body: isFormData ? data : JSON.stringify(data),
     });
 
+    console.log('📡 Response status:', response.status);
+    console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
+
     let json;
     try {
       json = await response.json();
-    } catch {
+      console.log('📄 Response JSON:', json);
+    } catch (error) {
+      console.error('❌ Failed to parse JSON:', error);
       json = { error: `API Error: ${response.status} ${response.statusText}` };
     }
+    
     if (!response.ok) {
       // Handle 401 Unauthorized errors
       if (response.status === 401) {
@@ -240,6 +249,7 @@ export const productsApi = {
   }) => apiClient.get('/products', params),
 
   getById: (id: string) => apiClient.get(`/products/${id}`),
+  getBySlug: (slug: string) => apiClient.get(`/products/slug/${slug}`),
 
   create: (product: any) => apiClient.post('/products', product),
 
@@ -277,7 +287,10 @@ export const productsApi = {
   getNewArrivals: () => apiClient.get('/products/new-arrivals'),
   getBrands: () => apiClient.get('/products/brands'),
   getBrandProducts: (brand: string) => apiClient.get(`/products/brands/${brand}`),
-  getCategoryProducts: (category: string) => apiClient.get(`/products/categories/${category}`),
+  getCategoryProducts: (category: string) => {
+    console.log('🔍 [API] Calling getCategoryProducts with category:', category);
+    return apiClient.get(`/products/categories/${category}`);
+  },
 };
 
 // Orders API
@@ -557,6 +570,65 @@ export const uploadApi = {
   }
 };
 
+// Admin API
+export const adminApi = {
+  // Dashboard stats
+  getDashboardStats: () => apiClient.get('/admin/dashboard/stats', undefined),
+  
+  // User management
+  getUsers: (params?: any) => apiClient.get('/admin/users', params),
+  getUser: (id: number) => apiClient.get(`/admin/users/${id}`, undefined),
+  updateUser: (id: number, data: any) => apiClient.put(`/admin/users/${id}`, data),
+  deleteUser: (id: number) => apiClient.delete(`/admin/users/${id}`),
+  
+  // Product management
+  getProducts: (params?: any) => apiClient.get('/admin/products', params),
+  getProduct: (id: number) => apiClient.get(`/admin/products/${id}`, undefined),
+  createProduct: (data: any) => apiClient.post('/admin/products', data),
+  updateProduct: (id: number, data: any) => apiClient.put(`/admin/products/${id}`, data),
+  deleteProduct: (id: number) => apiClient.delete(`/admin/products/${id}`),
+  
+  // Order management
+  getOrders: (params?: any) => apiClient.get('/admin/orders', params),
+  getOrder: (id: number) => apiClient.get(`/admin/orders/${id}`, undefined),
+  updateOrder: (id: number, data: any) => apiClient.put(`/admin/orders/${id}`, data),
+  
+  // Category management
+  getCategories: () => apiClient.get('/admin/categories', undefined),
+  createCategory: (data: any) => apiClient.post('/admin/categories', data),
+  updateCategory: (id: number, data: any) => apiClient.put(`/admin/categories/${id}`, data),
+  deleteCategory: (id: number) => apiClient.delete(`/admin/categories/${id}`),
+  
+  // Settings
+  getSettings: () => apiClient.get('/admin/settings', undefined),
+  updateSettings: (data: any) => apiClient.put('/admin/settings', data),
+  
+  // Rate Limits
+  getRateLimitSettings: () => apiClient.get('/admin/rate-limits/settings', undefined),
+  updateRateLimitSettings: (data: any) => apiClient.put('/admin/rate-limits/settings', data),
+  getRateLimitStats: () => apiClient.get('/admin/rate-limits/stats', undefined),
+  resetRateLimitCounters: () => apiClient.post('/admin/rate-limits/reset', {}),
+  
+  // Upload
+  uploadFile: (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiClient.post('/admin/upload', formData);
+  },
+  
+  // Bulk operations
+  bulkUpload: (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiClient.post('/admin/bulk/upload', formData);
+  },
+  
+  // Contact messages
+  getContactMessages: (params?: any) => apiClient.get('/admin/contact', params),
+  updateContactMessage: (id: number, data: any) => apiClient.put(`/admin/contact/${id}`, data),
+  deleteContactMessage: (id: number) => apiClient.delete(`/admin/contact/${id}`),
+};
+
 // Stripe API
 export const stripeApi = {
   createPaymentIntent: (data: {
@@ -565,6 +637,8 @@ export const stripeApi = {
     userEmail?: string;
     userName?: string;
     shipping?: any;
+    shippingAddress?: any;
+    billingAddress?: any;
   }) => apiClient.post('/stripe/create-payment-intent', data),
 };
 

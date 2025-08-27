@@ -150,7 +150,7 @@ export const BottomNav = () => {
                 <>
                   <button
                     onClick={() => {
-                      navigate('/profile');
+                      navigate('/account');
                       setIsMenuOpen(false);
                     }}
                     className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
