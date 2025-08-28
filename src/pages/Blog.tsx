@@ -252,7 +252,7 @@ const Blog: React.FC = () => {
 
         {/* Loading State */}
         {isLoading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="bg-white rounded-xl overflow-hidden shadow-md animate-pulse">
                 <div className="h-48 bg-gray-200"></div>
@@ -269,7 +269,7 @@ const Blog: React.FC = () => {
 
         {/* Blog Posts Grid */}
         {!isLoading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
             {blogPosts.length === 0 ? (
               <div className="col-span-full text-center py-12">
                 <div className="text-gray-400 mb-4">

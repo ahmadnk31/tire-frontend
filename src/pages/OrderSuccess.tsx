@@ -10,6 +10,8 @@ export default function OrderSuccess() {
   useEffect(() => {
     // Clear cart after successful payment
     localStorage.removeItem('cart');
+    // Dispatch cart-updated event to update cart notification icons
+    window.dispatchEvent(new Event('cart-updated'));
   }, []);
 
   return (

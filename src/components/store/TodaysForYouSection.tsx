@@ -187,7 +187,7 @@ export const TodaysForYouSection = ({
 
   // Carousel scroll logic
   const carouselRef = useRef<HTMLDivElement>(null);
-  const scrollAmount = 320; // px per click
+  const scrollAmount = 280; // px per click - adjusted for mobile
   const scrollLeft = () => {
     if (carouselRef.current) {
       carouselRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
@@ -209,32 +209,32 @@ export const TodaysForYouSection = ({
             <div className="h-6 sm:h-8 w-36 sm:w-48 bg-gray-200 rounded mb-4 sm:mb-6"></div>
             
             {/* Category tabs skeleton */}
-            <div className="flex gap-2 sm:gap-4 mb-6 sm:mb-8 overflow-x-auto pb-2">
+            <div className="flex gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-8 overflow-x-auto pb-2">
               {[...Array(4)].map((_, index) => (
-                <div key={index} className="flex-shrink-0 h-8 sm:h-10 w-16 sm:w-24 bg-gray-200 rounded-lg"></div>
+                <div key={index} className="flex-shrink-0 h-7 sm:h-8 md:h-10 w-14 sm:w-16 md:w-24 bg-gray-200 rounded-lg"></div>
               ))}
             </div>
             
             {/* Products carousel skeleton */}
-            <div className="flex gap-3 sm:gap-4 overflow-hidden">
+            <div className="flex gap-2 sm:gap-3 md:gap-4 overflow-hidden">
               {[...Array(6)].map((_, index) => (
                 <div 
                   key={index} 
-                  className={`flex-shrink-0 w-64 sm:w-72 md:w-80 bg-white border border-gray-200 rounded-xl p-3 sm:p-4 ${
+                  className={`flex-shrink-0 min-w-[280px] sm:min-w-[320px] md:min-w-[360px] lg:min-w-[400px] max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-md bg-white border border-gray-200 rounded-xl p-2 sm:p-3 md:p-4 ${
                     // Show fewer items on smaller screens
                     index >= 3 ? 'hidden lg:block' : 
                     index >= 2 ? 'hidden md:block' : ''
                   }`}
                 >
-                  <div className="w-full h-32 sm:h-40 md:h-48 bg-gray-200 rounded-lg mb-3 sm:mb-4"></div>
-                  <div className="space-y-2 sm:space-y-3">
+                  <div className="w-full h-32 sm:h-36 md:h-40 lg:h-48 bg-gray-200 rounded-lg mb-2 sm:mb-3 md:mb-4"></div>
+                  <div className="space-y-1.5 sm:space-y-2 md:space-y-3">
                     <div className="h-3 sm:h-4 w-3/4 bg-gray-200 rounded"></div>
                     <div className="h-2 sm:h-3 w-1/2 bg-gray-200 rounded"></div>
                     <div className="flex items-center justify-between">
-                      <div className="h-4 sm:h-6 w-16 sm:w-20 bg-gray-200 rounded"></div>
-                      <div className="h-3 sm:h-4 w-12 sm:w-16 bg-gray-200 rounded"></div>
+                      <div className="h-4 sm:h-5 md:h-6 w-16 sm:w-18 md:w-20 bg-gray-200 rounded"></div>
+                      <div className="h-3 sm:h-4 w-12 sm:w-14 md:w-16 bg-gray-200 rounded"></div>
                     </div>
-                    <div className="w-full h-8 sm:h-10 bg-gray-200 rounded-lg"></div>
+                    <div className="w-full h-7 sm:h-8 md:h-10 bg-gray-200 rounded-lg"></div>
                   </div>
                 </div>
               ))}
@@ -271,12 +271,12 @@ export const TodaysForYouSection = ({
             </button>
           </div>
         </div>
-        <div className="flex gap-4 mb-8 overflow-x-auto pb-2">
+        <div className="flex gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-8 overflow-x-auto pb-2">
           {categories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => handleCategoryClick(cat)}
-              className={`px-6 py-2 rounded-lg border text-base font-medium transition-colors focus:outline-none whitespace-nowrap ${
+              className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-lg border text-sm sm:text-base font-medium transition-colors focus:outline-none whitespace-nowrap flex-shrink-0 ${
                 selectedCategory === cat.name
                   ? "bg-gray-900 text-white border-gray-900"
                   : "bg-white text-gray-900 border-gray-300 hover:bg-gray-100"
@@ -305,7 +305,7 @@ export const TodaysForYouSection = ({
               filteredProducts.map((product) => {
                 const isWishlisted = wishlist.includes(product.id);
                 return (
-                  <div key={product.id} className="min-w-[400px] max-w-md flex-shrink-0 px-2 py-2">
+                  <div key={product.id} className="min-w-[280px] sm:min-w-[320px] md:min-w-[360px] lg:min-w-[400px] max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-md flex-shrink-0 px-1 sm:px-2 py-2">
                     <ProductCard
                       product={product}
                       cartItem={getCartItem(product)}

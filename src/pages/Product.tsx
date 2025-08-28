@@ -416,7 +416,7 @@ export default function ProductPage() {
             {/* Related products skeleton */}
             <div className="mt-12 sm:mt-16">
               <div className="h-6 sm:h-8 w-36 sm:w-48 bg-gray-200 rounded mb-4 sm:mb-6" />
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {[...Array(3)].map((_, i) => (
                   <div key={i} className="bg-white rounded-xl shadow p-4 flex flex-col gap-3 sm:gap-4">
                     <div className="h-32 sm:h-40 bg-gray-200 rounded-lg mb-2" />

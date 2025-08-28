@@ -4,6 +4,7 @@ import { ShoppingCart, User, Search, Home, Heart, Menu, LogOut } from "lucide-re
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { wishlistApi } from '@/lib/wishlistApi';
+import { dashboardApi } from '@/lib/api';
 
 export const BottomNav = () => {
   const { t } = useTranslation();
@@ -11,6 +12,7 @@ export const BottomNav = () => {
   const navigate = useNavigate();
   const [cartCount, setCartCount] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   // Check if we're on the home page
   const isHomePage = location.pathname === '/';
@@ -18,6 +20,31 @@ export const BottomNav = () => {
   // Check if user is logged in
   const isLoggedIn = typeof window !== 'undefined' && localStorage.getItem('token');
   const token = localStorage.getItem('token');
+
+  // Verify admin access with backend
+  const { data: adminStatus, isLoading: adminLoading } = useQuery({
+    queryKey: ['bottomnav-admin-verification'],
+    queryFn: async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        return { isAdmin: false };
+      }
+      
+      try {
+        await dashboardApi.getOverview(token);
+        return { isAdmin: true };
+      } catch (error: any) {
+        if (error.message?.includes('403') || error.message?.includes('Forbidden')) {
+          return { isAdmin: false };
+        }
+        // For other errors, we don't want to show admin access
+        return { isAdmin: false };
+      }
+    },
+    retry: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!user, // Only run if user is logged in
+  });
 
   // Fetch wishlist count
   const { data: wishlistData } = useQuery({
@@ -48,11 +75,40 @@ export const BottomNav = () => {
     };
   }, []);
 
+  // Handle user state changes
+  useEffect(() => {
+    // Try to get user from localStorage (token and user info)
+    const token = localStorage.getItem('token');
+    let userInfo = null;
+    try {
+      userInfo = JSON.parse(localStorage.getItem('user') || 'null');
+    } catch {}
+    if (token && userInfo) {
+      setUser(userInfo);
+    } else {
+      setUser(null);
+    }
+    // Listen for login/logout events
+    const handleAuth = () => {
+      let u = null;
+      try { u = JSON.parse(localStorage.getItem('user') || 'null'); } catch {}
+      setUser(u);
+    };
+    window.addEventListener('login', handleAuth);
+    window.addEventListener('logout', handleAuth);
+    return () => {
+      window.removeEventListener('login', handleAuth);
+      window.removeEventListener('logout', handleAuth);
+    };
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('cart');
     localStorage.removeItem('notifications');
+    // Dispatch cart-updated event to update cart notification icons
+    window.dispatchEvent(new Event('cart-updated'));
     window.dispatchEvent(new Event('logout'));
     navigate('/login');
   };
@@ -158,16 +214,18 @@ export const BottomNav = () => {
                     <User className="h-5 w-5" />
                     <span>{t('navigation.profile')}</span>
                   </button>
-                  <button
-                    onClick={() => {
-                      navigate('/dashboard');
-                      setIsMenuOpen(false);
-                    }}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
-                  >
-                    <Menu className="h-5 w-5" />
-                    <span>{t('navigation.dashboard')}</span>
-                  </button>
+                  {adminStatus?.isAdmin && (
+                    <button
+                      onClick={() => {
+                        navigate('/dashboard');
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
+                    >
+                      <Menu className="h-5 w-5" />
+                      <span>{t('navigation.dashboard')}</span>
+                    </button>
+                  )}
                   <button
                     onClick={() => {
                       handleLogout();

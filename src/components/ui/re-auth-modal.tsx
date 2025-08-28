@@ -56,6 +56,8 @@ export const ReAuthModal: React.FC<ReAuthModalProps> = ({
   const handleLogout = () => {
     // Clear all auth data and redirect to login
     localStorage.clear();
+    // Dispatch cart-updated event to update cart notification icons
+    window.dispatchEvent(new Event('cart-updated'));
     window.location.href = '/login';
   };
 

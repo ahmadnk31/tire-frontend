@@ -10,6 +10,8 @@ import { useToast } from '@/hooks/use-toast';
 import { addNewArrivalNotification } from '@/lib/notifications';
 import { NoProductsFound, ProductsError, ProductsLoading } from '@/components/ui/NoProductsFound';
 import { subscribeToNewsletter } from '@/lib/api/contact';
+import { ReviewHoverCard } from '@/components/ui/review-hover-card';
+import { reviewsApi } from '@/lib/api';
 
 interface Product {
   id: number;
@@ -100,6 +102,26 @@ const NewArrivals: React.FC = () => {
   });
 
   const wishlist = Array.isArray(wishlistData) ? wishlistData : [];
+
+  // Review stats query for all products
+  const { data: reviewStats } = useQuery({
+    queryKey: ['review-stats', products.map(p => p.id)],
+    queryFn: async () => {
+      const stats = await Promise.all(
+        products.map(async (product) => {
+          try {
+            const response = await reviewsApi.getReviewStats(product.id);
+            return { productId: product.id, stats: response.stats };
+          } catch (error) {
+            return { productId: product.id, stats: null };
+          }
+        })
+      );
+      return stats;
+    },
+    enabled: products.length > 0,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   // Newsletter subscription mutation
   const newsletterMutation = useMutation({
@@ -427,12 +449,12 @@ const NewArrivals: React.FC = () => {
             />
           </div>
         ) : (
-          <div className={`mb-12 ${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-4'}`}>
+          <div className={`mb-12 ${viewMode === 'grid' ? 'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6' : 'space-y-4'}`}>
             {sortedProducts.map(product => (
             <div key={product.id} className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full cursor-pointer ${viewMode === 'list' ? 'flex-row' : ''}`}>
               {/* Clickable Image Area */}
               <div 
-                className={`relative ${viewMode === 'list' ? 'w-48 h-32' : 'h-48'} cursor-pointer`}
+                className={`relative ${viewMode === 'list' ? 'w-48 h-32' : 'h-40 sm:h-44 md:h-48'} cursor-pointer`}
                 onClick={() => navigate(`/products/${product.slug || product.id}`)}
               >
                 <img
@@ -441,74 +463,50 @@ const NewArrivals: React.FC = () => {
                   className="w-full h-full object-contain"
                 />
                 <div className="absolute top-2 left-2 flex gap-1">
-                  <span className="px-2 py-1 bg-orange-500 text-white text-xs font-medium rounded">
+                  <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-orange-500 text-white text-xs font-medium rounded">
                     {t('newArrivals.new')}
                   </span>
                   {product.isOnSale && (
-                    <span className="px-2 py-1 bg-red-500 text-white text-xs font-medium rounded flex items-center gap-1">
+                    <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-red-500 text-white text-xs font-medium rounded flex items-center gap-1">
                       <Percent className="h-3 w-3" />
                       -{product.discount}%
                     </span>
                   )}
-                  {/* Sale countdown badge */}
-                  {product.saleEndDate && getDaysUntilEnd(product.saleEndDate) > 0 && product.isOnSale && (
-                    <span className="px-2 py-1 bg-orange-500 text-white text-xs font-medium rounded flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {getDaysUntilEnd(product.saleEndDate)}d
-                    </span>
-                  )}
-                </div>
-                <div className="absolute top-2 right-2">
-                  <span className="px-2 py-1 bg-blue-500 text-white text-xs font-medium rounded flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    {getDaysSinceArrival(product.arrivalDate)}d
-                  </span>
                 </div>
               </div>
               {/* Clickable Content Area */}
               <div 
-                className={`p-4 flex flex-col flex-grow ${viewMode === 'list' ? 'flex-1' : ''} cursor-pointer`}
+                className={`p-3 sm:p-4 flex flex-col flex-grow ${viewMode === 'list' ? 'flex-1' : ''} cursor-pointer`}
                 onClick={() => navigate(`/products/${product.slug || product.id}`)}
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-sm font-medium text-primary">{product.brand}</span>
-                  <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                    <span className="text-sm text-gray-600">{product.rating}</span>
-                    <span className="text-sm text-gray-500">({product.reviewCount})</span>
-                  </div>
+                  <span className="text-xs sm:text-sm font-medium text-primary">{product.brand}</span>
+                  <ReviewHoverCard 
+                    productId={product.id} 
+                    stats={reviewStats?.find(s => s.productId === product.id)?.stats}
+                  >
+                    <div className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity">
+                      <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400 fill-current" />
+                     
+                      
+                      <span className="text-xs text-gray-500 ml-1">
+                        ({reviewStats?.find(s => s.productId === product.id)?.stats?.totalReviews })
+                      </span>
+                    </div>
+                  </ReviewHoverCard>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-primary transition-colors">
+                <h3 className="font-semibold text-xs sm:text-sm md:text-base text-gray-900 mb-2 line-clamp-2 hover:text-primary transition-colors">
                   {product.name}
                 </h3>
                 <div className="flex items-center gap-2 mb-3">
                   {product.originalPrice && (
-                    <span className="text-sm text-gray-500 line-through">
+                    <span className="text-xs sm:text-sm text-gray-500 line-through">
                       €{product.originalPrice}
                     </span>
                   )}
-                  <span className="text-lg font-bold text-primary">
+                  <span className="text-sm sm:text-base md:text-lg font-bold text-primary">
                     €{product.price}
                   </span>
-                  {product.originalPrice && (
-                    <span className="text-sm text-orange-600 font-medium">
-                      Save €{(product.originalPrice - product.price).toFixed(0)}
-                    </span>
-                  )}
-                </div>
-                <div className="mb-3">
-                  <div className="flex flex-wrap gap-1">
-                    {Array.isArray(product.features) && product.features.slice(0, 2).map(feature => (
-                      <span key={feature} className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
-                        {feature}
-                      </span>
-                    ))}
-                    {Array.isArray(product.features) && product.features.length > 2 && (
-                      <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
-                        +{product.features.length - 2}
-                      </span>
-                    )}
-                  </div>
                 </div>
                 {/* Action Buttons - Not clickable for navigation */}
                 <div className="flex gap-2 mt-auto">
@@ -517,21 +515,22 @@ const NewArrivals: React.FC = () => {
                       e.stopPropagation();
                       addToCart(product);
                     }}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm"
+                    className="flex-1 flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-xs sm:text-sm"
                   >
-                    <ShoppingCart className="h-4 w-4" />
-                    {t('newArrivals.addToCart')}
+                    <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden sm:inline">{t('newArrivals.addToCart')}</span>
+                    <span className="sm:hidden">+</span>
                   </button>
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
                       handleToggleWishlist(product.id);
                     }}
-                    className={`p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors ${
+                    className={`p-1.5 sm:p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors ${
                       wishlist.includes(product.id) ? 'bg-red-50 border-red-200' : ''
                     }`}
                   >
-                    <Heart className={`h-4 w-4 ${
+                    <Heart className={`h-3 w-3 sm:h-4 sm:w-4 ${
                       wishlist.includes(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'
                     }`} />
                   </button>

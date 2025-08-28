@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Star, ShoppingCart, Heart, Filter, Grid, List, Percent, Clock, TrendingDown, Flame } from 'lucide-react';
+import { Search, Star, ShoppingCart, Heart, Filter, Grid, List, Percent, Clock, TrendingDown, Flame, ChevronUp, ChevronDown } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -200,6 +200,19 @@ const Sale: React.FC = () => {
       title: t('products.addToCart'),
       description: t('products.productAdded'),
     });
+  };
+
+  // Update cart quantity functionality
+  const updateCartQuantity = (product: Product, delta: number) => {
+    const newCart = [...cart];
+    const itemIndex = newCart.findIndex((item: any) => item.id === product.id && item.size === product.size);
+    
+    if (itemIndex !== -1) {
+      newCart[itemIndex].quantity = Math.max(1, newCart[itemIndex].quantity + delta);
+      localStorage.setItem('cart', JSON.stringify(newCart));
+      setCart(newCart);
+      window.dispatchEvent(new Event('cart-updated'));
+    }
   };
 
   // Wishlist functionality
@@ -455,12 +468,16 @@ const Sale: React.FC = () => {
             />
           </div>
         ) : (
-          <div className={`mb-12 ${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-4'}`}>
-            {sortedProducts.map(product => (
+          <div className={`mb-12 ${viewMode === 'grid' ? 'grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6' : 'space-y-4'}`}>
+            {sortedProducts.map(product => {
+              // Check if product is in cart
+              const cartItem = cart.find((item: any) => item.id === product.id && item.size === product.size);
+              
+              return (
             <div key={product.id} className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full cursor-pointer ${viewMode === 'list' ? 'flex-row' : ''}`}>
               {/* Clickable Image Area */}
               <div 
-                className={`relative ${viewMode === 'list' ? 'w-48 h-32' : 'h-48'} cursor-pointer`}
+                className={`relative ${viewMode === 'list' ? 'w-48 h-32' : 'h-40 md:h-48'} cursor-pointer`}
                 onClick={() => navigate(`/products/${product.slug || product.id}`)}
               >
                 <img
@@ -491,7 +508,7 @@ const Sale: React.FC = () => {
               
               {/* Clickable Content Area */}
               <div 
-                className={`p-4 flex flex-col flex-grow ${viewMode === 'list' ? 'flex-1' : ''} cursor-pointer`}
+                className={`p-3 md:p-4 flex flex-col flex-grow ${viewMode === 'list' ? 'flex-1' : ''} cursor-pointer`}
                 onClick={() => navigate(`/products/${product.slug || product.id}`)}
               >
                 <div className="flex items-center gap-2 mb-2">
@@ -502,17 +519,17 @@ const Sale: React.FC = () => {
                     <span className="text-sm text-gray-500">({product.reviewCount})</span>
                   </div>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-primary transition-colors">
+                <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-primary transition-colors text-sm md:text-base">
                   {product.name}
                 </h3>
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-sm text-gray-500 line-through">
+                  <span className="text-xs md:text-sm text-gray-500 line-through">
                     €{product.originalPrice}
                   </span>
-                  <span className="text-lg font-bold text-red-600">
+                  <span className="text-base md:text-lg font-bold text-red-600">
                     €{product.price}
                   </span>
-                  <span className="text-sm text-orange-600 font-medium">
+                  <span className="text-xs md:text-sm text-orange-600 font-medium">
                     {t('sale.save')} €{(product.originalPrice - product.price).toFixed(0)}
                   </span>
                 </div>
@@ -533,18 +550,49 @@ const Sale: React.FC = () => {
               </div>
               
               {/* Action Buttons - Not clickable for navigation */}
-              <div className="p-4 pt-0">
+              <div className="p-3 md:p-4 pt-0">
                 <div className="flex gap-2">
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      addToCart(product);
-                    }}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
-                  >
-                    <ShoppingCart className="h-4 w-4" />
-                    {t('sale.addToCart')}
-                  </button>
+                  {cartItem ? (
+                    // Show increment/decrement buttons if item is in cart
+                    <div className="flex items-center gap-2 flex-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateCartQuantity(product, -1);
+                        }}
+                        className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
+                      <span className="font-semibold text-sm min-w-[2ch] text-center">
+                        {cartItem.quantity}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateCartQuantity(product, 1);
+                        }}
+                        className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        <ChevronUp className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    // Show add to cart button if item is not in cart
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToCart(product);
+                      }}
+                      className="flex-1 flex items-center justify-center gap-1 px-2 md:px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-xs md:text-sm"
+                    >
+                      <ShoppingCart className="h-3 w-3 md:h-4 md:w-4" />
+                      <span className="hidden sm:inline">{t('sale.addToCart')}</span>
+                      <span className="sm:hidden">
+                        {t('sale.addToCart')}
+                      </span>
+                    </button>
+                  )}
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
@@ -561,7 +609,8 @@ const Sale: React.FC = () => {
                 </div>
               </div>
             </div>
-          ))}
+            );
+            })}
           </div>
         )}
 

@@ -46,9 +46,9 @@ const BrandsMarquee: React.FC = () => {
           {fallbackBrands.concat(fallbackBrands).map((brand, i) => (
             <span 
               key={i} 
-              className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-gray-700 hover:text-primary transition-colors duration-300 cursor-pointer select-none whitespace-nowrap"
+              className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-gray-700 hover:text-primary transition-colors duration-300 cursor-pointer select-none whitespace-nowrap uppercase"
             >
-              {brand}
+              {brand.toUpperCase()}
             </span>
           ))}
         </div>
@@ -69,9 +69,9 @@ const BrandsMarquee: React.FC = () => {
         {brands.concat(brands).map((brand, i) => (
           <span 
             key={i} 
-            className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-gray-700 hover:text-primary transition-colors duration-300 cursor-pointer select-none whitespace-nowrap"
+            className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-gray-700 hover:text-primary transition-colors duration-300 cursor-pointer select-none whitespace-nowrap uppercase"
           >
-            {brand}
+            {brand.toUpperCase()}
           </span>
         ))}
       </div>

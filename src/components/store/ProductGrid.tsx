@@ -258,7 +258,7 @@ export const ProductGrid = ({ sectionTitle = "Products", featuredOnly = false, s
             </Button>
             )}
         </div>
-         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-4 gap-2 md:gap-4 xl:gap-6">
+         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-4 gap-2 md:gap-4 xl:gap-6">
           {displayProducts
             .slice((currentPage - 1) * pageSize, currentPage * pageSize)
             .map((product, index) => {

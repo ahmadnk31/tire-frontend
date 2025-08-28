@@ -121,6 +121,8 @@ export const Dashboard = () => {
 
   const handleLogout = () => {
     localStorage.clear();
+    // Dispatch cart-updated event to update cart notification icons
+    window.dispatchEvent(new Event('cart-updated'));
     window.dispatchEvent(new Event('logout'));
     navigate('/login');
     toast({

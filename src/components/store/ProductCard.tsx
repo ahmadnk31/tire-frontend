@@ -240,7 +240,7 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
       
       <div className="relative">
         <div 
-          className="w-full h-48 sm:h-56 md:h-64 lg:h-72 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 flex items-center justify-center overflow-hidden cursor-pointer relative product-image-carousel"
+          className="w-full h-40 sm:h-48 md:h-56 lg:h-64 xl:h-72 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 flex items-center justify-center overflow-hidden cursor-pointer relative product-image-carousel"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -322,16 +322,16 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
         </div>
         
         {product.featured && (
-          <div className="absolute top-2 sm:top-4 left-2 sm:left-4">
-            <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-gradient-to-r from-primary to-accent text-white text-xs font-medium shadow-lg">
+          <div className="absolute top-2 left-2 sm:top-3 sm:left-3 md:top-4 md:left-4">
+            <span className="inline-flex items-center px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-primary to-accent text-white text-xs font-medium shadow-lg">
               {t('products.featured')}
             </span>
           </div>
         )}
         
         {product.comparePrice && parseFloat(product.comparePrice) > parseFloat(product.price) && (
-          <div className="absolute top-2 sm:top-4 right-2 sm:right-4">
-            <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-red-500 text-white text-xs font-medium shadow-lg">
+          <div className="absolute top-2 right-2 sm:top-3 sm:right-3 md:top-4 md:right-4">
+            <span className="inline-flex items-center px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 rounded-full bg-red-500 text-white text-xs font-medium shadow-lg">
               {Math.round(((parseFloat(product.comparePrice) - parseFloat(product.price)) / parseFloat(product.comparePrice)) * 100)}% OFF
             </span>
           </div>
@@ -339,8 +339,8 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
         
         {/* Sale countdown badge */}
         {product.saleEndDate && daysUntilEnd > 0 && product.isOnSale && (
-          <div className="absolute top-2 sm:top-4 left-2 sm:left-4">
-            <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-orange-500 text-white text-xs font-medium shadow-lg">
+          <div className="absolute top-2 left-2 sm:top-3 sm:left-3 md:top-4 md:left-4">
+            <span className="inline-flex items-center px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 rounded-full bg-orange-500 text-white text-xs font-medium shadow-lg">
               <Clock className="h-3 w-3 mr-1" />
               {daysUntilEnd}d
             </span>
@@ -356,34 +356,42 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
         )}
       </div>
       
-      <div className="p-4 sm:p-6 lg:p-8 flex flex-col flex-grow">
-        <h3 className="font-semibold text-sm sm:text-base md:text-lg lg:text-xl mb-2 sm:mb-3 line-clamp-2 group-hover:text-primary transition-colors duration-300 cursor-pointer leading-tight">
+      <div className="p-3 sm:p-4 md:p-6 lg:p-8 flex flex-col flex-grow">
+        <h3 className="font-semibold text-xs sm:text-sm md:text-base lg:text-lg mb-2 sm:mb-3 line-clamp-2 group-hover:text-primary transition-colors duration-300 cursor-pointer leading-tight">
           {product.name}
         </h3>
-        <p className="text-gray-600 mb-3 sm:mb-4 text-xs sm:text-sm md:text-base">{product.size}</p>
-        <div className="flex items-center mb-4 sm:mb-6 space-x-1 sm:space-x-2">
+        {product.brand && (
+          <p className="text-primary font-medium text-xs sm:text-sm md:text-base mb-1 sm:mb-2">
+            {product.brand}
+          </p>
+        )}
+        <p className="text-gray-600 mb-2 sm:mb-3 md:mb-4 text-xs sm:text-sm md:text-base">{product.size}</p>
+        <div className="flex items-center mb-3 sm:mb-4 md:mb-6 space-x-1 sm:space-x-2">
           <ReviewHoverCard 
             productId={product.id} 
             stats={reviewStats?.stats}
           >
             <div className="flex items-center cursor-pointer hover:opacity-80 transition-opacity">
-              <Star className="h-4 w-4 sm:h-5 sm:w-5 fill-amber-400 text-amber-400" />
+              <Star className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 fill-amber-400 text-amber-400" />
               <span className="ml-1 text-xs sm:text-sm md:text-base font-medium text-gray-900">
                 {(reviewStats?.stats?.averageRating || parseFloat(product.rating)).toFixed(1)}
               </span>
-              <span className="text-xs sm:text-sm md:text-base text-gray-500 ml-1">
+              <span className="text-xs sm:text-sm md:text-base text-gray-500 ml-1 hidden sm:inline">
                 ({reviewStats?.stats?.totalReviews || product.reviews} {t('products.reviews')})
+              </span>
+              <span className="text-xs text-gray-500 ml-1 sm:hidden">
+                ({reviewStats?.stats?.totalReviews || product.reviews})
               </span>
             </div>
           </ReviewHoverCard>
         </div>
-        <div className="flex items-center justify-between gap-2 mt-auto">
-          <div className="flex flex-col">
-            <span className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-primary">{formatCurrency(product.price)}</span>
+        <div className="flex items-center justify-between gap-1 sm:gap-2 mt-auto">
+          <div className="flex flex-col min-w-0 flex-1">
+            <span className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-primary">{formatCurrency(product.price)}</span>
             {product.comparePrice && parseFloat(product.comparePrice) > parseFloat(product.price) && (
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-1">
                 <span className="text-xs sm:text-sm text-gray-500 line-through">{formatCurrency(product.comparePrice)}</span>
-                <span className="text-xs sm:text-sm font-medium text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded">
+                <span className="text-xs sm:text-sm font-medium text-orange-600 bg-orange-50 px-1 py-0.5 rounded w-fit">
                   {Math.round(((parseFloat(product.comparePrice) - parseFloat(product.price)) / parseFloat(product.comparePrice)) * 100)}% OFF
                 </span>
               </div>
@@ -391,16 +399,16 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
           </div>
           {cartItem && updateCartQuantity ? (
             <div className="flex items-center gap-1 sm:gap-2" data-add-to-cart>
-              <Button size="icon" variant="outline" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 border-gray-300" onClick={e => { e.stopPropagation(); updateCartQuantity(1); }} disabled={product.stock === 0} tabIndex={0}>
+              <Button size="icon" variant="outline" className="rounded-full h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 border-gray-300" onClick={e => { e.stopPropagation(); updateCartQuantity(1); }} disabled={product.stock === 0} tabIndex={0}>
                 <ChevronUp className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
-              <span className="font-semibold text-sm sm:text-base min-w-[2ch] text-center">{cartItem.quantity}</span>
-              <Button size="icon" variant="outline" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 disabled:cursor-not-allowed border-gray-300" onClick={e => { e.stopPropagation(); updateCartQuantity(-1); }} disabled={product.stock === 0 || cartItem.quantity <= 1} tabIndex={0}>
+              <span className="font-semibold text-xs sm:text-sm md:text-base min-w-[2ch] text-center">{cartItem.quantity}</span>
+              <Button size="icon" variant="outline" className="rounded-full h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 disabled:cursor-not-allowed border-gray-300" onClick={e => { e.stopPropagation(); updateCartQuantity(-1); }} disabled={product.stock === 0 || cartItem.quantity <= 1} tabIndex={0}>
                 <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </div>
           ) : addToCart ? (
-            <Button size="sm" className="bg-primary hover:bg-accent text-primary-foreground px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-lg font-medium transition-all duration-200 flex items-center space-x-1 sm:space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm" disabled={product.stock === 0} onClick={e => { e.stopPropagation(); addToCart(); }} data-add-to-cart>
+            <Button size="sm" className="bg-primary hover:bg-accent text-primary-foreground px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-3 rounded-lg font-medium transition-all duration-200 flex items-center space-x-1 sm:space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm" disabled={product.stock === 0} onClick={e => { e.stopPropagation(); addToCart(); }} data-add-to-cart>
               <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden md:inline">{t('products.addCart')}</span>
               <span className="hidden sm:inline md:hidden">Cart</span>

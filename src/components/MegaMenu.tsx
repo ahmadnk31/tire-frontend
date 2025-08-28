@@ -19,7 +19,7 @@ export function MegaMenu() {
   const [brands, setBrands] = useState<string[]>([]);
   const [models, setModels] = useState<string[]>([]);
   const [sizes, setSizes] = useState<string[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<Array<{ name: string; slug: string }>>([]);
   const important = [
     t('megaMenu.offers'), 
     t('megaMenu.newArrivals'), 
@@ -81,7 +81,7 @@ export function MegaMenu() {
         setRelatedParts(parts);
         // Fetch categories from backend
         const catRes = await productsApi.getCategories();
-        setCategories(catRes.categories ? catRes.categories.map((c: any) => c.name) : []);
+        setCategories(catRes.categories ? catRes.categories.map((c: any) => ({ name: c.name, slug: c.slug })) : []);
       } catch (err) {
         setBrands([]);
         setModels([]);
@@ -190,11 +190,13 @@ export function MegaMenu() {
           </h3>
           <div className="space-y-6">
             {currentItems.map((item) => (
-              <div key={item} className="border-b border-gray-100 pb-4 last:border-b-0">
-                <div className="font-semibold mb-3 text-base cursor-pointer" onClick={() => handleFilterClick(active!, item)}>{item}</div>
+              <div key={typeof item === 'string' ? item : item.name} className="border-b border-gray-100 pb-4 last:border-b-0">
+                <div className="font-semibold mb-3 text-base cursor-pointer" onClick={() => handleFilterClick(active!, typeof item === 'string' ? item : item.slug)}>
+                  {typeof item === 'string' ? item.toUpperCase() : item.name.toUpperCase()}
+                </div>
                 <ul className="space-y-2 pl-4">
-                  {(active === "brands" && relatedParts[item] && relatedParts[item].length > 0) ? 
-                    relatedParts[item].map((part) => (
+                  {(active === "brands" && relatedParts[typeof item === 'string' ? item : item.name] && relatedParts[typeof item === 'string' ? item : item.name].length > 0) ? 
+                    relatedParts[typeof item === 'string' ? item : item.name].map((part) => (
                       <li key={part} className="text-gray-700 hover:text-primary-600 cursor-pointer text-sm" onClick={() => handleFilterClick("models", part)}>
                         {part}
                       </li>
@@ -216,8 +218,8 @@ export function MegaMenu() {
             </h3>
             <ul className="space-y-3">
               {currentItems.map((item) => (
-                <li key={item} className="text-gray-700 hover:text-primary-600 hover:underline cursor-pointer transition-colors" onClick={() => handleFilterClick(active!, item)}>
-                  {item}
+                <li key={typeof item === 'string' ? item : item.name} className="text-gray-700 hover:text-primary-600 hover:underline cursor-pointer transition-colors" onClick={() => handleFilterClick(active!, typeof item === 'string' ? item : item.slug)}>
+                  {typeof item === 'string' ? item.toUpperCase() : item.name.toUpperCase()}
                 </li>
               ))}
             </ul>
@@ -241,11 +243,13 @@ export function MegaMenu() {
                 <h3 className="font-bold mb-6 text-lg text-gray-900">{t('megaMenu.relatedParts')}</h3>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {currentItems.map((item) => (
-                    <div key={item} className="space-y-3">
-                      <div className="font-semibold text-gray-900 cursor-pointer" onClick={() => handleFilterClick(active!, item)}>{item}</div>
+                    <div key={typeof item === 'string' ? item : item.name} className="space-y-3">
+                      <div className="font-semibold text-gray-900 cursor-pointer" onClick={() => handleFilterClick(active!, typeof item === 'string' ? item : item.slug)}>
+                        {typeof item === 'string' ? item.toUpperCase() : item.name.toUpperCase()}
+                      </div>
                       <ul className="space-y-2">
-                        {(active === "brands" && relatedParts[item] && relatedParts[item].length > 0) ? 
-                          relatedParts[item].map((part) => (
+                        {(active === "brands" && relatedParts[typeof item === 'string' ? item : item.name] && relatedParts[typeof item === 'string' ? item : item.name].length > 0) ? 
+                          relatedParts[typeof item === 'string' ? item : item.name].map((part) => (
                             <li key={part} className="text-gray-700 hover:text-primary-600 hover:underline cursor-pointer transition-colors text-sm" onClick={() => handleFilterClick("models", part)}>
                               {part}
                             </li>

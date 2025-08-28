@@ -176,17 +176,18 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
         });
         console.log('🔍 Extracted constructions:', constructions);
 
-        // Extract categories
-        const categoryNames: string[] = [];
+        // Extract categories with slugs
+        const categoryData: Array<{ name: string; slug: string }> = [];
         categories.forEach((c: any, index: number) => {
           console.log(`🔍 Category ${index}:`, c);
           const name = typeof c === 'string' ? c : c.name;
-          console.log(`🔍 Category ${index} name:`, name);
-          if (name && !categoryNames.includes(name)) {
-            categoryNames.push(name);
+          const slug = typeof c === 'string' ? c : c.slug;
+          console.log(`🔍 Category ${index} name:`, name, 'slug:', slug);
+          if (name && slug && !categoryData.find(cat => cat.slug === slug)) {
+            categoryData.push({ name, slug });
           }
         });
-        console.log('🔍 Extracted categoryNames:', categoryNames);
+        console.log('🔍 Extracted categoryData:', categoryData);
 
         // Calculate price range
         const prices = products.map((p: any) => parseFloat(p.price) || 0).filter(p => p > 0);
@@ -195,7 +196,8 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
 
         const result = {
           brands: brands.sort(),
-          categories: categoryNames.sort(),
+          categories: categoryData.map(cat => cat.name).sort(),
+          categoryData: categoryData.sort((a, b) => a.name.localeCompare(b.name)),
           sizes: sizes.sort(),
           seasonTypes: seasonTypes.sort(),
           speedRatings: speedRatings.sort(),
@@ -214,6 +216,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
         return {
           brands: [],
           categories: [],
+          categoryData: [],
           sizes: [],
           seasonTypes: [],
           speedRatings: [],
@@ -487,24 +490,24 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose })
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   {filterOptionsLoading ? (
                     <div className="text-sm text-gray-500">Loading categories...</div>
-                  ) : filterOptions?.categories && filterOptions.categories.length > 0 ? (
-                    filterOptions.categories.map((category) => (
-                      <div key={category} className="flex items-center space-x-2">
+                  ) : filterOptions?.categoryData && filterOptions.categoryData.length > 0 ? (
+                    filterOptions.categoryData.map((category) => (
+                      <div key={category.slug} className="flex items-center space-x-2">
                         <Checkbox
-                          id={`category-${category}`}
-                          checked={filters.categories.includes(category)}
+                          id={`category-${category.slug}`}
+                          checked={filters.categories.includes(category.slug)}
                           onCheckedChange={(checked) => {
                             const newCategories = checked
-                              ? [...filters.categories, category]
-                              : filters.categories.filter(c => c !== category);
+                              ? [...filters.categories, category.slug]
+                              : filters.categories.filter(c => c !== category.slug);
                             updateURL({ categories: newCategories });
                           }}
                         />
                         <Label
-                          htmlFor={`category-${category}`}
+                          htmlFor={`category-${category.slug}`}
                           className="text-sm text-gray-700 cursor-pointer"
                         >
-                          {category}
+                          {category.name}
                         </Label>
                       </div>
                     ))

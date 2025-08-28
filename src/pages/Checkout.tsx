@@ -588,6 +588,8 @@ function CheckoutForm({ cart, setCart, currentStep, setCurrentStep, steps, setSt
       await saveOrderToBackend("paid");
       localStorage.removeItem("cart");
       setCart([]); // Clear local cart state
+      // Dispatch cart-updated event to update cart notification icons
+      window.dispatchEvent(new Event('cart-updated'));
       navigate("/order-success");
     }
 
@@ -915,7 +917,7 @@ export default function CheckoutPage() {
                 colorBackground: '#ffffff',
                 colorText: 'hsl(220, 9%, 20%)', // --primary
                 colorDanger: 'hsl(0, 84%, 60%)', // --destructive
-                colorSuccess: 'hsl(142, 76%, 36%)', // --accent
+                colorSuccess: 'hsl(28, 100.00%, 51.80%)', // --accent
                 fontFamily: 'system-ui, sans-serif',
                 spacingUnit: '4px',
                 borderRadius: '6px',
