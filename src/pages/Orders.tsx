@@ -3,8 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Eye } from 'lucide-react';
+import { Eye, ExternalLink } from 'lucide-react';
 import { ordersApi } from '@/lib/api';
+import { Link } from 'react-router-dom';
 
 const Orders = () => {
   const [orders, setOrders] = useState<any[]>([]);
@@ -17,6 +18,12 @@ const Orders = () => {
       setError('');
       try {
         const res = await ordersApi.getAll();
+        console.log('🔍 [Orders] API response:', res);
+        console.log('🔍 [Orders] Orders data:', res.orders);
+        if (res.orders && res.orders.length > 0) {
+          console.log('🔍 [Orders] First order:', res.orders[0]);
+          console.log('🔍 [Orders] First order items:', res.orders[0].items);
+        }
         setOrders(res.orders || []);
       } catch (err: any) {
         setError(err.message || 'Failed to load orders');
@@ -136,7 +143,48 @@ const Orders = () => {
                         )}
 
                         {/* Order Items */}
-                        {order.cart && order.cart.length > 0 && (
+                        {order.items && order.items.length > 0 && (
+                          <div>
+                            <label className="text-sm font-medium">Order Items</label>
+                            <div className="mt-2 space-y-2">
+                              {order.items.map((item: any, index: number) => (
+                                <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-md">
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2">
+                                      <p className="text-sm font-medium">
+                                        {item.productName || item.product?.name || 'Unknown Product'}
+                                      </p>
+                                      {item.product?.slug && (
+                                        <Link 
+                                          to={`/products/${item.product.slug}`}
+                                          className="text-primary hover:text-primary/80 text-xs flex items-center gap-1"
+                                        >
+                                          <ExternalLink className="h-3 w-3" />
+                                          View Product
+                                        </Link>
+                                      )}
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">
+                                      {item.productSize || item.product?.size} • SKU: {item.productSku}
+                                    </p>
+                                    {item.product?.brand && (
+                                      <p className="text-xs text-muted-foreground">
+                                        Brand: {item.product.brand}
+                                      </p>
+                                    )}
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="text-sm">Qty: {item.quantity}</p>
+                                    <p className="text-sm font-medium">€{parseFloat(item.totalPrice || item.unitPrice * item.quantity).toFixed(2)}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Fallback to cart data if items not available */}
+                        {(!order.items || order.items.length === 0) && order.cart && order.cart.length > 0 && (
                           <div>
                             <label className="text-sm font-medium">Order Items</label>
                             <div className="mt-2 space-y-2">

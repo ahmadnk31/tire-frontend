@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MapPin, Phone, Mail, Clock, Send, MessageCircle, User, FileText } from "lucide-react";
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { submitContactForm, ContactFormData } from "../lib/api/contact";
 
 const Contact = () => {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -16,6 +18,34 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+
+  // Handle URL parameters for order tracking
+  useEffect(() => {
+    const subject = searchParams.get('subject');
+    const inquiryType = searchParams.get('inquiryType');
+    
+    if (subject) {
+      setFormData(prev => ({
+        ...prev,
+        subject: subject
+      }));
+    }
+    
+    if (inquiryType) {
+      setFormData(prev => ({
+        ...prev,
+        inquiryType: inquiryType
+      }));
+    }
+
+    // If it's an order tracking inquiry, pre-fill the message
+    if (subject === 'order-tracking') {
+      setFormData(prev => ({
+        ...prev,
+        message: `I would like to track my recent order. Please provide me with the current status and any tracking information available.`
+      }));
+    }
+  }, [searchParams]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -61,10 +91,16 @@ const Contact = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            {t('contact.title')}
+            {searchParams.get('subject') === 'order-tracking' 
+              ? t('contact.orderTracking.title') 
+              : t('contact.title')
+            }
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            {t('contact.description')}
+            {searchParams.get('subject') === 'order-tracking'
+              ? t('contact.orderTracking.description')
+              : t('contact.description')
+            }
           </p>
         </div>
 

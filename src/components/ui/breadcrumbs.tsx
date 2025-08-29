@@ -1,4 +1,4 @@
-import { Link, useLocation, matchPath } from "react-router-dom";
+import { Link, useLocation, matchPath, useSearchParams } from "react-router-dom";
 
 const BREADCRUMB_MAP: Record<string, string> = {
   "/": "Home",
@@ -8,7 +8,29 @@ const BREADCRUMB_MAP: Record<string, string> = {
   "/cart": "Cart",
 };
 
-function getBreadcrumbs(pathname: string) {
+// Dashboard section labels
+const DASHBOARD_SECTION_LABELS: Record<string, string> = {
+  'overview': 'Overview',
+  'products': 'Products',
+  'add-product': 'Add Product',
+  'categories': 'Categories',
+  'banners': 'Banners',
+  'orders': 'Orders',
+  'customers': 'Customers',
+  'reviews': 'Reviews',
+  'blog': 'Blog',
+  'comments': 'Comments',
+  'contacts': 'Contacts',
+  'newsletter': 'Newsletter',
+  'campaigns': 'Campaigns',
+  'security': 'Security',
+  'rate-limits': 'Rate Limits',
+  'bulk-import': 'Bulk Import',
+  'settings': 'Settings',
+  'upload-diagnostics': 'Upload Diagnostics',
+};
+
+function getBreadcrumbs(pathname: string, searchParams?: URLSearchParams) {
   const crumbs: { path: string; label: string }[] = [];
   let path = "";
   const segments = pathname.split("/").filter(Boolean);
@@ -21,6 +43,19 @@ function getBreadcrumbs(pathname: string) {
     if (!label && path.match(/^\/dashboard/)) label = "Dashboard";
     if (!label && path.match(/^\/cart/)) label = "Cart";
     if (!label) label = seg.charAt(0).toUpperCase() + seg.slice(1);
+    
+    // Add search parameters to dashboard path
+    if (path === "/dashboard" && searchParams?.get('section')) {
+      const section = searchParams.get('section');
+      const sectionLabel = DASHBOARD_SECTION_LABELS[section || ''] || section;
+      crumbs.push({ path, label });
+      crumbs.push({ 
+        path: `${path}?section=${section}`, 
+        label: sectionLabel 
+      });
+      return;
+    }
+    
     crumbs.push({ path, label });
   });
   return [{ path: "/", label: "Home" }, ...crumbs];
@@ -28,13 +63,14 @@ function getBreadcrumbs(pathname: string) {
 
 export function Breadcrumbs() {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   
   // Don't show breadcrumbs on the home page
   if (location.pathname === "/") {
     return null;
   }
   
-  const breadcrumbs = getBreadcrumbs(location.pathname);
+  const breadcrumbs = getBreadcrumbs(location.pathname, searchParams);
   return (
     <div className="max-w-7xl mx-auto px-2 sm:px-6">
       <nav className="text-sm text-gray-500 py-2" aria-label="Breadcrumb">

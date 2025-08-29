@@ -76,6 +76,9 @@ export const DashboardOverview = () => {
         ]);
         
         console.log('Dashboard API responses:', { overviewResponse, ordersData, stockData });
+        console.log('🔍 [Dashboard] Recent orders data type:', typeof ordersData);
+        console.log('🔍 [Dashboard] Recent orders data:', ordersData);
+        
         // Defensive: check for error or missing fields
         if (!overviewResponse || typeof overviewResponse !== 'object') {
           throw new Error('No dashboard overview data received');
@@ -124,7 +127,7 @@ export const DashboardOverview = () => {
             trend: (overviewResponse.newSubscriptions || 0) > 0 ? 'up' : 'down',
           },
         });
-        setRecentOrders(Array.isArray(ordersData?.orders) ? ordersData.orders : []);
+     setRecentOrders(Array.isArray(ordersData) ? ordersData : []);
         setLowStockItems(Array.isArray(stockData?.products) ? stockData.products : []);
       } catch (error: any) {
         console.error('Error fetching dashboard data:', error);

@@ -233,6 +233,10 @@
     },
     "contact": {
       "contactInfo": "Contactgegevens",
+      "orderTracking": {
+        "title": "Volg je Bestelling",
+        "description": "Hulp nodig bij het volgen van je recente bestelling? Vul het formulier hieronder in en we zullen je zo snel mogelijk terugbellen met de status van je bestelling."
+      },
       "businessHours": "Openingstijden",
       "paymentMethods": "Betaalmethoden",
       "mondayFriday": "Maandag - Vrijdag:",
@@ -467,6 +471,10 @@
   "contact": {
     "title": "Contact",
     "description": "Neem contact op met onze bandenexperts. Wij helpen je graag bij het vinden van de perfecte banden voor je voertuig en beantwoorden al je vragen.",
+    "orderTracking": {
+      "title": "Volg Je Bestelling",
+      "description": "Hulp nodig bij het volgen van je recente bestelling? Vul het formulier hieronder in en we nemen contact met je op over de status van je bestelling."
+    },
     "location": {
       "title": "Bezoek Onze Winkel",
       "businessName": "Ariana Banden Service",
@@ -628,6 +636,13 @@
     "orderComplete": "Bestelling voltooid",
     "thankYou": "Bedankt voor je bestelling!",
     "orderDetails": "Besteldetails",
+    "viewMyOrders": "Bekijk mijn Bestellingen",
+    "trackOrderByEmail": "Volg Bestelling via E-mail",
+    "createAccountToTrack": "Maak een Account om Bestellingen te Volgen",
+    "continueShopping": "Doorgaan Met Winkelen",
+    "emailConfirmation": "Je ontvangt een e-mailbevestiging binnenkort.",
+    "guestUserTip": "Gasten Checkout",
+    "guestUserTipText": "Maak een account om je bestellingen eenvoudig te volgen en updates op toekomstige aankopen te ontvangen.",
     "orderHistory": "Bestelgeschiedenis",
     "steps": {
       "address": {
@@ -1108,5 +1123,22 @@
     "averageRating": "Gemiddelde Beoordeling",
     "totalReviews": "Totaal Reviews",
     "hoverCardMessage": "Klik om alle klantenreviews en beoordelingen te bekijken"
-  }
+  },
+  "orderComplete": "Bestelling Voltooid",
+    "thankYou": "Bedankt voor je bestelling!",
+    "orderDetails": "Besteldetails",
+    "orderHistory": "Bestelgeschiedenis",
+    "viewMyOrders": "Bekijk mijn Bestellingen",
+    "trackOrderByEmail": "Volg Bestelling via E-mail",
+    "createAccountToTrack": "Maak een Account om Bestellingen te Volgen",
+    "continueShopping": "Doorgaan Met Winkelen",
+    "emailConfirmation": "Je ontvangt een e-mailbevestiging binnenkort.",
+    "guestUserTip": "Gasten Checkout",
+    "guestUserTipText": "Maak een account om je bestellingen eenvoudig te volgen en updates op toekomstige aankopen te ontvangen.",
+    "steps": {
+      "step1": "Bestelling Geplaatst",
+      "step2": "Betaling Bevestigd",
+      "step3": "Bestelling Verzonden",
+      "step4": "Bestelling Geleverd"
+    }
 }

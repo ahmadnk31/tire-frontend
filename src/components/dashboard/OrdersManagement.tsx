@@ -41,8 +41,10 @@ import {
   Package,
   DollarSign,
   Users,
-  TrendingUp
+  TrendingUp,
+  ExternalLink
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface Order {
   id: number;
@@ -58,6 +60,7 @@ interface Order {
   billingAddress?: any;
   trackingNumber?: string;
   orderItems?: any[];
+  items?: any[];
 }
 
 const statusOptions = [
@@ -147,6 +150,10 @@ export const OrdersManagement = () => {
   // Debug logging
   console.log('🔍 [OrdersManagement] Orders data:', orders);
   console.log('🔍 [OrdersManagement] First order:', orders[0]);
+  if (orders[0]) {
+    console.log('🔍 [OrdersManagement] First order items:', orders[0].items);
+    console.log('🔍 [OrdersManagement] First order orderItems:', orders[0].orderItems);
+  }
 
   const handleUpdateOrder = (status: string, paymentStatus?: string) => {
     if (!selectedOrder) return;
@@ -391,7 +398,48 @@ export const OrdersManagement = () => {
                               )}
 
                               {/* Order Items */}
-                              {order.orderItems && order.orderItems.length > 0 && (
+                              {order.items && order.items.length > 0 && (
+                                <div>
+                                  <label className="text-sm font-medium">{t('orders.orderItems')}</label>
+                                  <div className="mt-2 space-y-2">
+                                    {order.items.map((item: any, index: number) => (
+                                      <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-md">
+                                        <div className="flex-1">
+                                          <div className="flex items-center gap-2">
+                                            <p className="text-sm font-medium">
+                                              {item.productName || item.product?.name || 'Unknown Product'}
+                                            </p>
+                                            {item.product?.slug && (
+                                              <Link 
+                                                to={`/products/${item.product.slug}`}
+                                                className="text-primary hover:text-primary/80 text-xs flex items-center gap-1"
+                                              >
+                                                <ExternalLink className="h-3 w-3" />
+                                                View Product
+                                              </Link>
+                                            )}
+                                          </div>
+                                          <p className="text-xs text-muted-foreground">
+                                            {item.productSize || item.product?.size} • SKU: {item.productSku}
+                                          </p>
+                                          {item.product?.brand && (
+                                            <p className="text-xs text-muted-foreground">
+                                              Brand: {item.product.brand}
+                                            </p>
+                                          )}
+                                        </div>
+                                        <div className="text-right">
+                                          <p className="text-sm">{t('orders.quantity')}: {item.quantity}</p>
+                                          <p className="text-sm font-medium">€{parseFloat(item.totalPrice).toFixed(2)}</p>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Fallback to orderItems if items not available */}
+                              {(!order.items || order.items.length === 0) && order.orderItems && order.orderItems.length > 0 && (
                                 <div>
                                   <label className="text-sm font-medium">{t('orders.orderItems')}</label>
                                   <div className="mt-2 space-y-2">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { dashboardApi } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
@@ -55,10 +55,32 @@ const navigation: NavigationItem[] = [
 ];
 
 export const Dashboard = () => {
-  const [currentView, setCurrentView] = useState<DashboardView>('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Get current view from URL parameter, default to 'overview'
+  const currentView = (searchParams.get('section') as DashboardView) || 'overview';
+
+  // Debug logging
+  useEffect(() => {
+    console.log('🔍 [Dashboard] Current view:', currentView);
+    console.log('🔍 [Dashboard] URL search params:', searchParams.toString());
+  }, [currentView, searchParams]);
+
+  // Function to update the current view and URL
+  const setCurrentView = (view: DashboardView) => {
+    console.log('🔍 [Dashboard] Setting view to:', view);
+    setSearchParams({ section: view });
+  };
+
+  // Initialize URL if no section parameter is present
+  useEffect(() => {
+    if (!searchParams.get('section')) {
+      setSearchParams({ section: 'overview' });
+    }
+  }, [searchParams, setSearchParams]);
 
   // Verify admin access with backend
   const { data: adminStatus, isLoading, error } = useQuery({

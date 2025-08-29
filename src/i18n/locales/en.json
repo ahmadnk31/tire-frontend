@@ -1456,6 +1456,10 @@
   "contact": {
     "title": "Contact Us",
     "description": "Get in touch with our tire experts. We're here to help you find the perfect tires for your vehicle and answer any questions you may have.",
+    "orderTracking": {
+      "title": "Track Your Order",
+      "description": "Need help tracking your recent order? Fill out the form below and we'll get back to you with your order status."
+    },
     "location": {
       "title": "Visit Our Store",
       "businessName": "Ariana Banden Service",
@@ -1618,6 +1622,13 @@
     "thankYou": "Thank you for your order!",
     "orderDetails": "Order Details",
     "orderHistory": "Order History",
+    "viewMyOrders": "View My Orders",
+    "trackOrderByEmail": "Track Order by Email",
+    "createAccountToTrack": "Create Account to Track Orders",
+    "continueShopping": "Continue Shopping",
+    "emailConfirmation": "You will receive an email confirmation shortly.",
+    "guestUserTip": "Guest Checkout",
+    "guestUserTipText": "Create an account to easily track your orders and get updates on future purchases.",
     "steps": {
       "address": {
         "title": "Address",
@@ -2048,5 +2059,23 @@
     "totalReviews": "Total Reviews",
     "hoverCardMessage": "Click to view all customer reviews and ratings",
     "yourReviewsCount": "You have written {{count}} review(s) for this product"
-  }
+  },
+      "orderComplete": "Order Complete",
+    "thankYou": "Thank you for your order!",
+    "orderDetails": "Order Details",
+    "orderHistory": "Order History",
+    "viewMyOrders": "View My Orders",
+    "trackOrderByEmail": "Track Order by Email",
+    "createAccountToTrack": "Create Account to Track Orders",
+    "continueShopping": "Continue Shopping",
+    "emailConfirmation": "You will receive an email confirmation shortly.",
+    "guestUserTip": "Guest Checkout",
+    "guestUserTipText": "Create an account to easily track your orders and get updates on future purchases.",
+    "steps": {
+      "step1": "Order Placed",
+      "step2": "Payment Confirmed",
+      "step3": "Order Shipped",
+      "step4": "Order Delivered"
+    }
+
 }
