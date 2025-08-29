@@ -53,8 +53,12 @@ const Brands: React.FC = () => {
   const [filterCountry, setFilterCountry] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(12);
   const [wishlist, setWishlist] = useState<number[]>([]);
   const [cart, setCart] = useState<any[]>([]);
+  
+
   
   // Initialize cart from localStorage
   useEffect(() => {
@@ -140,18 +144,23 @@ const Brands: React.FC = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Fetch review stats for products
+  // Fetch review stats for products - optimized to reduce API calls
   const productIds = brandProductsData?.products?.map((p: any) => p.id) || [];
   const { data: reviewStatsData } = useQuery({
     queryKey: ['brand-review-stats', productIds],
     queryFn: async () => {
       if (productIds.length === 0) return {};
+      
+      // Only fetch stats for the first 20 products to prevent rate limiting
+      const limitedProductIds = productIds.slice(0, 20);
+      
       const stats = await Promise.all(
-        productIds.map(async (id: number) => {
+        limitedProductIds.map(async (id: number) => {
           try {
             const stats = await reviewsApi.getReviewStats(id);
             return { [id]: stats.stats };
           } catch (error) {
+            console.warn(`Failed to fetch review stats for product ${id}:`, error);
             return { [id]: null };
           }
         })
@@ -159,8 +168,10 @@ const Brands: React.FC = () => {
       return stats.reduce((acc, stat) => ({ ...acc, ...stat }), {});
     },
     enabled: productIds.length > 0,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 10 * 60 * 1000, // Increased to 10 minutes
+    gcTime: 15 * 60 * 1000, // Increased to 15 minutes
+    retry: 2, // Limit retries
+    retryDelay: 1000, // 1 second delay between retries
   });
 
   // Wishlist mutation with optimistic updates
@@ -412,6 +423,17 @@ const Brands: React.FC = () => {
     isOnSale: product.isOnSale,
   })) || [];
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+
+  // Reset to first page when brand changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedBrand]);
+
   // Check if product is in cart
   const isInCart = (productId: number) => {
     return cart.some(item => item.id === productId);
@@ -633,7 +655,7 @@ const Brands: React.FC = () => {
               {t('brands.productsBy')} {brands.find(b => b.id === selectedBrand)?.name}
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-              {filteredProducts.map(product => {
+                              {paginatedProducts.map(product => {
                 const cartItem = cart.find((item: any) => item.id === product.id);
                 return (
                   <div key={product.id} className="h-full min-w-0">
@@ -649,6 +671,31 @@ const Brands: React.FC = () => {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {selectedBrand && totalPages > 1 && (
+          <div className="my-12 flex justify-center">
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {t('common.previous')}
+              </button>
+              <span className="px-4 py-2 text-sm text-gray-600">
+                {t('common.page')} {currentPage} {t('common.of')} {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {t('common.next')}
+              </button>
             </div>
           </div>
         )}

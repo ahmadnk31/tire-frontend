@@ -83,6 +83,7 @@ export interface ProductCardProps {
     slug?: string;
     images?: Array<string | { imageUrl: string }>;
     productImages?: Array<{ imageUrl: string }>;
+    categoryIds?: number[];
     // Sale fields
     saleStartDate?: string;
     saleEndDate?: string;
@@ -321,31 +322,30 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
           )}
         </div>
         
-        {product.featured && (
-          <div className="absolute top-2 left-2 sm:top-3 sm:left-3 md:top-4 md:left-4">
-            <span className="inline-flex items-center px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-primary to-accent text-white text-xs font-medium shadow-lg">
-              {t('products.featured')}
-            </span>
-          </div>
-        )}
-        
-        {product.comparePrice && parseFloat(product.comparePrice) > parseFloat(product.price) && (
-          <div className="absolute top-2 right-2 sm:top-3 sm:right-3 md:top-4 md:right-4">
-            <span className="inline-flex items-center px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 rounded-full bg-red-500 text-white text-xs font-medium shadow-lg">
-              {Math.round(((parseFloat(product.comparePrice) - parseFloat(product.price)) / parseFloat(product.comparePrice)) * 100)}% OFF
-            </span>
-          </div>
-        )}
-        
-        {/* Sale countdown badge */}
-        {product.saleEndDate && daysUntilEnd > 0 && product.isOnSale && (
-          <div className="absolute top-2 left-2 sm:top-3 sm:left-3 md:top-4 md:left-4">
-            <span className="inline-flex items-center px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 rounded-full bg-orange-500 text-white text-xs font-medium shadow-lg">
+        {/* Smart Badge System - Priority Order (No Discount) */}
+        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 md:top-4 md:left-4 z-10">
+          {/* Priority 1: Sale Countdown */}
+          {product.saleEndDate && daysUntilEnd > 0 && product.isOnSale && (
+            <span className="inline-flex items-center px-2 py-1 rounded-full bg-orange-500 text-white text-xs font-medium shadow-lg">
               <Clock className="h-3 w-3 mr-1" />
               {daysUntilEnd}d
             </span>
-          </div>
-        )}
+          )}
+          
+          {/* Priority 2: Featured */}
+          {!product.saleEndDate && product.featured && (
+            <span className="inline-flex items-center px-2 py-1 rounded-full bg-gradient-to-r from-primary to-accent text-white text-xs font-medium shadow-lg">
+              {t('products.featured')}
+            </span>
+          )}
+          
+          {/* Priority 3: Second-Hand (Always show if no other badges) */}
+          {!product.saleEndDate && !product.featured && product.categoryIds && product.categoryIds.includes(45) && (
+            <span className="inline-flex items-center px-2 py-1 rounded-full bg-amber-500 text-white text-xs font-medium shadow-lg">
+              {t('products.secondHand')}
+            </span>
+          )}
+        </div>
         
         {product.stock === 0 && (
           <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center">
@@ -356,8 +356,8 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
         )}
       </div>
       
-      <div className="p-3 sm:p-4 md:p-6 lg:p-8 flex flex-col flex-grow">
-        <h3 className="font-semibold text-xs sm:text-sm md:text-base lg:text-lg mb-2 sm:mb-3 line-clamp-2 group-hover:text-primary transition-colors duration-300 cursor-pointer leading-tight">
+      <div className="p-2 sm:p-3 md:p-4 lg:p-6 flex flex-col flex-grow">
+        <h3 className="font-semibold text-xs sm:text-sm md:text-base lg:text-lg mb-1 sm:mb-2 md:mb-3 line-clamp-2 group-hover:text-primary transition-colors duration-300 cursor-pointer leading-tight">
           {product.name}
         </h3>
         {product.brand && (
@@ -365,8 +365,8 @@ export const ProductCard = ({ product, onClick, cartItem, addToCart, updateCartQ
             {product.brand}
           </p>
         )}
-        <p className="text-gray-600 mb-2 sm:mb-3 md:mb-4 text-xs sm:text-sm md:text-base">{product.size}</p>
-        <div className="flex items-center mb-3 sm:mb-4 md:mb-6 space-x-1 sm:space-x-2">
+        <p className="text-gray-600 mb-1 sm:mb-2 md:mb-3 text-xs sm:text-sm md:text-base">{product.size}</p>
+        <div className="flex items-center mb-2 sm:mb-3 md:mb-4 space-x-1 sm:space-x-2">
           <ReviewHoverCard 
             productId={product.id} 
             stats={reviewStats?.stats}

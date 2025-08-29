@@ -8,6 +8,8 @@
     "save": "Opslaan",
     "delete": "Verwijderen",
     "login": "Inloggen",
+    "page": "Pagina",
+    "of":"van",
     "edit": "Bewerken",
     "add": "Toevoegen",
     "remove": "Verwijderen",
@@ -99,6 +101,12 @@
     "similarProducts": "Vergelijkbare producten",
     "tireType": "Bandentype",
     "seasonType": "Seizoentype",
+    "secondHand": "Tweedehands",
+    "featuredProducts": "Uitgelichte Producten",
+    "todaysForYou": "Vandaag Voor Jou!",
+    "noProductsInCategory": "Geen producten gevonden in deze categorie",
+    "noFeaturedProducts": "Geen uitgelichte producten beschikbaar",
+    "noProductsForYou": "Geen producten beschikbaar voor jou vandaag",
     "speedRating": "Snelheidsindex",
     "loadIndex": "Laadindex",
     "width": "Breedte",
@@ -119,6 +127,7 @@
     "productRemovedFromWishlist": "Product verwijderd uit verlanglijst",
     "noProductsFound": "Geen producten gevonden",
     "loadingProducts": "Producten laden...",
+    "noProductsAvailable": "Er zijn momenteel geen producten beschikbaar",
     "filterBy": "Filteren op",
     "sortBy": "Sorteren op",
     "name": "Naam",
@@ -145,6 +154,9 @@
     "keyFeatures": "Belangrijkste kenmerken",
     "currentlyOutOfStock": "Momenteel niet op voorraad",
     "temporarilyUnavailable": "Dit artikel is tijdelijk niet beschikbaar"
+  },
+  "errors": {
+    "failedToLoadProducts": "Het laden van producten is mislukt. Probeer het opnieuw."
   },
   "header": {
     "downloadApp": "Download Ariana App",
@@ -238,13 +250,24 @@
     "description": "Je vertrouwde partner voor premium banden, wielen en auto-accessoires. We leveren kwaliteit, expertise en uitzonderlijke service om je veilig in beweging te houden."
   },
   "searchBar": {
-    "placeholder": "Zoek producten...",
+    "placeholder": "Zoek op naam, merk, maat, specificaties, tags...",
     "filterByBrand": "Filter op merk",
     "selectBrand": "Selecteer merk",
     "allBrands": "Alle merken",
     "noResults": "Geen resultaten gevonden",
     "noResultsDescription": "We konden geen producten vinden die overeenkomen met je zoekopdracht. Probeer je zoekwoorden aan te passen of blader door onze categorieën.",
-    "clearFilters": "Filters wissen"
+    "clearFilters": "Filters wissen",
+    "searchError": "Fout bij het laden van zoekresultaten. Probeer het opnieuw.",
+    "matchesInSpecifications": "Overeenkomsten in specificaties",
+    "showingResults": "Toont {{count}} van {{total}} resultaten",
+    "loadingResults": "Resultaten laden...",
+    "searching": "Zoeken...",
+    "filter": "Filter",
+    "clearSearch": "Zoekopdracht wissen",
+    "searchResults": "Zoekresultaten",
+    "noSearchQuery": "Voer een zoekterm in om producten te vinden",
+    "searchSuggestions": "Probeer te zoeken naar:",
+    "popularSearches": "Populaire zoekopdrachten"
   },
   
   "noResults": {
@@ -891,7 +914,7 @@
     },
     "new": "Nieuw",
     "sale": "Aanbieding",
-    "addToCart": "Toevoegen aan Winkelwagen",
+    "addToCart": "Winkelwagen",
     "stats": {
       "newProducts": "Nieuwe Producten",
       "onSale": "In Aanbieding",
@@ -909,6 +932,8 @@
     "title": "Aanbieding",
     "description": "Beperkte tijd aanbiedingen op premium banden en accessoires",
     "searchPlaceholder": "Zoek aanbiedingen...",
+    "noSaleProducts": "Geen aanbiedingen gevonden",
+    "noSaleProductsDescription": "We konden geen aanbiedingen vinden die overeenkomen met je zoekopdracht. Probeer je zoekwoorden aan te passen of blader door onze categorieën.",
     "categories": {
       "all": "Alle Categorieën",
       "summer": "Zomerbanden",

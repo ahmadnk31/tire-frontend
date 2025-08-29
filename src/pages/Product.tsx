@@ -1029,12 +1029,44 @@ export default function ProductPage() {
                 // Cart logic for related products
                 const cart = JSON.parse(localStorage.getItem('cart') || '[]');
                 const cartItem = cart.find((item: any) => item.id === related.id && item.size === related.size);
+                
+                // Check if related product is in wishlist
+                const isRelatedWishlisted = wishlistData?.wishlist?.some((item: any) => item.productId === related.id) || false;
+                
+                // Debug: Log related product data for badge system
+                console.log('🔍 [Product Page] Related product data:', {
+                  id: related.id,
+                  name: related.name,
+                  featured: related.featured,
+                  categoryIds: related.categoryIds,
+                  saleEndDate: related.saleEndDate,
+                  isOnSale: related.isOnSale,
+                  comparePrice: related.comparePrice,
+                  price: related.price
+                });
+                
                 return (
                   <ProductCard
                     key={related.id}
                     product={{
-                      ...related,
-                      price: formatEuro(related.price)
+                      id: related.id,
+                      name: related.name,
+                      brand: related.brand,
+                      model: related.model || related.name,
+                      size: related.size || '',
+                      price: related.price.toString(),
+                      comparePrice: related.comparePrice?.toString(),
+                      rating: related.rating?.toString() || '0',
+                      reviews: related.reviews || 0,
+                      stock: related.stock || 0,
+                      featured: related.featured || false,
+                      slug: related.slug,
+                      images: related.images || [],
+                      productImages: related.productImages || [],
+                      categoryIds: related.categoryIds || [],
+                      saleStartDate: related.saleStartDate,
+                      saleEndDate: related.saleEndDate,
+                      isOnSale: related.isOnSale || (related.comparePrice && parseFloat(related.comparePrice) > parseFloat(related.price))
                     }}
                     onClick={() => navigate(`/products/${related.slug}`)}
                     cartItem={cartItem}
@@ -1083,6 +1115,19 @@ export default function ProductPage() {
                           description: t('cart.cartUpdated'),
                         });
                       }
+                    }}
+                    isWishlisted={isRelatedWishlisted}
+                    onToggleWishlist={() => {
+                      if (!isLoggedIn) {
+                        toast({
+                          title: t('auth.loginRequired'),
+                          description: t('auth.loginToAddWishlist'),
+                          variant: "destructive",
+                        });
+                        navigate('/login');
+                        return;
+                      }
+                      wishlistMutation.mutate({ productId: related.id, isWishlisted: isRelatedWishlisted });
                     }}
                   />
                 );

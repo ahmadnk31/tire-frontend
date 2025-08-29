@@ -49,6 +49,8 @@ const Categories: React.FC = () => {
   const token = localStorage.getItem('token');
   
   const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(12);
   const [wishlist, setWishlist] = useState<number[]>([]);
   const [cart, setCart] = useState<any[]>([]);
 
@@ -95,6 +97,7 @@ const Categories: React.FC = () => {
       'winter tires': ['Studded', 'Studless', 'Performance Winter'],
       'all-season tires': ['Touring', 'Performance', 'SUV'],
       'performance tires': ['Ultra High Performance', 'High Performance', 'Track'],
+      'commercial tires': ['Van', 'Delivery', 'Light Commercial'],
       'truck tires': ['Light Truck', 'Heavy Duty', 'Commercial'],
       'motorcycle tires': ['Sport', 'Touring', 'Cruiser', 'Off-Road']
     };
@@ -142,18 +145,23 @@ const Categories: React.FC = () => {
     }
   }, [categoryProductsData]);
 
-  // Fetch review stats for products
+  // Fetch review stats for products - optimized to reduce API calls
   const productIds = categoryProductsData?.products?.map((p: any) => p.id) || [];
   const { data: reviewStatsData } = useQuery({
     queryKey: ['category-review-stats', productIds],
     queryFn: async () => {
       if (productIds.length === 0) return {};
+      
+      // Only fetch stats for the first 20 products to prevent rate limiting
+      const limitedProductIds = productIds.slice(0, 20);
+      
       const stats = await Promise.all(
-        productIds.map(async (id: number) => {
+        limitedProductIds.map(async (id: number) => {
           try {
             const stats = await reviewsApi.getReviewStats(id);
             return { [id]: stats.stats };
           } catch (error) {
+            console.warn(`Failed to fetch review stats for product ${id}:`, error);
             return { [id]: null };
           }
         })
@@ -161,8 +169,10 @@ const Categories: React.FC = () => {
       return stats.reduce((acc, stat) => ({ ...acc, ...stat }), {});
     },
     enabled: productIds.length > 0,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 10 * 60 * 1000, // Increased to 10 minutes
+    gcTime: 15 * 60 * 1000, // Increased to 15 minutes
+    retry: 2, // Limit retries
+    retryDelay: 1000, // 1 second delay between retries
   });
 
   // Wishlist mutation with optimistic updates
@@ -353,6 +363,17 @@ const Categories: React.FC = () => {
     isOnSale: product.comparePrice ? Number(product.comparePrice) > Number(product.price) : false
   })) || [];
 
+  // Pagination logic
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedProducts = products.slice(startIndex, endIndex);
+
+  // Reset to first page when category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory]);
+
   // Loading state
   if (isLoading) {
     return (
@@ -511,7 +532,7 @@ const Categories: React.FC = () => {
                   />
                 </div>
               ) : (
-                products.map(product => {
+                paginatedProducts.map(product => {
                   const isWishlisted = wishlist.includes(product.id);
                   const cartItem = cart.find((item: any) => item.id === product.id);
                   
@@ -536,6 +557,32 @@ const Categories: React.FC = () => {
                   );
                 })
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {selectedCategory && totalPages > 1 && (
+          <div className="my-12 flex justify-center">
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {t('common.previous')}
+              </button>
+            
+              <span className="px-4 py-2 text-sm text-gray-600">
+                {t('common.page')} {currentPage} {t('common.of')} {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {t('common.next')}
+              </button>
             </div>
           </div>
         )}

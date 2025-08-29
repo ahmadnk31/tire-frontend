@@ -10,6 +10,7 @@ import { ProductCard } from "./ProductCard";
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { NoProductsFound } from '@/components/ui/NoProductsFound';
 
 interface Product {
   id: number;
@@ -258,10 +259,37 @@ export const ProductGrid = ({ sectionTitle = "Products", featuredOnly = false, s
             </Button>
             )}
         </div>
-         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-4 gap-2 md:gap-4 xl:gap-6">
-          {displayProducts
-            .slice((currentPage - 1) * pageSize, currentPage * pageSize)
-            .map((product, index) => {
+         {productsLoading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-4 gap-2 md:gap-4 xl:gap-6">
+            {[...Array(8)].map((_, index) => (
+              <div key={index} className="bg-white border border-gray-200 rounded-xl p-4 animate-pulse">
+                <div className="w-full h-48 bg-gray-200 rounded-lg mb-4"></div>
+                <div className="space-y-3">
+                  <div className="h-4 w-3/4 bg-gray-200 rounded"></div>
+                  <div className="h-3 w-1/2 bg-gray-200 rounded"></div>
+                  <div className="w-full h-10 bg-gray-200 rounded-lg"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : productsError ? (
+          <NoProductsFound 
+            type="error" 
+            title={t('common.error')}
+            description={t('errors.failedToLoadProducts')}
+            onRetry={() => window.location.reload()}
+          />
+        ) : displayProducts.length === 0 ? (
+          <NoProductsFound 
+            type={featuredOnly ? "empty" : "no-results"}
+            title={featuredOnly ? t('products.noFeaturedProducts') : t('products.noProductsInCategory')}
+            description={featuredOnly ? t('products.noFeaturedProducts') : t('products.noProductsInCategory')}
+          />
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-4 gap-2 md:gap-4 xl:gap-6">
+            {displayProducts
+              .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+              .map((product, index) => {
               const cartItem = cart.find((item: any) => item.id === product.id && item.size === product.size);
               const isWishlisted = wishlist.includes(product.id);
               const handleToggleWishlist = () => {
@@ -331,7 +359,8 @@ export const ProductGrid = ({ sectionTitle = "Products", featuredOnly = false, s
                 />
               );
             })}
-        </div>
+          </div>
+        )}
         {/* Pagination Controls */}
         {products.length > pageSize && (
           <div className="flex justify-center items-center mt-8 gap-4">

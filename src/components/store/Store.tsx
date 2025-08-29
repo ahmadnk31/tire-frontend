@@ -155,9 +155,9 @@ export const Store = () => {
     <div className="min-h-screen">
       <HeroCarousel />
       <CategorySection />
-      <TodaysForYouSection sectionTitle="Todays For You!" />
+      <TodaysForYouSection sectionTitle={t('products.todaysForYou')} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <ProductGrid sectionTitle="Featured Products" showAllButton={true} featuredOnly={true} />
+        <ProductGrid sectionTitle={t('products.featuredProducts')} showAllButton={true} featuredOnly={true} />
       </div>
       {/* <BrandsMarquee /> --- IGNORE */}
     </div>

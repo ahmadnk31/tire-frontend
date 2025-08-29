@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ScrollToTop } from "@/components/ScrollToTop";
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import './i18n'; // Initialize i18n
 
 import Index from "./pages/Index";
@@ -77,9 +79,11 @@ const AppContent = () => {
   
   return (
     <>
+      <ScrollToTop />
       {!isAuthRoute && <Header />}
       {!isAuthRoute && <Breadcrumbs />}
       {!isAuthRoute && <BottomNav />}
+      {!isAuthRoute && <ScrollToTopButton />}
       <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/products/:slug" element={<ProductPage />} />

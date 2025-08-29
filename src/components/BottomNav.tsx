@@ -30,14 +30,21 @@ export const BottomNav = () => {
         return { isAdmin: false };
       }
       
+      // Check if user has admin role from localStorage first
       try {
-        await dashboardApi.getOverview(token);
-        return { isAdmin: true };
-      } catch (error: any) {
-        if (error.message?.includes('403') || error.message?.includes('Forbidden')) {
-          return { isAdmin: false };
+        const userInfo = JSON.parse(localStorage.getItem('user') || 'null');
+        if (userInfo?.role === 'admin') {
+          // Only try dashboard API if user has admin role
+          try {
+            await dashboardApi.getOverview(token);
+            return { isAdmin: true };
+          } catch (error: any) {
+            console.log('Dashboard API check failed:', error.message);
+            return { isAdmin: false };
+          }
         }
-        // For other errors, we don't want to show admin access
+        return { isAdmin: false };
+      } catch (error) {
         return { isAdmin: false };
       }
     },

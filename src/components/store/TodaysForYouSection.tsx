@@ -7,13 +7,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ProductGridSkeleton } from "@/components/ui/skeletons";
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from 'react-i18next';
+import { NoProductsFound } from '@/components/ui/NoProductsFound';
 
 interface TodaysForYouSectionProps {
   sectionTitle?: string;
 }
 
 export const TodaysForYouSection = ({
-  sectionTitle = "Today's For You!",
+  sectionTitle,
 }: TodaysForYouSectionProps) => {
   const { t } = useTranslation();
   const { toast } = useToast();
@@ -250,7 +251,7 @@ export const TodaysForYouSection = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
-            {sectionTitle}
+            {sectionTitle || t('products.todaysForYou')}
           </h2>
           <div className="flex gap-2">
             <button
@@ -300,7 +301,14 @@ export const TodaysForYouSection = ({
       />
               </div>
             ) : filteredProducts.length === 0 ? (
-              <div className="text-center text-gray-500 w-full">No products found.</div>
+              <div className="w-full flex justify-center">
+                <NoProductsFound 
+                  type="no-results"
+                  title={t('products.noProductsForYou')}
+                  description={t('products.noProductsForYou')}
+                  className="max-w-md"
+                />
+              </div>
             ) : (
               filteredProducts.map((product) => {
                 const isWishlisted = wishlist.includes(product.id);

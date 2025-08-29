@@ -4,11 +4,14 @@
     "error": "Error",
     "errorLoading": "Error loading products",
     "success": "Success",
-    "cancel": "Cancel",
+    "loadingProducts": "Loading products...",
+      "cancel": "Cancel",
     "save": "Save",
     "delete": "Delete",
     "optional": "Optional",
     "edit": "Edit",
+    "page": "Page",
+    "of":"of",
     "add": "Add",
     "remove": "Remove",
     "clearAll": "Clear all",
@@ -39,7 +42,10 @@
     "share": "Share",
     "print": "Print",
     "export": "Export",
-    "import": "Import"
+    "import": "Import",
+    "goBack": "Go Back",
+    "goHome": "Go Home",
+    "browseProducts": "Browse All Products"
   },
   "navigation": {
     "home": "Home",
@@ -67,7 +73,6 @@
     "sale": "Sale",
     "newArrivals": "New Arrivals"
   },
-
   "products": {
     "title": "Products",
     "allProducts": "All Products",
@@ -98,6 +103,12 @@
     "similarProducts": "Similar Products",
     "tireType": "Tire Type",
     "seasonType": "Season Type",
+    "secondHand": "Second-Hand",
+    "featuredProducts": "Featured Products",
+    "todaysForYou": "Today's For You!",
+    "noProductsInCategory": "No products found in this category",
+    "noFeaturedProducts": "No featured products available",
+    "noProductsForYou": "No products available for you today",
     "speedRating": "Speed Rating",
     "loadIndex": "Load Index",
     "width": "Width",
@@ -106,7 +117,6 @@
     "treadDepth": "Tread Depth",
     "weight": "Weight",
     "warranty": "Warranty",
-   
     "shipping": "Shipping",
     "returns": "Returns",
     "quantity": "Quantity",
@@ -118,7 +128,36 @@
     "productRemovedFromWishlist": "Product removed from wishlist",
     "noProductsFound": "No products found",
     "loadingProducts": "Loading products...",
+    "noProductsAvailable": "No products are currently available",
     "filterBy": "Filter by",
+    "sortBy": "Sort by",
+    "name": "Name",
+    "newest": "Newest",
+    "oldest": "Oldest",
+    "priceLowToHigh": "Price: Low to High",
+    "priceHighToLow": "Price: High to Low",
+    "ratingHighToLow": "Rating: High to Low",
+    "brandAZ": "Brand: A-Z",
+    "brandZA": "Brand: Z-A",
+    "viewAll": "View All Products",
+    "priceRange": "Price Range",
+    "minRating": "Minimum Rating",
+    "anyRating": "Any Rating",
+    "andUp": "& up",
+    "inStockOnly": "In Stock Only",
+    "featuredOnly": "Featured Only",
+    "noBrands": "No brands available",
+    "noSizes": "No sizes available",
+   
+    "sizeGuide": "Size Guide",
+    "productDetails": "Product Details",
+    "keyFeatures": "Key Features",
+    "currentlyOutOfStock": "Currently Out of Stock",
+    "temporarilyUnavailable": "This item is temporarily unavailable"
+  },
+  "errors": {
+    "failedToLoadProducts": "Failed to load products. Please try again."
+  },
     "sortBy": "Sort by",
     "name": "Name",
     "newest": "Newest",
@@ -144,8 +183,8 @@
     "productDetails": "Product Details",
     "keyFeatures": "Key Features",
     "currentlyOutOfStock": "Currently Out of Stock",
-    "temporarilyUnavailable": "This item is temporarily unavailable"
-  },
+    "temporarilyUnavailable": "This item is temporarily unavailable",
+    "noProducts": "No products found",
   "header": {
     "downloadApp": "Download Ariana App",
     "about": "About Ariana",
@@ -236,15 +275,25 @@
     },
     "description": "Your trusted partner for premium tyres, wheels, and automotive accessories. We deliver quality, expertise, and exceptional service to keep you moving safely."
   },
-  
   "searchBar": {
-    "placeholder": "Search products...",
+    "placeholder": "Search by name, brand, size, specs, tags...",
     "filterByBrand": "Filter by Brand",
     "selectBrand": "Select brand",
     "allBrands": "All Brands",
     "noResults": "No results found",
     "noResultsDescription": "We couldn't find any products matching your search. Try adjusting your keywords or browse our categories.",
-    "clearFilters": "Clear Filters"
+    "clearFilters": "Clear Filters",
+    "searchError": "Error loading search results. Please try again.",
+    "matchesInSpecifications": "Matches in specifications",
+    "showingResults": "Showing {{count}} of {{total}} results",
+    "loadingResults": "Loading results...",
+    "searching": "Searching...",
+    "filter": "Filter",
+    "clearSearch": "Clear search",
+    "searchResults": "Search results",
+    "noSearchQuery": "Enter a search term to find products",
+    "searchSuggestions": "Try searching for:",
+    "popularSearches": "Popular searches"
   },
   
   "noResults": {
@@ -323,6 +372,7 @@
     "nextCategories": "Next categories",
     "goToPage": "Go to page {{number}}",
     "title": "Categories",
+    "viewAll": "View All Categories",
     "products": "Products",
     "product": "Product",
     "subcategories": "Subcategories",
@@ -1743,7 +1793,18 @@
     "couponAlreadyUsed": "Coupon already used",
     "shippingNotAvailable": "Shipping not available",
     "paymentNotSupported": "Payment method not supported",
-    "checkoutError": "Failed to proceed to checkout. Please try again"
+    "checkoutError": "Failed to proceed to checkout. Please try again",
+    "rateLimit": {
+      "title": "Too Many Requests",
+      "message": "You've made too many requests from this IP address. Please wait a moment and try again.",
+      "help": "If this problem persists, please contact support."
+    },
+    "noCategory": {
+      "title": "Category Not Found",
+      "message": "The requested category could not be found.",
+      "messageWithName": "The category \"{{categoryName}}\" could not be found.",
+      "suggestion": "It may have been removed or renamed."
+    }
   },
   "success": {
     "login": "Login successful",
@@ -1853,7 +1914,7 @@
     },
     "new": "New",
     "sale": "Sale",
-    "addToCart": "Add to Cart",
+    "addToCart": "Cart",
     "stats": {
       "newProducts": "New Products",
       "onSale": "On Sale",
@@ -1871,6 +1932,8 @@
     "title": "Sale",
     "description": "Limited time offers on premium tires and accessories",
     "searchPlaceholder": "Search sale items...",
+    "noSaleProducts": "No sale products found",
+    "noSaleProductsDescription": "We could not find any sale products that match your search. Please try adjusting your search terms or browse through our categories.",
     "categories": {
       "all": "All Categories",
       "summer": "Summer Tires",
