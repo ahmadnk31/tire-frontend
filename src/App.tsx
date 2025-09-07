@@ -51,6 +51,17 @@ import NewArrivals from "./pages/NewArrivals";
 import Sale from "./pages/Sale";
 import Categories from "./pages/Categories";
 import { PWAUpdateNotification } from '@/components/PWAUpdateNotification';
+import pwaManager from '@/lib/pwa';
+
+// Test service worker on app load (without causing infinite refresh)
+if (typeof window !== 'undefined') {
+  // Test service worker after a delay to avoid interfering with initial load
+  setTimeout(() => {
+    pwaManager.testServiceWorker().then((isWorking) => {
+      console.log('🔧 PWA Test Result:', isWorking ? '✅ Service Worker Working' : '❌ Service Worker Not Working');
+    });
+  }, 5000); // Increased delay to 5 seconds
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {

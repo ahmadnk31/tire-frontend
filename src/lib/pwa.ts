@@ -52,10 +52,10 @@ class PWAManager {
           }
         });
 
-        // Check for updates periodically
-        setInterval(() => {
-          registration.update();
-        }, 60000); // Check every minute
+        // Check for updates periodically (disabled to prevent infinite refresh)
+        // setInterval(() => {
+        //   registration.update();
+        // }, 60000); // Check every minute
         
         return registration;
       } catch (error) {
@@ -94,11 +94,9 @@ class PWAManager {
   private handleServiceWorkerUpdate(data: any) {
     console.log('PWA: Handling service worker update:', data);
     
-    // Automatically refresh the page after a short delay
-    setTimeout(() => {
-      console.log('PWA: Auto-refreshing page for update');
-      window.location.reload();
-    }, 2000);
+    // Don't auto-refresh, let user control when to update
+    this.updateAvailable = true;
+    this.showUpdateAvailable();
   }
 
   public async checkForUpdates(): Promise<boolean> {
@@ -122,8 +120,8 @@ class PWAManager {
         // Listen for the controller change
         navigator.serviceWorker.addEventListener('controllerchange', () => {
           console.log('PWA: Service worker controller changed, refreshing...');
-          window.location.reload();
-        });
+        window.location.reload();
+      });
       }
     }
   }
@@ -174,6 +172,31 @@ class PWAManager {
     
     localStorage.clear();
     sessionStorage.clear();
+  }
+
+  // Test function to verify service worker is working
+  public async testServiceWorker(): Promise<boolean> {
+    if ('serviceWorker' in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (registration) {
+          console.log('PWA: Service worker test - Registration found:', registration);
+          console.log('PWA: Service worker test - Active worker:', registration.active);
+          console.log('PWA: Service worker test - Waiting worker:', registration.waiting);
+          console.log('PWA: Service worker test - Installing worker:', registration.installing);
+          return true;
+        } else {
+          console.log('PWA: Service worker test - No registration found');
+          return false;
+        }
+      } catch (error) {
+        console.error('PWA: Service worker test failed:', error);
+        return false;
+      }
+    } else {
+      console.log('PWA: Service worker test - Service Worker not supported');
+      return false;
+    }
   }
 }
 

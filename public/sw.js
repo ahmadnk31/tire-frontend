@@ -69,17 +69,9 @@ self.addEventListener('activate', (event) => {
         return self.clients.claim(); // Take control of all clients immediately
       })
       .then(() => {
-        // Notify all clients about the update
-        return self.clients.matchAll({ includeUncontrolled: true });
-      })
-      .then((clients) => {
-        clients.forEach((client) => {
-          client.postMessage({
-            type: 'SW_UPDATED',
-            version: CACHE_VERSION,
-            timestamp: BUILD_TIMESTAMP
-          });
-        });
+        // Only notify clients if this is a new installation, not every activation
+        console.log('Service Worker: Activation complete');
+        // Removed automatic client notification to prevent infinite refresh loop
       })
   );
 });
