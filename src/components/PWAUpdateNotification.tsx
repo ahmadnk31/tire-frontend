@@ -28,10 +28,12 @@ export function PWAUpdateNotification({ onUpdate, onDismiss }: PWAUpdateNotifica
   const handleUpdate = async () => {
     setIsUpdating(true);
     try {
+      console.log('PWA Update: Starting update process...');
       await pwaManager.forceUpdate();
+      console.log('PWA Update: Update process completed');
       onUpdate?.();
     } catch (error) {
-      console.error('Failed to update:', error);
+      console.error('PWA Update: Failed to update:', error);
       setIsUpdating(false);
     }
   };

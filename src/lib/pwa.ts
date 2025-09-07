@@ -89,6 +89,21 @@ class PWAManager {
 
     // Dispatch custom event for components to listen to
     window.dispatchEvent(new CustomEvent('pwa-update-available'));
+    
+    // Call the update callback if set
+    if (this.updateCallback) {
+      this.updateCallback();
+    }
+  }
+
+  // Method to register update callback
+  public onUpdateAvailable(callback: () => void) {
+    this.updateCallback = callback;
+  }
+
+  // Method to remove update listener
+  public removeUpdateListener() {
+    this.updateCallback = null;
   }
 
   private handleServiceWorkerUpdate(data: any) {
@@ -103,6 +118,7 @@ class PWAManager {
     if ('serviceWorker' in navigator) {
       const registration = await navigator.serviceWorker.getRegistration();
       if (registration) {
+        console.log('PWA: Checking for updates...');
         await registration.update();
         return this.updateAvailable;
       }
@@ -110,10 +126,27 @@ class PWAManager {
     return false;
   }
 
+  // Method to manually trigger update check and show notification if available
+  public async triggerUpdateCheck(): Promise<void> {
+    const hasUpdate = await this.checkForUpdates();
+    if (hasUpdate) {
+      this.showUpdateAvailable();
+    } else {
+      console.log('PWA: No updates available');
+    }
+  }
+
+  // Method to manually show update notification (for testing)
+  public showUpdateNotification(): void {
+    this.updateAvailable = true;
+    this.showUpdateAvailable();
+  }
+
   public async forceUpdate(): Promise<void> {
     if ('serviceWorker' in navigator) {
       const registration = await navigator.serviceWorker.getRegistration();
       if (registration && registration.waiting) {
+        console.log('PWA: Forcing update by skipping waiting service worker');
         // Send message to waiting service worker to skip waiting
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });
         
@@ -122,21 +155,16 @@ class PWAManager {
           console.log('PWA: Service worker controller changed, refreshing...');
         window.location.reload();
       });
+      } else {
+        console.log('PWA: No waiting service worker found, checking for updates...');
+        // If no waiting worker, try to update
+        if (registration) {
+          await registration.update();
+        }
       }
     }
   }
 
-  public onUpdateAvailable(callback: () => void) {
-    this.updateCallback = callback;
-    window.addEventListener('pwa-update-available', callback);
-  }
-
-  public removeUpdateListener() {
-    if (this.updateCallback) {
-      window.removeEventListener('pwa-update-available', this.updateCallback);
-      this.updateCallback = null;
-    }
-  }
 
   public getInstallStatus(): boolean {
     return window.matchMedia('(display-mode: standalone)').matches || 

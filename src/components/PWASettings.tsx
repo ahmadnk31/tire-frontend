@@ -190,6 +190,24 @@ export function PWASettings() {
             <RefreshCw className={`h-4 w-4 mr-2 ${isUpdating ? 'animate-spin' : ''}`} />
             {isUpdating ? 'Updating...' : 'Force Update & Reload'}
           </Button>
+          
+          <Button 
+            onClick={() => pwaManager.triggerUpdateCheck()} 
+            variant="outline" 
+            className="w-full"
+          >
+            <Info className="h-4 w-4 mr-2" />
+            Test Update Check
+          </Button>
+          
+          <Button 
+            onClick={() => pwaManager.showUpdateNotification()} 
+            variant="outline" 
+            className="w-full"
+          >
+            <Info className="h-4 w-4 mr-2" />
+            Show Update Notification
+          </Button>
         </CardContent>
       </Card>
 
