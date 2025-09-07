@@ -7,7 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import './i18n'; // Initialize i18n
-
+import { Analytics } from "@vercel/analytics/react"
 import Index from "./pages/Index";
 import Footer from "@/components/Footer";
 import NotFound from "./pages/NotFound";
@@ -50,6 +50,7 @@ import Brands from "./pages/Brands";
 import NewArrivals from "./pages/NewArrivals";
 import Sale from "./pages/Sale";
 import Categories from "./pages/Categories";
+import { PWAUpdateNotification } from '@/components/PWAUpdateNotification';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -137,8 +138,10 @@ const App = () => {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
+          <Analytics />
           <Toaster />
           <Sonner />
+          <PWAUpdateNotification />
           <BrowserRouter>
             <AppContent />
           </BrowserRouter>

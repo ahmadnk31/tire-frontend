@@ -19,6 +19,14 @@ const Contact = () => {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
+  // Contact information
+  const contactInfo = {
+    phone: "+32 467 66 21 97",
+    email: "info@ariana-bandencentraal.com",
+    whatsapp: "+32 467 66 21 97",
+    address: "https://www.google.com/maps/place/Ariana+banden+service/@50.8789553,3.1101877,17.51z/data=!4m8!3m7!1s0x47c33587cb851f77:0xcdd1d0f8da2f0893!8m2!3d50.8786294!4d3.1125472!9m1!1b1!16s%2Fg%2F11l7b6g4hg?entry=ttu&g_ep=EgoyMDI1MDgxOS4wIKXMDSoASAFQAw%3D%3D"
+  };
+
   // Handle URL parameters for order tracking
   useEffect(() => {
     const subject = searchParams.get('subject');
@@ -120,14 +128,12 @@ const Contact = () => {
                 <p>{t('contact.location.country')}</p>
               </div>
               <div className="mt-4">
-                <a 
-                  href="https://www.google.com/maps/place/Ariana+banden+service/@50.8789553,3.1101877,17.51z/data=!4m8!3m7!1s0x47c33587cb851f77:0xcdd1d0f8da2f0893!8m2!3d50.8786294!4d3.1125472!9m1!1b1!16s%2Fg%2F11l7b6g4hg?entry=ttu&g_ep=EgoyMDI1MDgxOS4wIKXMDSoASAFQAw%3D%3D"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:text-primary/80 font-medium text-sm"
+                <button 
+                  onClick={() => window.open(contactInfo.address, '_blank')}
+                  className="text-primary hover:text-primary/80 font-medium text-sm flex items-center gap-1 hover:underline"
                 >
                   {t('contact.location.directions')} →
-                </a>
+                </button>
               </div>
             </div>
 
@@ -136,29 +142,46 @@ const Contact = () => {
               <h2 className="text-xl font-bold text-gray-900 mb-4">{t('contact.details.title')}</h2>
               
               <div className="space-y-4">
-                <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => window.open(`tel:${contactInfo.phone}`, '_self')}
+                  className="flex items-center gap-3 w-full text-left hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                >
                   <Phone className="w-5 h-5 text-primary" />
                   <div>
                     <p className="font-medium text-gray-900">{t('contact.details.phone')}</p>
-                    <p className="text-gray-600">{t('contact.details.phoneNumber')}</p>
+                    <p className="text-gray-600">{contactInfo.phone}</p>
                   </div>
-                </div>
+                </button>
 
-                <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => {
+                    const subject = encodeURIComponent('Contact Inquiry - Ariana Bandencentraal');
+                    const body = encodeURIComponent('Hello,\n\nI would like to inquire about your services.\n\nBest regards,');
+                    window.open(`mailto:${contactInfo.email}?subject=${subject}&body=${body}`, '_self');
+                  }}
+                  className="flex items-center gap-3 w-full text-left hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                >
                   <Mail className="w-5 h-5 text-primary" />
                   <div>
                     <p className="font-medium text-gray-900">{t('contact.details.email')}</p>
-                    <p className="text-gray-600">{t('contact.details.emailAddress')}</p>
+                    <p className="text-gray-600">{contactInfo.email}</p>
                   </div>
-                </div>
+                </button>
 
-                <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => {
+                    const cleanNumber = contactInfo.whatsapp.replace(/[\s\-\(\)]/g, '');
+                    const message = encodeURIComponent('Hello! I would like to inquire about your tire services.');
+                    window.open(`https://wa.me/${cleanNumber}?text=${message}`, '_blank');
+                  }}
+                  className="flex items-center gap-3 w-full text-left hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                >
                   <MessageCircle className="w-5 h-5 text-primary" />
                   <div>
                     <p className="font-medium text-gray-900">{t('contact.details.whatsapp')}</p>
-                    <p className="text-gray-600">{t('contact.details.whatsappNumber')}</p>
+                    <p className="text-gray-600">{contactInfo.whatsapp}</p>
                   </div>
-                </div>
+                </button>
               </div>
             </div>
 
@@ -362,29 +385,49 @@ const Contact = () => {
 
         {/* Quick Contact Options */}
         <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow cursor-pointer">
+          <button 
+            onClick={() => window.open(`tel:${contactInfo.phone}`, '_self')}
+            className="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow cursor-pointer hover:bg-gray-50"
+          >
             <Phone className="w-8 h-8 text-primary mx-auto mb-2" />
             <h3 className="font-semibold text-gray-900 mb-1">{t('contact.quickContact.call')}</h3>
             <p className="text-sm text-gray-600">{t('contact.quickContact.callDesc')}</p>
-          </div>
+          </button>
 
-          <div className="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow cursor-pointer">
+          <button 
+            onClick={() => {
+              const cleanNumber = contactInfo.whatsapp.replace(/[\s\-\(\)]/g, '');
+              const message = encodeURIComponent('Hello! I would like to inquire about your tire services.');
+              window.open(`https://wa.me/${cleanNumber}?text=${message}`, '_blank');
+            }}
+            className="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow cursor-pointer hover:bg-gray-50"
+          >
             <MessageCircle className="w-8 h-8 text-primary mx-auto mb-2" />
             <h3 className="font-semibold text-gray-900 mb-1">{t('contact.quickContact.whatsapp')}</h3>
             <p className="text-sm text-gray-600">{t('contact.quickContact.whatsappDesc')}</p>
-          </div>
+          </button>
 
-          <div className="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow cursor-pointer">
+          <button 
+            onClick={() => {
+              const subject = encodeURIComponent('Contact Inquiry - Ariana Bandencentraal');
+              const body = encodeURIComponent('Hello,\n\nI would like to inquire about your services.\n\nBest regards,');
+              window.open(`mailto:${contactInfo.email}?subject=${subject}&body=${body}`, '_self');
+            }}
+            className="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow cursor-pointer hover:bg-gray-50"
+          >
             <Mail className="w-8 h-8 text-primary mx-auto mb-2" />
             <h3 className="font-semibold text-gray-900 mb-1">{t('contact.quickContact.email')}</h3>
             <p className="text-sm text-gray-600">{t('contact.quickContact.emailDesc')}</p>
-          </div>
+          </button>
 
-          <div className="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow cursor-pointer">
+          <button 
+            onClick={() => window.open(contactInfo.address, '_blank')}
+            className="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow cursor-pointer hover:bg-gray-50"
+          >
             <MapPin className="w-8 h-8 text-primary mx-auto mb-2" />
             <h3 className="font-semibold text-gray-900 mb-1">{t('contact.quickContact.visit')}</h3>
             <p className="text-sm text-gray-600">{t('contact.quickContact.visitDesc')}</p>
-          </div>
+          </button>
         </div>
 
         {/* Emergency Contact */}
@@ -393,7 +436,10 @@ const Contact = () => {
           <p className="text-red-800 mb-4">
             {t('contact.emergency.description')}
           </p>
-          <button className="bg-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors">
+          <button 
+            onClick={() => window.open(`tel:${contactInfo.phone}`, '_self')}
+            className="bg-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors"
+          >
             {t('contact.emergency.callButton')}
           </button>
         </div>

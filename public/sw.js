@@ -1,11 +1,11 @@
 // Cache version should be updated with each deployment
-const CACHE_VERSION = '2025-08-29T21-02-05'; // Update this version number with each deployment
+const CACHE_VERSION = '2025-08-30T18-53-20'; // Update this version number with each deployment
 const CACHE_NAME = `ariana-tires-v${CACHE_VERSION}`;
 const STATIC_CACHE_NAME = `ariana-tires-static-v${CACHE_VERSION}`;
 const DYNAMIC_CACHE_NAME = `ariana-tires-dynamic-v${CACHE_VERSION}`;
 
 // Build timestamp for additional cache busting
-const BUILD_TIMESTAMP = 1756501325184;
+const BUILD_TIMESTAMP = 1756580000305;
 
 // Assets to cache on install
 const STATIC_ASSETS = [
@@ -218,10 +218,18 @@ self.addEventListener('sync', (event) => {
   
   if (event.tag === 'background-sync-cart') {
     event.waitUntil(syncCartData());
-  }
-  
-  if (event.tag === 'background-sync-wishlist') {
+  } else if (event.tag === 'background-sync-wishlist') {
     event.waitUntil(syncWishlistData());
+  }
+});
+
+// Handle messages from the main thread
+self.addEventListener('message', (event) => {
+  console.log('Service Worker: Message received:', event.data);
+  
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('Service Worker: Skipping waiting and activating immediately');
+    self.skipWaiting();
   }
 });
 
