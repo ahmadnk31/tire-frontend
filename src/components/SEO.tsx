@@ -16,7 +16,7 @@ const SEO: React.FC<SEOProps> = ({
   title,
   description,
   keywords,
-  image = '/images/ariana-banden-og.jpg',
+  image = '/banden-og.png',
   url,
   type = 'website',
   structuredData
@@ -39,8 +39,8 @@ const SEO: React.FC<SEOProps> = ({
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Ariana Banden Service",
-    "url": "https://arianabanden.be",
-    "logo": "https://arianabanden.be/images/logo.png",
+    "url": "https://arianabandencentralebv.be",
+    "logo": "https://arianabandencentralebv.be/logo.png",
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": "+32-467-66-21-97",
@@ -121,7 +121,10 @@ const SEO: React.FC<SEOProps> = ({
       <meta property="og:type" content={type} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={metaDescription} />
-      <meta property="og:image" content={image} />
+      <meta property="og:image" content={image.startsWith('http') ? image : `${window.location.origin}${image}`} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content={fullTitle} />
       <meta property="og:url" content={currentUrl} />
       <meta property="og:site_name" content={siteName} />
       <meta property="og:locale" content={currentLanguage === 'en' ? 'en_US' : 'nl_BE'} />
@@ -130,7 +133,8 @@ const SEO: React.FC<SEOProps> = ({
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={metaDescription} />
-      <meta name="twitter:image" content={image} />
+      <meta name="twitter:image" content={image.startsWith('http') ? image : `${window.location.origin}${image}`} />
+      <meta name="twitter:image:alt" content={fullTitle} />
       
       {/* Mobile & Responsive */}
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -165,7 +169,7 @@ const SEO: React.FC<SEOProps> = ({
       <meta name="business:contact_data:postal_code" content="8880" />
       <meta name="business:contact_data:country_name" content="Belgium" />
       <meta name="business:contact_data:phone_number" content="+32-467-66-21-97" />
-      <meta name="business:contact_data:email" content="info@ariana-bandencentraal.com" />
+      <meta name="business:contact_data:email" content="info@ariana-bandencentraal.be" />
     </Helmet>
   );
 };
