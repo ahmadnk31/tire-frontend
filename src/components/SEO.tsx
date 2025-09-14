@@ -43,9 +43,9 @@ const SEO: React.FC<SEOProps> = ({
     "logo": "https://arianabanden.be/images/logo.png",
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": "+32-56-51-28-29",
-      "contactType": "Customer Service",
-      "availableLanguage": ["Dutch", "French", "English"]
+      "telephone": "+32-467-66-21-97",
+      "contactType": currentLanguage === 'en' ? "Customer Service" : "Klantenservice",
+      "availableLanguage": currentLanguage === 'en' ? ["Dutch", "French", "English"] : ["Nederlands", "Frans", "Engels"]
     },
     "address": {
       "@type": "PostalAddress",
@@ -65,10 +65,12 @@ const SEO: React.FC<SEOProps> = ({
     "@context": "https://schema.org",
     "@type": "AutoPartsStore",
     "name": "Ariana Banden Service",
-    "description": "Professional tire sales, installation, and automotive services in Ledegem, Belgium",
+    "description": currentLanguage === 'en' 
+      ? "Professional tire sales, installation, and automotive services in Ledegem, Belgium"
+      : "Professionele bandenverkoop, installatie en automotive services in Ledegem, België",
     "url": "https://arianabanden.be",
-    "telephone": "+32-56-51-28-29",
-    "email": "info@arianabanden.be",
+    "telephone": "+32-467-66-21-97",
+    "email": "info@ariana-bandencentraal.com",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Provinciebaan 192A",
@@ -86,7 +88,9 @@ const SEO: React.FC<SEOProps> = ({
       "Sa 09:00-18:00"
     ],
     "priceRange": "$$",
-    "paymentAccepted": ["Visa", "Mastercard", "PayPal", "Apple Pay", "Cash"],
+    "paymentAccepted": currentLanguage === 'en' 
+      ? ["Visa", "Mastercard", "PayPal", "Apple Pay", "Cash"]
+      : ["Visa", "Mastercard", "PayPal", "Apple Pay", "Contant"],
     "currenciesAccepted": "EUR",
     "aggregateRating": {
       "@type": "AggregateRating",
@@ -160,8 +164,8 @@ const SEO: React.FC<SEOProps> = ({
       <meta name="business:contact_data:locality" content="Ledegem" />
       <meta name="business:contact_data:postal_code" content="8880" />
       <meta name="business:contact_data:country_name" content="Belgium" />
-      <meta name="business:contact_data:phone_number" content="+32-56-51-28-29" />
-      <meta name="business:contact_data:email" content="info@arianabanden.be" />
+      <meta name="business:contact_data:phone_number" content="+32-467-66-21-97" />
+      <meta name="business:contact_data:email" content="info@ariana-bandencentraal.com" />
     </Helmet>
   );
 };

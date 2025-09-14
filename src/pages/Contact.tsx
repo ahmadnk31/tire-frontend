@@ -19,13 +19,48 @@ const Contact = () => {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
-  // Contact information
-  const contactInfo = {
-    phone: "+32 467 66 21 97",
-    email: "info@ariana-bandencentraal.com",
-    whatsapp: "+32 467 66 21 97",
-    address: "https://www.google.com/maps/place/Ariana+banden+service/@50.8789553,3.1101877,17.51z/data=!4m8!3m7!1s0x47c33587cb851f77:0xcdd1d0f8da2f0893!8m2!3d50.8786294!4d3.1125472!9m1!1b1!16s%2Fg%2F11l7b6g4hg?entry=ttu&g_ep=EgoyMDI1MDgxOS4wIKXMDSoASAFQAw%3D%3D"
-  };
+  // Branch information
+  const branches = [
+    {
+      id: 1,
+      name: "Ariana Banden Service - Ledegem",
+      street: "Provinciebaan 192A",
+      city: "8880 Ledegem",
+      country: "Belgium",
+      phone: "+32 467 66 21 97",
+      email: "info@ariana-bandencentraal.com",
+      whatsapp: "+32 467 66 21 97",
+      mapsLink: "https://maps.app.goo.gl/qF2wt1aMPQ2QiV9t7",
+      isMain: true
+    },
+    {
+      id: 2,
+      name: "Ariana Banden Service - Ghent",
+      street: "Dendermondsesteenweg 128",
+      city: "9040 Gent",
+      country: "Belgium",
+      phone: "+32 467 66 21 97",
+      email: "info@ariana-bandencentraal.com",
+      whatsapp: "+32 467 66 21 97",
+      mapsLink: "https://maps.app.goo.gl/yDF8wa7QvBtVtjB26",
+      isMain: false
+    },
+    {
+      id: 3,
+      name: "Ariana Banden Service - England",
+      street: "78 Newlands, Hull",
+      city: "HU3 6RJ",
+      country: "England",
+      phone: "+44 668 335 50 19",
+      email: "info@ariana-bandencentraal.com",
+      whatsapp: "+44 668 335 50 19",
+      mapsLink: "https://maps.app.goo.gl/9PJsj6oNCZM8TbaDA",
+      isMain: false
+    }
+  ];
+
+  // Main contact info (using the main branch)
+  const contactInfo = branches.find(branch => branch.isMain) || branches[0];
 
   // Handle URL parameters for order tracking
   useEffect(() => {
@@ -115,25 +150,55 @@ const Contact = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Contact Information */}
           <div className="lg:col-span-1 space-y-6">
-            {/* Store Location */}
+            {/* Store Locations */}
             <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-6">
                 <MapPin className="w-6 h-6 text-primary" />
                 <h2 className="text-xl font-bold text-gray-900">{t('contact.location.title')}</h2>
               </div>
-              <div className="space-y-2 text-gray-600">
-                <p className="font-medium">{t('contact.location.businessName')}</p>
-                <p>{t('contact.location.street')}</p>
-                <p>{t('contact.location.cityPostal')}</p>
-                <p>{t('contact.location.country')}</p>
-              </div>
-              <div className="mt-4">
-                <button 
-                  onClick={() => window.open(contactInfo.address, '_blank')}
-                  className="text-primary hover:text-primary/80 font-medium text-sm flex items-center gap-1 hover:underline"
-                >
-                  {t('contact.location.directions')} →
-                </button>
+              
+              <div className="space-y-6">
+                {branches.map((branch, index) => (
+                  <div key={branch.id} className={`p-4 rounded-lg border ${branch.isMain ? 'border-primary bg-primary/5' : 'border-gray-200'}`}>
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h3 className="font-semibold text-gray-900 mb-1">
+                          {branch.name}
+                          {branch.isMain && (
+                            <span className="ml-2 px-2 py-1 bg-primary text-white text-xs rounded-full">
+                              {t('contact.location.mainBranch')}
+                            </span>
+                          )}
+                        </h3>
+                        <div className="space-y-1 text-gray-600 text-sm">
+                          <p>{branch.street}</p>
+                          <p>{branch.city}</p>
+                          <p>{branch.country}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      <button 
+                        onClick={() => window.open(`tel:${branch.phone}`, '_self')}
+                        className="text-primary hover:text-primary/80 font-medium text-sm flex items-center gap-1 hover:underline"
+                      >
+                        <Phone className="w-4 h-4" />
+                        {branch.phone}
+                      </button>
+                      
+                      {branch.mapsLink !== '#' && (
+                        <button 
+                          onClick={() => window.open(branch.mapsLink, '_blank')}
+                          className="text-primary hover:text-primary/80 font-medium text-sm flex items-center gap-1 hover:underline"
+                        >
+                          <MapPin className="w-4 h-4" />
+                          {t('contact.location.directions')}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -182,6 +247,12 @@ const Contact = () => {
                     <p className="text-gray-600">{contactInfo.whatsapp}</p>
                   </div>
                 </button>
+              </div>
+              
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  {t('contact.location.helpText')}
+                </p>
               </div>
             </div>
 
@@ -421,7 +492,7 @@ const Contact = () => {
           </button>
 
           <button 
-            onClick={() => window.open(contactInfo.address, '_blank')}
+            onClick={() => window.open(contactInfo.mapsLink, '_blank')}
             className="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow cursor-pointer hover:bg-gray-50"
           >
             <MapPin className="w-8 h-8 text-primary mx-auto mb-2" />

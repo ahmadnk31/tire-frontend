@@ -476,12 +476,34 @@
       "description": "Hulp nodig bij het volgen van je recente bestelling? Vul het formulier hieronder in en we nemen contact met je op over de status van je bestelling."
     },
     "location": {
-      "title": "Bezoek Onze Winkel",
+      "title": "Onze Locaties",
       "businessName": "Ariana Banden Service",
       "street": "Provinciebaan 192A",
       "cityPostal": "8880 Ledegem",
       "country": "België",
-      "directions": "Routebeschrijving"
+      "directions": "Routebeschrijving",
+      "mainBranch": "Hoofdvestiging",
+      "branches": {
+        "ledegem": {
+          "name": "Ariana Banden Service - Ledegem",
+          "street": "Provinciebaan 192A",
+          "city": "8880 Ledegem",
+          "country": "België"
+        },
+        "branch2": {
+          "name": "Ariana Banden Service - Vestiging 2",
+          "street": "Straat Adres 2",
+          "city": "Stad 2, Postcode",
+          "country": "België"
+        },
+        "branch3": {
+          "name": "Ariana Banden Service - Vestiging 3",
+          "street": "Straat Adres 3",
+          "city": "Stad 3, Postcode",
+          "country": "België"
+        }
+      },
+      "helpText": "Hulp nodig bij het kiezen van een locatie? Al onze vestigingen bieden dezelfde kwaliteitsservice. Neem contact met ons op en we helpen je de meest geschikte locatie voor jouw behoeften te vinden."
     },
     "details": {
       "title": "Contactgegevens",

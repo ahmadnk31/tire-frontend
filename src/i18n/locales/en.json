@@ -1461,12 +1461,34 @@
       "description": "Need help tracking your recent order? Fill out the form below and we'll get back to you with your order status."
     },
     "location": {
-      "title": "Visit Our Store",
+      "title": "Our Locations",
       "businessName": "Ariana Banden Service",
       "street": "Provinciebaan 192A",
       "cityPostal": "8880 Ledegem",
       "country": "Belgium",
-      "directions": "Get Directions"
+      "directions": "Get Directions",
+      "mainBranch": "Main Branch",
+      "branches": {
+        "ledegem": {
+          "name": "Ariana Banden Service - Ledegem",
+          "street": "Provinciebaan 192A",
+          "city": "8880 Ledegem",
+          "country": "Belgium"
+        },
+        "branch2": {
+          "name": "Ariana Banden Service - Branch 2",
+          "street": "Street Address 2",
+          "city": "City 2, Postal Code",
+          "country": "Belgium"
+        },
+        "branch3": {
+          "name": "Ariana Banden Service - Branch 3",
+          "street": "Street Address 3",
+          "city": "City 3, Postal Code",
+          "country": "Belgium"
+        }
+      },
+      "helpText": "Need help choosing a location? All our branches offer the same quality service. Contact us and we'll help you find the most convenient location for your needs."
     },
     "details": {
       "title": "Contact Details",

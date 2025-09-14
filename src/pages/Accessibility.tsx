@@ -291,11 +291,11 @@ const Accessibility: React.FC = () => {
             </p>
             <div className="space-y-2">
               <a
-                href="tel:+32 56 51 28 29"
+                href="tel:+32 467 66 21 97"
                 className="flex items-center gap-2 text-primary hover:text-primary/80 font-medium"
               >
                 <Phone className="h-4 w-4" />
-                +32 56 51 28 29
+                +32 467 66 21 97
               </a>
               <a
                 href="mailto:support@arianabanden.be"

@@ -239,7 +239,9 @@ const Terms: React.FC = () => {
                   <Mail className="h-4 w-4" />
                   legal@arianabanden.be
                 </a>
-                <div>+32 56 51 28 29</div>
+                <div>
+                  +32 467 66 21 97
+                </div>
               </div>
             </div>
           </div>
