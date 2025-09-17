@@ -114,7 +114,7 @@ interface AddProductProps {
 
 export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductProps) => {
   const [images, setImages] = useState<string[]>([]);
-  const [uploadedImages, setUploadedImages] = useState<{ imageUrl: string; altText: string }[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<{ imageUrl: string; altText?: string }[]>([]);
   const [features, setFeatures] = useState<string[]>(['']);
   const [formData, setFormData] = useState({
     brand: '',
@@ -286,13 +286,75 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
   };
 
   const handleImageUpload = async (files: File[]) => {
+    console.log('🚨 FUNCTION CALLED - handleImageUpload');
     try {
-      const response = await uploadApi.multiple(files, 'products');
+      console.log('🔄 Starting image upload for files:', files);
+      console.log('🔄 Files array length:', files.length);
+      console.log('🔄 Files array type:', typeof files);
+      console.log('🔄 Files is array:', Array.isArray(files));
+      
+      if (!Array.isArray(files) || files.length === 0) {
+        throw new Error('No files provided for upload');
+      }
+      
+      console.log('🔄 File names:', files.map(f => f.name));
+      
+      let response;
+      try {
+        response = await uploadApi.multiple(files, 'products');
+        console.log('📦 Upload API call successful, response:', response);
+      } catch (apiError) {
+        console.error('❌ Upload API call failed:', apiError);
+        throw apiError;
+      }
+      
+      // Defensive logging
+      console.log('📦 Upload response received:', response);
+      console.log('📦 Response type:', typeof response);
+      console.log('📦 Response is null/undefined:', response === null || response === undefined);
+      
+      if (response && typeof response === 'object') {
+        console.log('📦 Response keys:', Object.keys(response));
+      } else {
+        console.log('📦 Response is not an object:', response);
+      }
 
-      const uploadResults = response.results.map((result: any) => ({
-        imageUrl: result.imageUrl,
-        altText: result.originalName
-      }));
+      // Check if response exists and has the expected structure
+      if (!response) {
+        throw new Error('No response received from upload server');
+      }
+
+      // Try to get the files array
+      let results = null;
+      if (response.files && Array.isArray(response.files)) {
+        results = response.files;
+        console.log('✅ Using response.files:', results);
+      } else if (response.results && Array.isArray(response.results)) {
+        results = response.results;
+        console.log('✅ Using response.results:', results);
+      } else {
+        console.error('❌ No valid files array found in response:', response);
+        throw new Error('Invalid response structure from upload server');
+      }
+
+      if (results.length === 0) {
+        console.error('❌ Empty results array:', response);
+        throw new Error('No files were uploaded');
+      }
+
+      console.log('✅ Results is array, mapping results...');
+      const uploadResults = results.map((result: any) => {
+        console.log('🔄 Mapping result:', result);
+        if (!result || !result.imageUrl) {
+          console.error('❌ Invalid result object:', result);
+          throw new Error('Invalid result object from upload server');
+        }
+        return {
+          imageUrl: result.imageUrl,
+          altText: result.originalName || result.altText || 'Uploaded image'
+        };
+      });
+      console.log('✅ Mapped upload results:', uploadResults);
 
       setUploadedImages(prev => [...prev, ...uploadResults]);
       if (!editingProduct) {
@@ -300,7 +362,7 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
       }
       return uploadResults;
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error('❌ Upload error:', error);
       throw new Error('Failed to upload images');
     }
   };

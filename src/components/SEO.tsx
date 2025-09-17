@@ -68,9 +68,9 @@ const SEO: React.FC<SEOProps> = ({
     "description": currentLanguage === 'en' 
       ? "Professional tire sales, installation, and automotive services in Ledegem, Belgium"
       : "Professionele bandenverkoop, installatie en automotive services in Ledegem, België",
-    "url": "https://arianabanden.be",
+    "url": "https://arianabandencentralebv.be",
     "telephone": "+32-467-66-21-97",
-    "email": "info@ariana-bandencentraal.com",
+    "email": "info@ariana-bandencentraal.be",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Provinciebaan 192A",

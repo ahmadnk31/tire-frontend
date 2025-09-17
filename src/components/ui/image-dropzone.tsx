@@ -17,7 +17,7 @@ interface UploadedFile {
 }
 
 interface ImageDropzoneProps {
-  onUpload: (files: File[]) => Promise<{ imageUrl: string; originalName: string }[]>;
+  onUpload: (files: File[]) => Promise<{ imageUrl: string; altText?: string }[]>;
   onRemove?: (index: number) => void;
   maxFiles?: number;
   maxSize?: number; // in bytes
@@ -42,7 +42,21 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
   const { toast } = useToast();
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    if (!acceptedFiles.length) return;
+    console.log('🚨 DROPZONE onDrop CALLED');
+    console.log('🔄 onDrop called with acceptedFiles:', acceptedFiles);
+    console.log('🔄 acceptedFiles type:', typeof acceptedFiles);
+    console.log('🔄 acceptedFiles is array:', Array.isArray(acceptedFiles));
+    console.log('🔄 acceptedFiles length:', acceptedFiles?.length);
+    
+    if (!acceptedFiles || !Array.isArray(acceptedFiles)) {
+      console.error('❌ acceptedFiles is not an array:', acceptedFiles);
+      return;
+    }
+    
+    if (!acceptedFiles.length) {
+      console.log('❌ No files in acceptedFiles array');
+      return;
+    }
 
     // Validate file count
     const totalFiles = uploadedFiles.length + existingImages.length + acceptedFiles.length;
@@ -84,6 +98,9 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
       });
 
       // Upload files
+      console.log('🔄 About to call onUpload with acceptedFiles:', acceptedFiles);
+      console.log('🔄 acceptedFiles type before onUpload:', typeof acceptedFiles);
+      console.log('🔄 acceptedFiles is array before onUpload:', Array.isArray(acceptedFiles));
       const uploadResults = await onUpload(acceptedFiles);
 
       // Update files with success status
@@ -164,7 +181,22 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
 
   const retryUpload = async (index: number) => {
     const file = uploadedFiles[index];
-    if (!file || file.status !== 'error') return;
+    console.log('🔄 Retry upload called for index:', index);
+    console.log('🔄 File object:', file);
+    
+    if (!file || file.status !== 'error') {
+      console.log('❌ File not found or not in error state');
+      return;
+    }
+
+    console.log('🔄 File.file object:', file.file);
+    console.log('🔄 File.file type:', typeof file.file);
+    console.log('🔄 File.file is File:', file.file instanceof File);
+
+    if (!file.file) {
+      console.error('❌ No file object found in uploadedFiles');
+      return;
+    }
 
     setUploadedFiles(prev => {
       const updated = [...prev];
@@ -178,7 +210,14 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
     });
 
     try {
+      console.log('🔄 Calling onUpload with:', [file.file]);
       const result = await onUpload([file.file]);
+      console.log('🔄 onUpload result:', result);
+      
+      if (!result || !Array.isArray(result) || result.length === 0) {
+        throw new Error('Invalid result from upload function');
+      }
+      
       setUploadedFiles(prev => {
         const updated = [...prev];
         updated[index] = {
@@ -195,6 +234,7 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
         description: "File uploaded successfully.",
       });
     } catch (error) {
+      console.error('❌ Retry upload error:', error);
       setUploadedFiles(prev => {
         const updated = [...prev];
         updated[index] = {
@@ -208,7 +248,7 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
 
       toast({
         title: "Upload failed",
-        description: "Failed to upload file. Please try again.",
+        description: error instanceof Error ? error.message : 'Upload failed',
         variant: "destructive",
       });
     }

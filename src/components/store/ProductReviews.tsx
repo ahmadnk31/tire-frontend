@@ -137,7 +137,15 @@ const ReviewForm: React.FC<{
       // Upload images to S3 first
       const response = await uploadApi.multiple(files, 'reviews');
       
-      const uploadResults = response.results.map((result: any) => ({
+      // Handle both response structures for backward compatibility
+      const results = response.files || response.results || [];
+      
+      if (!Array.isArray(results)) {
+        console.error('Invalid response structure:', response);
+        throw new Error('Invalid response from upload server');
+      }
+      
+      const uploadResults = results.map((result: any) => ({
         imageUrl: result.imageUrl,
         originalName: result.originalName
       }));
