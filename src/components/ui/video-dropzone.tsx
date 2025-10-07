@@ -17,6 +17,7 @@ interface VideoDropzoneProps {
   folder?: string;
   existingVideos?: VideoFile[];
   onRemove?: (index: number) => void;
+  onRemoveExisting?: (index: number) => void;
   className?: string;
   acceptedFormats?: string[];
   maxSize?: number; // in MB
@@ -29,12 +30,13 @@ export const VideoDropzone: React.FC<VideoDropzoneProps> = ({
   folder = 'videos',
   existingVideos = [],
   onRemove,
+  onRemoveExisting,
   className,
   acceptedFormats = ['.mp4', '.mov', '.avi', '.webm', '.mkv'],
   maxSize = 100, // 100MB default
 }) => {
   const [uploading, setUploading] = useState(false);
-  const [uploadedVideos, setUploadedVideos] = useState<VideoFile[]>(existingVideos);
+  const [uploadedVideos, setUploadedVideos] = useState<VideoFile[]>([]);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
@@ -114,6 +116,46 @@ export const VideoDropzone: React.FC<VideoDropzoneProps> = ({
         </div>
       </div>
 
+      {/* Existing Videos */}
+      {existingVideos.length > 0 && (
+        <div className="space-y-2">
+          <h4 className="text-sm font-medium text-gray-900">Existing Videos</h4>
+          <div className="grid gap-3">
+            {existingVideos.map((video, index) => (
+              <div
+                key={`existing-${index}`}
+                className="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-200"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-orange-200 rounded flex items-center justify-center">
+                    <Play className="h-5 w-5 text-orange-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {video.originalName}
+                    </p>
+                    <p className="text-xs text-orange-600">
+                      Existing Video
+                    </p>
+                  </div>
+                </div>
+                {onRemoveExisting && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onRemoveExisting(index)}
+                    className="text-gray-400 hover:text-red-500"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Uploaded Videos */}
       {uploadedVideos.length > 0 && (
         <div className="space-y-2">
@@ -121,7 +163,7 @@ export const VideoDropzone: React.FC<VideoDropzoneProps> = ({
           <div className="grid gap-3">
             {uploadedVideos.map((video, index) => (
               <div
-                key={index}
+                key={`uploaded-${index}`}
                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
               >
                 <div className="flex items-center space-x-3">

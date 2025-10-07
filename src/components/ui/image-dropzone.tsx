@@ -19,6 +19,7 @@ interface UploadedFile {
 interface ImageDropzoneProps {
   onUpload: (files: File[]) => Promise<{ imageUrl: string; altText?: string }[]>;
   onRemove?: (index: number) => void;
+  onRemoveExisting?: (index: number) => void;
   maxFiles?: number;
   maxSize?: number; // in bytes
   multiple?: boolean;
@@ -30,6 +31,7 @@ interface ImageDropzoneProps {
 export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
   onUpload,
   onRemove,
+  onRemoveExisting,
   maxFiles = 10,
   maxSize = 10 * 1024 * 1024, // 10MB
   multiple = true,
@@ -326,6 +328,17 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
                 <Badge className="absolute top-2 left-2 bg-orange-500">
                   Existing
                 </Badge>
+                {onRemoveExisting && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => onRemoveExisting(index)}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                )}
               </div>
             ))}
           </div>

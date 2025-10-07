@@ -56,6 +56,63 @@ const clearFormStorage = () => {
   }
 };
 
+// Helper function to format date for datetime-local input
+const formatDateForInput = (dateString: string | null | undefined): string => {
+  if (!dateString) return '';
+  
+  try {
+    console.log('🔍 Formatting date:', dateString);
+    
+    // Handle different date formats
+    let date: Date;
+    
+    // If it's already in ISO format or has timezone info, use it directly
+    if (dateString.includes('T') || dateString.includes('Z') || dateString.includes('+')) {
+      date = new Date(dateString);
+    } else {
+      // If it's just a date string, assume it's in YYYY-MM-DD format and add time
+      date = new Date(dateString + 'T00:00:00');
+    }
+    
+    if (isNaN(date.getTime())) {
+      console.warn('Invalid date:', dateString);
+      return '';
+    }
+    
+    // Format to YYYY-MM-DDTHH:MM for datetime-local input
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+    const formatted = `${year}-${month}-${day}T${hours}:${minutes}`;
+    console.log('🔍 Formatted date:', formatted);
+    
+    return formatted;
+  } catch (error) {
+    console.warn('Failed to format date:', dateString, error);
+    return '';
+  }
+};
+
+// Helper function to convert datetime-local input to ISO string for API
+const formatDateForAPI = (dateString: string | null | undefined): string | null => {
+  if (!dateString) return null;
+  
+  try {
+    // datetime-local input gives us YYYY-MM-DDTHH:MM format
+    // Convert to ISO string for API
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return null;
+    
+    return date.toISOString();
+  } catch (error) {
+    console.warn('Failed to format date for API:', dateString, error);
+    return null;
+  }
+};
+
 interface Product {
   id: number;
   name: string;
@@ -81,6 +138,7 @@ interface Product {
     tireType?: string;
     treadDepth?: number | string;
     construction?: string;
+    tireSoundVolume?: string;
   };
   // Individual specification fields for backward compatibility
   speedRating?: string;
@@ -89,6 +147,7 @@ interface Product {
   tireType?: string;
   treadDepth?: string | number;
   construction?: string;
+  tireSoundVolume?: string;
   comparePrice?: string | number;
   compareAtPrice?: string | number;
   stockQuantity?: number | string;
@@ -129,6 +188,7 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
     vehicleType: '',
     treadDepth: '',
     construction: 'radial',
+    soundVolume: '',
     price: '',
     comparePrice: '',
     sku: '',
@@ -181,6 +241,15 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
     } else {
       // If editing, load the product data and clear any saved form data
       clearFormStorage();
+      
+      // Debug sale dates
+      console.log('🔍 Editing product sale dates:', {
+        saleStartDate: editingProduct.saleStartDate,
+        saleEndDate: editingProduct.saleEndDate,
+        formattedStartDate: formatDateForInput(editingProduct.saleStartDate),
+        formattedEndDate: formatDateForInput(editingProduct.saleEndDate)
+      });
+      
       const sizeParts = editingProduct.size ? editingProduct.size.match(/(\d+)\/(\d+)R(\d+)/) : null;
       setFormData({
         brand: editingProduct.brand || '',
@@ -196,6 +265,7 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
         vehicleType: editingProduct.specifications?.tireType || editingProduct.tireType || '',
         treadDepth: editingProduct.specifications?.treadDepth?.toString() || editingProduct.treadDepth?.toString() || '',
         construction: editingProduct.specifications?.construction || editingProduct.construction || 'radial',
+        soundVolume: editingProduct.specifications?.tireSoundVolume || editingProduct.tireSoundVolume || '',
         price: (editingProduct.price || '').toString().replace('$', ''),
         comparePrice: (editingProduct.comparePrice || editingProduct.compareAtPrice || '').toString(),
         sku: editingProduct.sku || '',
@@ -208,8 +278,8 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
         metaDescription: editingProduct.seoDescription || editingProduct.seo?.metaDescription || '',
         categoryIds: editingProduct.categoryIds || [],
         // Sale fields
-        saleStartDate: editingProduct.saleStartDate || '',
-        saleEndDate: editingProduct.saleEndDate || ''
+        saleStartDate: formatDateForInput(editingProduct.saleStartDate),
+        saleEndDate: formatDateForInput(editingProduct.saleEndDate)
       });
       const productFeatures = Array.isArray(editingProduct.features) && editingProduct.features.length > 0 
         ? editingProduct.features 
@@ -447,9 +517,10 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
         tireType: formData.vehicleType, // Map vehicleType to tireType
         treadDepth: formData.treadDepth,
         construction: formData.construction,
+        tireSoundVolume: formData.soundVolume,
         // Sale fields
-        saleStartDate: formData.saleStartDate || null,
-        saleEndDate: formData.saleEndDate || null,
+        saleStartDate: formatDateForAPI(formData.saleStartDate),
+        saleEndDate: formatDateForAPI(formData.saleEndDate),
         // SEO fields
         seoTitle: formData.metaTitle,
         seoDescription: formData.metaDescription,
@@ -507,6 +578,7 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
           vehicleType: '',
           treadDepth: '',
           construction: 'radial',
+          soundVolume: '',
           price: '',
           comparePrice: '',
           sku: '',
@@ -655,6 +727,8 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
                       <SelectItem value="headway">Headway</SelectItem>
                       <SelectItem value="dextero">Dextero</SelectItem>
                       <SelectItem value="leao">Leao</SelectItem>
+                      <SelectItem value="ceat">Ceat</SelectItem>
+                      
                       <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>
@@ -821,7 +895,19 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
                     </SelectContent>
                   </Select>
                 </div>
-                
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="soundVolume">Sound Volume (dB)</Label>
+                <Input 
+                  id="soundVolume" 
+                  placeholder="e.g., 72" 
+                  value={formData.soundVolume}
+                  onChange={(e) => handleInputChange('soundVolume', e.target.value)}
+                />
+                <p className="text-xs text-gray-500">
+                  Enter the noise level in decibels (dB). Lower values indicate quieter tires.
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -835,6 +921,7 @@ export const AddProduct = ({ editingProduct, onCancel, onSuccess }: AddProductPr
               <ImageDropzone
                 onUpload={handleImageUpload}
                 onRemove={removeImage}
+                onRemoveExisting={removeImage}
                 maxFiles={8}
                 multiple={true}
                 folder="products"

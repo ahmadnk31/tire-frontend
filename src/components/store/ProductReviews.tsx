@@ -365,6 +365,7 @@ const ReviewForm: React.FC<{
         <ImageDropzone
           onUpload={handleImageUpload}
           onRemove={handleImageRemove}
+          onRemoveExisting={handleImageRemove}
           maxFiles={5}
           maxSize={5 * 1024 * 1024} // 5MB
           multiple={true}

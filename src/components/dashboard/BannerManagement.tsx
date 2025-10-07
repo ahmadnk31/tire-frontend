@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { bannersApi } from '@/lib/bannersApi';
-// Removed Dialog imports
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { ImageDropzone } from '@/components/ui/image-dropzone';
@@ -12,6 +12,7 @@ import { VideoDropzone } from '@/components/ui/video-dropzone';
 import { uploadApi } from '@/lib/api';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Eye, Play } from 'lucide-react';
 
 interface Banner {
   id: number;
@@ -32,6 +33,8 @@ export const BannerManagement = () => {
   const [form, setForm] = useState<Partial<Banner>>({ type: 'image', isActive: true, sortOrder: 0 });
   const [uploading, setUploading] = useState(false);
   const [videoUploadType, setVideoUploadType] = useState<'upload' | 'url'>('upload');
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewBanner, setPreviewBanner] = useState<Partial<Banner> | null>(null);
 
   // Fetch banners
   const {
@@ -129,6 +132,16 @@ export const BannerManagement = () => {
     setVideoUploadType('upload');
   };
 
+  const openPreview = (banner: Partial<Banner>) => {
+    setPreviewBanner(banner);
+    setShowPreview(true);
+  };
+
+  const closePreview = () => {
+    setShowPreview(false);
+    setPreviewBanner(null);
+  };
+
   // Handle image upload
   const handleImageUpload = async (files: File[]) => {
     setUploading(true);
@@ -210,6 +223,7 @@ export const BannerManagement = () => {
                   <Label>Banner Image</Label>
                   <ImageDropzone
                     onUpload={handleImageUpload}
+                    onRemoveExisting={() => setForm(f => ({ ...f, src: '' }))}
                     maxFiles={1}
                     multiple={false}
                     folder="banners"
@@ -243,6 +257,7 @@ export const BannerManagement = () => {
                       <Label>Upload Video</Label>
                       <VideoDropzone
                         onUpload={handleVideoUpload}
+                        onRemoveExisting={() => setForm(f => ({ ...f, src: '' }))}
                         maxFiles={1}
                         multiple={false}
                         folder="banners"
@@ -320,6 +335,15 @@ export const BannerManagement = () => {
                 <Button type="submit" disabled={createBanner.isPending || updateBanner.isPending}>
                   {editBanner ? 'Update' : 'Create'}
                 </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => openPreview(form)}
+                  disabled={!form.src}
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  Preview
+                </Button>
                 <Button type="button" variant="outline" onClick={closeForm}>
                   Cancel
                 </Button>
@@ -357,6 +381,15 @@ export const BannerManagement = () => {
                 </div>
                 <div className="flex gap-2 mt-4">
                   <Button size="sm" variant="outline" onClick={() => openEdit(banner)}>Edit</Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => openPreview(banner)}
+                    disabled={!banner.src}
+                  >
+                    <Eye className="h-3 w-3 mr-1" />
+                    Preview
+                  </Button>
                   <Button size="sm" variant="destructive" onClick={() => deleteBanner.mutate(banner.id)}>Delete</Button>
                 </div>
               </CardContent>
@@ -364,6 +397,89 @@ export const BannerManagement = () => {
           ))}
         </div>
       )}
+
+      {/* Preview Modal */}
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Banner Preview</DialogTitle>
+          </DialogHeader>
+          {previewBanner && (
+            <div className="space-y-4">
+              {/* Banner Preview */}
+              <div className="relative w-full h-64 md:h-80 bg-gray-100 rounded-lg overflow-hidden">
+                {previewBanner.type === 'image' ? (
+                  previewBanner.src ? (
+                    <img
+                      src={previewBanner.src}
+                      alt="Banner preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-500">
+                      No image selected
+                    </div>
+                  )
+                ) : (
+                  previewBanner.src ? (
+                    <video
+                      src={previewBanner.src}
+                      controls
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-500">
+                      No video selected
+                    </div>
+                  )
+                )}
+                
+                {/* Overlay Text */}
+                {(previewBanner.headline || previewBanner.subheadline || previewBanner.description) && (
+                  <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                    <div className="text-center text-white p-6">
+                      {previewBanner.headline && (
+                        <h2 className="text-2xl md:text-4xl font-bold mb-2">
+                          {previewBanner.headline}
+                        </h2>
+                      )}
+                      {previewBanner.subheadline && (
+                        <h3 className="text-lg md:text-xl mb-2">
+                          {previewBanner.subheadline}
+                        </h3>
+                      )}
+                      {previewBanner.description && (
+                        <p className="text-sm md:text-base opacity-90">
+                          {previewBanner.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Banner Details */}
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="font-medium">Type:</span> {previewBanner.type}
+                </div>
+                <div>
+                  <span className="font-medium">Active:</span> {previewBanner.isActive ? 'Yes' : 'No'}
+                </div>
+                <div>
+                  <span className="font-medium">Sort Order:</span> {previewBanner.sortOrder}
+                </div>
+                <div className="col-span-2">
+                  <span className="font-medium">Source:</span>
+                  <div className="mt-1 break-all text-xs text-gray-600">
+                    {previewBanner.src || 'No source'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

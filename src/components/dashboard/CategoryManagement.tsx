@@ -91,6 +91,7 @@ export function CategoryManagement() {
                       setImageUploading(false);
                     }
                   }}
+                  onRemoveExisting={() => setFormFields(f => ({ ...f, image: "" }))}
                   maxFiles={1}
                   multiple={false}
                   existingImages={formFields.image ? [{ imageUrl: formFields.image }] : []}

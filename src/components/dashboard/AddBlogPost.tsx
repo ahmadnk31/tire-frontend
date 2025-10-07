@@ -381,6 +381,7 @@ export const AddBlogPost: React.FC<AddBlogPostProps> = ({ editingPost, onSuccess
         <Label>Featured Image</Label>
         <ImageDropzone
           onUpload={handleFeaturedImageUpload}
+          onRemoveExisting={() => setFeaturedImage('')}
           maxFiles={1}
           multiple={false}
           folder="blog"

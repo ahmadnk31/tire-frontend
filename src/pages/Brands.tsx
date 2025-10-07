@@ -82,7 +82,8 @@ const Brands: React.FC = () => {
     'windforce': 'https://ik.imagekit.io/ntvz9dezi1x/blog/windforce-logo.png',
     "headway": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3pm5I-aR6QDAcIj5ZHTUpouU2VTK80MNi8Lsaskagov8-vsvEcsxIpNzgFB_UxPJC8z4&usqp=CAU",
     "dextero": "https://tirehungry.com/wp-content/uploads/2023/05/Dextero-Review.png",
-    "leao": "https://leao-tyres.com/sites/default/files/default_images/Leao%20logo.png"
+    "leao": "https://leao-tyres.com/sites/default/files/default_images/Leao%20logo.png",
+    "ceat": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTefWziZxVCgQLft5zhA1wWsic0oDhNfN8LE9v8znDWmFFXGqXsrs0jtQs4yPHiFZXMdeY&usqp=CAU"
   }
 
   // Check if user is logged in
@@ -332,7 +333,8 @@ const Brands: React.FC = () => {
       "windforce": "USA",
       "headway": "USA",
       "dextero": "USA",
-      "leao": "China"
+      "leao": "China",
+      "ceat": "China"
     };
     return countryMap[brand.toLowerCase()] || 'Unknown';
   }
@@ -352,7 +354,8 @@ const Brands: React.FC = () => {
       'windforce': 1996,
       'headway': 1996,
       'dextero': 1993,
-      'leao': 1996
+      'leao': 1996,
+      'ceat': 1996
     };
     return foundedMap[brand.toLowerCase()] || 1900;
   }
@@ -372,7 +375,8 @@ const Brands: React.FC = () => {
       'windforce': ['Summer Tires', 'Winter Tires', 'All-Season'],
       'headway': ['Summer Tires', 'Winter Tires', 'All-Season'],
       'dextero': ['Summer Tires', 'Winter Tires', 'All-Season'],
-      'leao': ['Summer Tires', 'Winter Tires', 'All-Season']
+      'leao': ['Summer Tires', 'Winter Tires', 'All-Season'],
+      'ceat': ['Summer Tires', 'Winter Tires', 'All-Season']
     };
     return categoryMap[brand.toLowerCase()] || ['Tires'];
   }
