@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Calendar, Clock, User, Tag, ArrowLeft, Eye, MessageCircle, Send } from 'lucide-react';
+import { Calendar, Clock, User, Tag, ArrowLeft, Eye, MessageCircle, Send, Share2, Copy } from 'lucide-react';
+ 
 import { blogApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -143,7 +144,14 @@ const BlogPost: React.FC = () => {
 
   const post = postData?.post;
   const comments = post?.comments || [];
-
+ // Social share logic
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const shareText = post ? encodeURIComponent(post.title) : '';
+  const encodedUrl = encodeURIComponent(shareUrl);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(shareUrl);
+    toast({ title: 'Link copied!', description: 'You can now share this link.' });
+  };
   const handleCommentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -221,8 +229,8 @@ const BlogPost: React.FC = () => {
           Back to Blog
         </Button>
 
-        {/* Article Header */}
-        <article className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+  {/* Article Header */}
+  <article className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
           {/* Featured Image */}
           {post.image && (
             <div className="relative h-64 md:h-96">
@@ -239,7 +247,40 @@ const BlogPost: React.FC = () => {
             </div>
           )}
 
-          {/* Article Content */}
+          {/* Social Share Buttons */}
+          <div className="flex flex-wrap gap-3 items-center p-4 border-b border-gray-100 mb-4">
+            <span className="font-semibold text-gray-700 flex items-center gap-1"><Share2 className="h-4 w-4" /> Share:</span>
+            <a
+              href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+            >Facebook</a>
+            <a
+              href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${shareText}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1 bg-blue-400 text-white rounded hover:bg-blue-500 text-sm"
+            >Twitter</a>
+            <a
+              href={`https://wa.me/?text=${shareText}%20${encodedUrl}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
+            >WhatsApp</a>
+            <button
+              onClick={handleCopy}
+              className="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm flex items-center gap-1"
+            >
+              <Copy className="h-4 w-4" /> Copy Link
+            </button>
+          </div>
+          {/* Embed instructions */}
+          <div className="p-4 border-b border-gray-100 mb-4 bg-gray-50 rounded">
+            <span className="font-semibold text-gray-700">Embed this blog post:</span>
+            <pre className="bg-gray-100 rounded p-2 mt-2 text-xs overflow-x-auto"><code>{`<iframe src="${window.location.origin}/blog/embed/${slug}" width="100%" height="600" frameborder="0" style="border:0;overflow:auto;"></iframe>`}</code></pre>
+            <span className="text-xs text-gray-500">Copy and paste this HTML into any website to embed this post.</span>
+          </div>
           <div className="p-8">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               {post.title}

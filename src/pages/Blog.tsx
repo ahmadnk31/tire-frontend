@@ -252,7 +252,7 @@ const Blog: React.FC = () => {
 
         {/* Loading State */}
         {isLoading && (
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="bg-white rounded-xl overflow-hidden shadow-md animate-pulse">
                 <div className="h-48 bg-gray-200"></div>
@@ -269,7 +269,7 @@ const Blog: React.FC = () => {
 
         {/* Blog Posts Grid */}
         {!isLoading && (
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
             {blogPosts.length === 0 ? (
               <div className="col-span-full text-center py-12">
                 <div className="text-gray-400 mb-4">
@@ -296,7 +296,7 @@ const Blog: React.FC = () => {
               </div>
             ) : (
               blogPosts.map(post => (
-                <article key={post.id} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                <article key={post.id} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow flex flex-col h-full">
                   <div className="relative">
                     <img
                       src={post.image || 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop'}
@@ -309,7 +309,7 @@ const Blog: React.FC = () => {
                       </span>
                     </div>
                   </div>
-                  <div className="p-6">
+                  <div className="p-6 flex flex-col flex-1">
                     <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
                       {post.title}
                     </h3>
@@ -337,14 +337,16 @@ const Blog: React.FC = () => {
                         </span>
                       ))}
                     </div>
-                    <Button 
-                      onClick={() => handleReadMore(post)}
-                      variant='outline'
-                      className="flex items-center gap-2 font-medium transition-colors"
-                    >
-                      {t('blog.readMore')}
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
+                    <div className="mt-auto">
+                      <Button 
+                        onClick={() => handleReadMore(post)}
+                        variant='outline'
+                        className="flex items-center gap-2 font-medium transition-colors"
+                      >
+                        {t('blog.readMore')}
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </article>
               ))

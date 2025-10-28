@@ -38,6 +38,7 @@ import Returns from "./pages/Returns";
 import Shipping from "./pages/Shipping";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import BlogPostEmbed from "./pages/BlogPostEmbed";
 import Careers from "./pages/Careers";
 import Press from "./pages/Press";
 import Sustainability from "./pages/Sustainability";
@@ -123,6 +124,7 @@ const AppContent = () => {
             <Route path="/shipping" element={<Shipping />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/blog/embed/:slug" element={<BlogPostEmbed />} />
             <Route path="/careers" element={<Careers />} />
             <Route path="/press" element={<Press />} />
             <Route path="/sustainability" element={<Sustainability />} />

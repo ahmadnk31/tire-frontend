@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     proxy: {
-      '/api': 'http://localhost:3002', // Updated to match backend port
+      '/api': 'http://localhost:3000', // Updated to match backend port
     },
   },
   plugins: [
