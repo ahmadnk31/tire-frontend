@@ -212,17 +212,27 @@ export const AddBlogPost: React.FC<AddBlogPostProps> = ({ editingPost, onSuccess
       return;
     }
 
+    // Convert tags string to array, splitting by comma or hashtag, trimming whitespace, and removing empties
+    const tagsArray = (formData.tags || '')
+      .split(/[#|,]/)
+      .map((t) => t.trim())
+      .filter(Boolean);
+
     const postData = {
       title: formData.title,
       excerpt: formData.excerpt,
       content: formData.content,
       category: formData.category,
-      tags: formData.tags,
+      tags: JSON.stringify(tagsArray),
       status: formData.status,
       featured: formData.featured,
       readTime: formData.readTime,
       image: featuredImage || null,
     };
+
+    // Debug log to verify payload
+    // eslint-disable-next-line no-console
+    console.log('Submitting blog post (create/update):', postData);
 
     createPostMutation.mutate(postData);
   };
@@ -312,6 +322,7 @@ export const AddBlogPost: React.FC<AddBlogPostProps> = ({ editingPost, onSuccess
             <SelectContent>
               <SelectItem value="tips">Tips & Advice</SelectItem>
               <SelectItem value="maintenance">Maintenance</SelectItem>
+              <SelectItem value="Car ">Repair</SelectItem>
               <SelectItem value="safety">Safety</SelectItem>
               <SelectItem value="seasonal">Seasonal</SelectItem>
               <SelectItem value="industry">Industry News</SelectItem>

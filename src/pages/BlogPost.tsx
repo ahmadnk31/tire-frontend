@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Calendar, Clock, User, Tag, ArrowLeft, Eye, MessageCircle, Send, Share2, Copy } from 'lucide-react';
- 
+import { Helmet } from 'react-helmet-async';
+
 import { blogApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -177,6 +178,12 @@ const BlogPost: React.FC = () => {
     addCommentMutation.mutate(commentForm);
   };
 
+  // Prepare meta tags for social sharing
+  const metaTitle = post?.title || '';
+  const metaDescription = post?.excerpt || '';
+  const metaImage = post?.image || (import.meta.env.VITE_APP_URL ? `${import.meta.env.VITE_APP_URL}/logo.png` : '/logo.png');
+  const metaUrl = typeof window !== 'undefined' ? window.location.href : '';
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
@@ -217,17 +224,30 @@ const BlogPost: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Back Button */}
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/blog')}
-          className="mb-8 flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Blog
-        </Button>
+    <>
+      <Helmet>
+        <title>{metaTitle}</title>
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:image" content={metaImage} />
+        <meta property="og:url" content={metaUrl} />
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={metaTitle} />
+        <meta name="twitter:description" content={metaDescription} />
+        <meta name="twitter:image" content={metaImage} />
+      </Helmet>
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Back Button */}
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/blog')}
+            className="mb-8 flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Blog
+          </Button>
 
   {/* Article Header */}
   <article className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
@@ -442,6 +462,7 @@ const BlogPost: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
