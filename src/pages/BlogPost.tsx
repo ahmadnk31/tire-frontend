@@ -278,7 +278,7 @@ const BlogPost: React.FC = () => {
           {/* Embed instructions */}
           <div className="p-4 border-b border-gray-100 mb-4 bg-gray-50 rounded">
             <span className="font-semibold text-gray-700">Embed this blog post:</span>
-            <pre className="bg-gray-100 rounded p-2 mt-2 text-xs overflow-x-auto"><code>{`<iframe src="${window.location.origin}/blog/embed/${slug}" width="100%" height="600" frameborder="0" style="border:0;overflow:auto;"></iframe>`}</code></pre>
+            <pre className="bg-gray-100 rounded p-2 mt-2 text-xs overflow-x-auto"><code>{`<iframe src="${import.meta.env.VITE_APP_URL || window.location.origin}/blog/embed/${slug}" width="100%" height="600" frameborder="0" style="border:0;overflow:auto;"></iframe>`}</code></pre>
             <span className="text-xs text-gray-500">Copy and paste this HTML into any website to embed this post.</span>
           </div>
           <div className="p-8">
