@@ -435,7 +435,15 @@ export default function ProductPage() {
     ? `${product.description.substring(0, 155)}...` 
     : `Koop ${product.name} van ${product.brand}. ${product.category || 'Premium banden'} tegen de beste prijs. Gratis montage en balanceren. Direct leverbaar.`;
   const productPrice = product.price ? formatEuro(product.price) : '';
-  const productImage = productImages[0] || '/logo.png';
+  
+  // Ensure absolute URL for product image
+  const getAbsoluteImageUrl = (imageUrl: string | undefined) => {
+    if (!imageUrl) return 'https://arianabandencentralebv.be/logo.png';
+    if (imageUrl.startsWith('http')) return imageUrl;
+    return `https://arianabandencentralebv.be${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+  };
+  
+  const productImage = getAbsoluteImageUrl(productImages[0]);
   const productUrl = `https://arianabandencentralebv.be/products/${slug}`;
   const availability = product.stock && product.stock > 0 ? 'InStock' : 'OutOfStock';
   const rating = reviewStats?.averageRating || 0;
@@ -453,9 +461,14 @@ export default function ProductPage() {
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="product" />
-        <meta property="og:title" content={productTitle} />
+        <meta property="og:title" content={`${product.name} ${product.brand}`} />
         <meta property="og:description" content={productDescription} />
         <meta property="og:image" content={productImage} />
+        <meta property="og:image:secure_url" content={productImage} />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={`${product.name} ${product.brand}`} />
         <meta property="og:url" content={productUrl} />
         <meta property="og:locale" content={currentLang === 'nl' ? 'nl_BE' : 'en_US'} />
         <meta property="og:site_name" content="Ariana Bandencentraal" />
@@ -468,9 +481,16 @@ export default function ProductPage() {
         
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={productTitle} />
+        <meta name="twitter:title" content={`${product.name} ${product.brand}`} />
         <meta name="twitter:description" content={productDescription} />
         <meta name="twitter:image" content={productImage} />
+        <meta name="twitter:image:alt" content={`${product.name} ${product.brand}`} />
+        <meta name="twitter:site" content="@arianabanden" />
+        <meta name="twitter:creator" content="@arianabanden" />
+        <meta name="twitter:label1" content="Price" />
+        <meta name="twitter:data1" content={productPrice} />
+        <meta name="twitter:label2" content="Availability" />
+        <meta name="twitter:data2" content={availability === 'InStock' ? 'In Stock' : 'Out of Stock'} />
         
         {/* Product Schema.org structured data */}
         <script type="application/ld+json">

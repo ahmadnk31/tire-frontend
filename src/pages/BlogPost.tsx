@@ -149,14 +149,23 @@ const BlogPost: React.FC = () => {
   const post = postData?.post;
   const comments = post?.comments || [];
   
-  // Prepare meta tags for social sharing (before rendering)
-  const metaTitle = post?.title || t('blog.title');
-  const metaDescription = post?.excerpt || t('blog.description');
-  const metaImage = post?.image || (import.meta.env.VITE_APP_URL ? `${import.meta.env.VITE_APP_URL}/logo.png` : '/logo.png');
-  const metaUrl = typeof window !== 'undefined' ? window.location.href : '';
+  // Prepare meta tags for social sharing with absolute URLs
+  // Use post data directly to ensure dynamic values are used
+  const metaTitle = post ? `${post.title} | ${t('blog.title')}` : t('blog.title');
+  const metaDescription = post?.excerpt || post?.content?.substring(0, 155) || t('blog.description');
+  
+  // Ensure absolute URL for image
+  const getAbsoluteImageUrl = (imageUrl: string | undefined) => {
+    if (!imageUrl) return 'https://arianabandencentralebv.be/logo.png';
+    if (imageUrl.startsWith('http')) return imageUrl;
+    return `https://arianabandencentralebv.be${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+  };
+  
+  const metaImage = getAbsoluteImageUrl(post?.image);
+  const metaUrl = `https://arianabandencentralebv.be/blog/${slug}`;
   
   // Social share logic
-  const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const shareUrl = metaUrl;
   const shareText = post ? encodeURIComponent(post.title) : '';
   const encodedUrl = encodeURIComponent(shareUrl);
   
@@ -263,15 +272,20 @@ const BlogPost: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>{metaTitle} | {t('blog.title')}</title>
+        <title>{metaTitle}</title>
         <meta name="description" content={metaDescription} />
         <meta name="keywords" content={post?.tags?.join(', ') || t('blog.keywords')} />
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="article" />
-        <meta property="og:title" content={metaTitle} />
+        <meta property="og:title" content={post?.title || metaTitle} />
         <meta property="og:description" content={metaDescription} />
         <meta property="og:image" content={metaImage} />
+        <meta property="og:image:secure_url" content={metaImage} />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={metaTitle} />
         <meta property="og:url" content={metaUrl} />
         <meta property="og:site_name" content={t('seo.siteName')} />
         {post?.publishedAt && <meta property="article:published_time" content={post.publishedAt} />}
@@ -281,9 +295,12 @@ const BlogPost: React.FC = () => {
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={metaTitle} />
+        <meta name="twitter:title" content={post?.title || metaTitle} />
         <meta name="twitter:description" content={metaDescription} />
         <meta name="twitter:image" content={metaImage} />
+        <meta name="twitter:image:alt" content={post?.title || metaTitle} />
+        <meta name="twitter:site" content="@arianabanden" />
+        <meta name="twitter:creator" content="@arianabanden" />
         
         {/* Additional SEO */}
         <link rel="canonical" href={metaUrl} />
