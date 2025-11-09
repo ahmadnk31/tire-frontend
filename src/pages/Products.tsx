@@ -62,6 +62,12 @@ const Products = () => {
             }
           })}
         </script>
+        
+        {/* Multi-lingual / Alternate language versions */}
+        <link rel="alternate" hrefLang="nl" href={`https://arianabandencentralebv.be/nl/products${featuredOnly ? '?featured=true' : ''}`} />
+        <link rel="alternate" hrefLang="en" href={`https://arianabandencentralebv.be/en/products${featuredOnly ? '?featured=true' : ''}`} />
+        <link rel="alternate" hrefLang="x-default" href={`https://arianabandencentralebv.be/products${featuredOnly ? '?featured=true' : ''}`} />
+        <meta property="og:locale:alternate" content={currentLang === 'nl' ? 'en_US' : 'nl_BE'} />
       </Helmet>
       <div className="min-h-screen bg-background">
       <div className="flex">

@@ -19,12 +19,10 @@ class PWAManager {
   private async registerServiceWorker() {
     if ('serviceWorker' in navigator) {
       try {
-        // First, unregister any existing service workers to avoid conflicts
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(registrations.map(registration => registration.unregister()));
-        
+        // Don't unregister existing service workers - let them update naturally
         const registration = await navigator.serviceWorker.register('/sw.js', {
-          scope: '/'
+          scope: '/',
+          updateViaCache: 'none' // Always check for updates
         });
         
         console.log('PWA: Service Worker registered successfully:', registration);
@@ -34,9 +32,14 @@ class PWAManager {
           const newWorker = registration.installing;
           if (newWorker) {
             console.log('PWA: New service worker found, installing...');
+            
+            // Only show update notification once
+            let updateNotified = false;
+            
             newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller && !updateNotified) {
                 console.log('PWA: New version available');
+                updateNotified = true;
                 this.updateAvailable = true;
                 this.showUpdateAvailable();
               }
@@ -78,6 +81,13 @@ class PWAManager {
   }
 
   private showUpdateAvailable() {
+    // Check if user dismissed the notification in this session
+    const dismissed = sessionStorage.getItem('pwa-update-dismissed');
+    if (dismissed === 'true') {
+      console.log('PWA: Update notification dismissed by user');
+      return;
+    }
+
     // Show a notification to the user
     if ('Notification' in window && Notification.permission === 'granted') {
       new Notification('App Update Available', {
@@ -94,6 +104,12 @@ class PWAManager {
     if (this.updateCallback) {
       this.updateCallback();
     }
+  }
+
+  // Method to dismiss update notification for this session
+  public dismissUpdateNotification(): void {
+    sessionStorage.setItem('pwa-update-dismissed', 'true');
+    this.updateAvailable = false;
   }
 
   // Method to register update callback

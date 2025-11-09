@@ -306,6 +306,13 @@ const BlogPost: React.FC = () => {
         <link rel="canonical" href={metaUrl} />
         <meta name="robots" content="index, follow" />
         <meta name="language" content={t('seo.language')} />
+        
+        {/* Multi-lingual / Alternate language versions */}
+        <link rel="alternate" hrefLang="nl" href={`https://arianabandencentralebv.be/nl/blog/${slug}`} />
+        <link rel="alternate" hrefLang="en" href={`https://arianabandencentralebv.be/en/blog/${slug}`} />
+        <link rel="alternate" hrefLang="x-default" href={metaUrl} />
+        <meta property="og:locale" content={t('seo.language') === 'nl' ? 'nl_BE' : 'en_US'} />
+        <meta property="og:locale:alternate" content={t('seo.language') === 'nl' ? 'en_US' : 'nl_BE'} />
       </Helmet>
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

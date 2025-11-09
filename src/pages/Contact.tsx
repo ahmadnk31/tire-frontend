@@ -195,6 +195,11 @@ const Contact = () => {
             }
           })}
         </script>
+        
+        {/* Multi-lingual / Alternate language versions */}
+        <link rel="alternate" hrefLang="nl" href="https://arianabandencentralebv.be/nl/contact" />
+        <link rel="alternate" hrefLang="en" href="https://arianabandencentralebv.be/en/contact" />
+        <link rel="alternate" hrefLang="x-default" href="https://arianabandencentralebv.be/contact" />
       </Helmet>
       <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">

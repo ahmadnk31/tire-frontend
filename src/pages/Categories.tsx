@@ -477,6 +477,11 @@ const Categories: React.FC = () => {
             }
           })}
         </script>
+        
+        {/* Multi-lingual / Alternate language versions */}
+        <link rel="alternate" hrefLang="nl" href={`https://arianabandencentralebv.be/nl/categories${selectedCategory ? `?category=${selectedCategory}` : ''}`} />
+        <link rel="alternate" hrefLang="en" href={`https://arianabandencentralebv.be/en/categories${selectedCategory ? `?category=${selectedCategory}` : ''}`} />
+        <link rel="alternate" hrefLang="x-default" href={`https://arianabandencentralebv.be/categories${selectedCategory ? `?category=${selectedCategory}` : ''}`} />
       </Helmet>
       <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

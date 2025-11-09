@@ -40,6 +40,7 @@ export function PWAUpdateNotification({ onUpdate, onDismiss }: PWAUpdateNotifica
 
   const handleDismiss = () => {
     setShowNotification(false);
+    pwaManager.dismissUpdateNotification(); // Remember dismissal for this session
     onDismiss?.();
   };
 

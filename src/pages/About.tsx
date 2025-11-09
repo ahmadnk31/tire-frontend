@@ -53,6 +53,11 @@ const AboutPage = () => {
             }
           })}
         </script>
+        
+        {/* Multi-lingual / Alternate language versions */}
+        <link rel="alternate" hrefLang="nl" href="https://arianabandencentralebv.be/nl/about" />
+        <link rel="alternate" hrefLang="en" href="https://arianabandencentralebv.be/en/about" />
+        <link rel="alternate" hrefLang="x-default" href="https://arianabandencentralebv.be/about" />
       </Helmet>
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">

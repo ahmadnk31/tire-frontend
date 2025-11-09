@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
+import { Helmet } from 'react-helmet-async';
 import { Calendar, Clock, User, Tag, Search, ChevronRight, TrendingUp, Eye } from 'lucide-react';
 import { blogApi } from '@/lib/api';
 import { useNavigate } from 'react-router-dom';
@@ -147,10 +148,35 @@ const Blog: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-6 sm:mb-8 lg:mb-12">
+    <>
+      <Helmet>
+        <title>{t('blog.title')} | Ariana Bandencentraal</title>
+        <meta name="description" content={t('blog.description')} />
+        <meta name="keywords" content="blog, autobanden, bandenadvies, onderhoud, veiligheid, seizoensbanden, banden tips" />
+        
+        {/* Canonical URL */}
+        <link rel="canonical" href="https://arianabandencentralebv.be/blog" />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content={t('blog.title')} />
+        <meta property="og:description" content={t('blog.description')} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://arianabandencentralebv.be/blog" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={t('blog.title')} />
+        <meta name="twitter:description" content={t('blog.description')} />
+        
+        {/* Multi-lingual / Alternate language versions */}
+        <link rel="alternate" hrefLang="nl" href="https://arianabandencentralebv.be/nl/blog" />
+        <link rel="alternate" hrefLang="en" href="https://arianabandencentralebv.be/en/blog" />
+        <link rel="alternate" hrefLang="x-default" href="https://arianabandencentralebv.be/blog" />
+      </Helmet>
+      <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+          {/* Header */}
+          <div className="text-center mb-6 sm:mb-8 lg:mb-12">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
             {t('blog.title')}
           </h1>
@@ -417,6 +443,7 @@ const Blog: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

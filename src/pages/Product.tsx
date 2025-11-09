@@ -565,6 +565,12 @@ export default function ProductPage() {
             ]
           })}
         </script>
+        
+        {/* Multi-lingual / Alternate language versions */}
+        <link rel="alternate" hrefLang="nl" href={`https://arianabandencentralebv.be/nl/products/${slug}`} />
+        <link rel="alternate" hrefLang="en" href={`https://arianabandencentralebv.be/en/products/${slug}`} />
+        <link rel="alternate" hrefLang="x-default" href={productUrl} />
+        <meta property="og:locale:alternate" content={currentLang === 'nl' ? 'en_US' : 'nl_BE'} />
       </Helmet>
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4 sm:py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
