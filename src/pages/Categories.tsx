@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { productsApi, reviewsApi, getCurrentUserId } from '@/lib/api';
 import { wishlistApi } from '@/lib/wishlistApi';
 import { useToast } from '@/hooks/use-toast';
@@ -42,11 +43,12 @@ interface Product {
 }
 
 const Categories: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const token = localStorage.getItem('token');
+  const currentLang = i18n.language;
   
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -412,8 +414,71 @@ const Categories: React.FC = () => {
     );
   }
 
+  // Dynamic meta data based on selected category
+  const selectedCategoryData = categories.find(c => c.slug === selectedCategory);
+  const pageTitle = selectedCategoryData 
+    ? `${selectedCategoryData.name} - Alle Modellen & Merken | Ariana Bandencentraal`
+    : 'Banden Categorieën - Winter, Zomer, All-Season | Ariana Bandencentraal';
+  const pageDescription = selectedCategoryData
+    ? `Shop ${selectedCategoryData.name.toLowerCase()} banden. ${selectedCategoryData.description} Topmerken, alle maten, beste prijzen. Gratis montage en advies.`
+    : 'Ontdek onze complete bandencollectie per categorie. Winterbanden, zomerbanden, all-season banden, SUV banden, performance banden en meer. Alle topmerken en maten beschikbaar.';
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta name="keywords" content={selectedCategoryData 
+          ? `${selectedCategoryData.name}, ${selectedCategoryData.slug}, banden categorie, ${selectedCategoryData.name} kopen`
+          : 'banden categorieën, winterbanden, zomerbanden, all-season, SUV banden, 4x4 banden, performance banden, budget banden, premium banden'
+        } />
+        
+        <link rel="canonical" href={`https://arianabandencentralebv.be/categories${selectedCategory ? `?category=${selectedCategory}` : ''}`} />
+        
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:url" content={`https://arianabandencentralebv.be/categories${selectedCategory ? `?category=${selectedCategory}` : ''}`} />
+        <meta property="og:locale" content={currentLang === 'nl' ? 'nl_BE' : 'en_US'} />
+        
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": selectedCategoryData ? selectedCategoryData.name : "Banden Categorieën",
+            "description": pageDescription,
+            "url": `https://arianabandencentralebv.be/categories${selectedCategory ? `?category=${selectedCategory}` : ''}`,
+            "breadcrumb": {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://arianabandencentralebv.be/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Categorieën",
+                  "item": "https://arianabandencentralebv.be/categories"
+                },
+                ...(selectedCategoryData ? [{
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": selectedCategoryData.name,
+                  "item": `https://arianabandencentralebv.be/categories?category=${selectedCategory}`
+                }] : [])
+              ]
+            }
+          })}
+        </script>
+      </Helmet>
+      <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -612,6 +677,7 @@ const Categories: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

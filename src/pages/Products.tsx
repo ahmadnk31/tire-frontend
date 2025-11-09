@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import { ProductGrid } from "@/components/store/ProductGrid";
 import { FilterSidebar } from "@/components/store/FilterSidebar";
 import { Button } from "@/components/ui/button";
@@ -9,9 +11,59 @@ const Products = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchParams] = useSearchParams();
   const featuredOnly = searchParams.get('featured') === 'true';
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.language;
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <Helmet>
+        <title>{featuredOnly ? t('seo.products.featuredTitle') : t('seo.products.title')}</title>
+        <meta name="description" content={featuredOnly ? t('seo.products.featuredDescription') : t('seo.products.description')} />
+        <meta name="keywords" content={t('seo.products.keywords')} />
+        
+        {/* Canonical URL */}
+        <link rel="canonical" href={`https://arianabandencentralebv.be/products${featuredOnly ? '?featured=true' : ''}`} />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content={featuredOnly ? t('seo.products.featuredOgTitle') : t('seo.products.ogTitle')} />
+        <meta property="og:description" content={featuredOnly ? t('seo.products.featuredOgDescription') : t('seo.products.ogDescription')} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`https://arianabandencentralebv.be/products${featuredOnly ? '?featured=true' : ''}`} />
+        <meta property="og:locale" content={currentLang === 'nl' ? 'nl_BE' : 'en_US'} />
+        
+        {/* Twitter */}
+        <meta name="twitter:title" content={featuredOnly ? t('seo.products.featuredTwitterTitle') : t('seo.products.twitterTitle')} />
+        <meta name="twitter:description" content={featuredOnly ? t('seo.products.featuredTwitterDescription') : t('seo.products.twitterDescription')} />
+        
+        {/* Product Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": featuredOnly ? "Best Selling Tires" : "All Tires & Wheels",
+            "description": featuredOnly ? "Our most popular tire models" : "Complete collection of winter, summer, and all-season tires",
+            "url": `https://arianabandencentralebv.be/products${featuredOnly ? '?featured=true' : ''}`,
+            "breadcrumb": {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://arianabandencentralebv.be/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Products",
+                  "item": "https://arianabandencentralebv.be/products"
+                }
+              ]
+            }
+          })}
+        </script>
+      </Helmet>
+      <div className="min-h-screen bg-background">
       <div className="flex">
         {/* Filter Sidebar */}
         <FilterSidebar 
@@ -52,6 +104,7 @@ const Products = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

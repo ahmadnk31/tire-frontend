@@ -464,9 +464,73 @@
     "callUs": "Bel Ons"
   },
   "seo": {
+    "siteName": "Ariana Banden Service",
+    "language": "nl",
     "defaultTitle": "Premium Banden & Professionele Installatie",
     "defaultDescription": "Ariana Banden Service - Uw vertrouwde bandenexpert in Ledegem, België. Premium banden, professionele installatie en uitzonderlijke service voor alle voertuigtypes.",
-    "defaultKeywords": "banden, bandenmontage, Ledegem, België, autobanden, vrachtwagenbanden, automotive service, bandenreparatie, wieluitlijning"
+    "defaultKeywords": "banden, bandenmontage, Ledegem, België, autobanden, vrachtwagenbanden, automotive service, bandenreparatie, wieluitlijning",
+    "home": {
+      "title": "Ariana Bandencentraal - Premium Winter-, Zomer- & All-Season Banden | Expert Service België",
+      "description": "🏆 Belgische bandenspecialist! Premium winter-, zomer- & all-season banden van topmerken: Michelin, Continental, Bridgestone, Pirelli, Goodyear. ✓ Gratis montage ✓ Wieluitlijning ✓ Balanceren ✓ TPMS service ✓ Bandenopslag. Beste prijs-kwaliteit verhouding in België. Shop online of bezoek onze winkel.",
+      "keywords": "autobanden België, winterbanden, zomerbanden, all-season banden, vierseizoenenbanden, aluminium velgen, stalen velgen, bandenservice, bandenmontage, bandencentrale, banden online kopen, Michelin banden, Continental banden, Bridgestone, Pirelli, Goodyear, Dunlop, Hankook, Yokohama, bandenwisseling, bandenopslag, wieluitlijning, balanceren, TPMS, bandendruksensor, banden België, banden Antwerpen, goedkope banden, premium banden, auto onderdelen, tweedehands banden, occasion banden, vrachtwagenbanden, SUV banden, 4x4 banden, performance banden, runflat banden, eco banden, elektrische auto banden, bandenlabel, EU bandenlabel, wielophanging, schokdempers, remmen, bandenhotel",
+      "ogTitle": "Ariana Bandencentraal - Premium Banden Expert in België",
+      "ogDescription": "Specialist in winter-, zomer- & all-season banden. Topmerken: Michelin, Continental, Pirelli. Gratis montage & balanceren. Beste service & prijzen!",
+      "twitterTitle": "Ariana Bandencentraal - Uw Banden Expert 🚗",
+      "twitterDescription": "🏆 Premium banden van topmerken | 🔧 Gratis montage & balanceren | 📍 België | ⭐ Beste service garantie"
+    },
+    "products": {
+      "title": "Shop Premium Banden & Velgen Online | Alle Merken & Maten | Ariana Bandencentraal",
+      "description": "Ontdek onze complete collectie premium banden: winter-, zomer-, all-season banden van Michelin, Continental, Bridgestone, Pirelli, Goodyear. Alle maten beschikbaar. Geavanceerd filteren op maat, merk, seizoen. Gratis expertadvies. Snelle levering. Professionele montageservice inbegrepen.",
+      "keywords": "banden online kopen, bandenwinkel België, winterbanden uitverkoop, zomerbanden aanbiedingen, all-season banden prijzen, Michelin België, Continental België, Bridgestone prijzen, Pirelli winkel, Goodyear België, bandenmaten, 205/55R16, 225/45R17, 195/65R15, SUV banden, autobanden, performance banden, budget banden, premium banden, banden vergelijken, beste bandenaanbiedingen, banden kortingen",
+      "ogTitle": "Shop Premium Banden & Velgen - Alle Merken Beschikbaar",
+      "ogDescription": "Complete bandencollectie: winter, zomer, all-season. Topmerken aan competitieve prijzen. Gratis montage & expertadvies.",
+      "twitterTitle": "Shop Premium Banden Online 🛞",
+      "twitterDescription": "🔍 Alle merken & maten | 💰 Beste prijzen | 🚚 Snelle levering | 🔧 Gratis montage",
+      "featuredTitle": "Bestverkochte Banden | Top Gewaardeerde Modellen | Ariana Bandencentraal",
+      "featuredDescription": "Ontdek onze bestverkochte bandenmodellen. Klantfavorieten van Michelin, Continental, Bridgestone, Pirelli. Bewezen kwaliteit, uitstekende reviews. Populaire maten op voorraad. Gratis montage en balanceren inbegrepen.",
+      "featuredOgTitle": "Bestverkochte Banden - Klantfavorieten",
+      "featuredOgDescription": "Onze populairste bandenmodellen. Top beoordeeld door klanten. Premium kwaliteit aan competitieve prijzen.",
+      "featuredTwitterTitle": "Bestverkochte Banden 🏆",
+      "featuredTwitterDescription": "⭐ Top modellen | 👥 Klantfavorieten | ✓ Op voorraad | 🚀 Snelle levering"
+    }
+  },
+  "blog": {
+    "title": "Banden Kenniscentrum",
+    "description": "Expert inzichten, onderhoudstips en branchenieuws om u te helpen weloverwogen beslissingen te nemen",
+    "keywords": "banden, bandenonderhoud, bandenveiligheid, bandentips, autoonderhoud",
+    "searchPlaceholder": "Zoek artikelen...",
+    "linkCopied": "Link gekopieerd naar klembord",
+    "categories": {
+      "all": "Alle Artikelen",
+      "tips": "Tips & Gidsen",
+      "maintenance": "Onderhoud",
+      "safety": "Veiligheid",
+      "seasonal": "Seizoensgebonden",
+      "industry": "Branchenieuws"
+    },
+    "featured": "Uitgelicht Artikel",
+    "readMore": "Lees Meer",
+    "comments": {
+      "title": "Reacties",
+      "noComments": "Nog geen reacties",
+      "beFirst": "Wees de eerste die reageert",
+      "submitComment": "Reactie Versturen",
+      "yourName": "Uw Naam",
+      "yourEmail": "Uw E-mail",
+      "yourComment": "Uw Reactie",
+      "missingComment": "Reactie ontbreekt",
+      "enterComment": "Voer uw reactie in",
+      "missingFields": "Ontbrekende velden",
+      "fillFields": "Vul uw naam en e-mail in",
+      "commentSubmitted": "Reactie verzonden",
+      "commentPending": "Uw reactie is verzonden en wacht op goedkeuring"
+    },
+    "newsletter": {
+      "title": "Abonneer op Onze Nieuwsbrief",
+      "description": "Ontvang de nieuwste bandentips en branche-inzichten in uw inbox",
+      "placeholder": "Voer uw e-mail in",
+      "subscribe": "Abonneren"
+    }
   },
   "contact": {
     "title": "Contact",

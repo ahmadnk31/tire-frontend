@@ -1,9 +1,60 @@
 import React from "react";
+import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import { Users, Truck, Globe, Shield, Award, Heart } from "lucide-react";
 
 const AboutPage = () => {
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.language;
+  
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+    <>
+      <Helmet>
+        <title>Over Ons - Familie Bedrijf | Ariana Bandencentraal België</title>
+        <meta name="description" content="Leer het verhaal kennen van Ariana Bandencentraal. Familie-bedrijf gerund door twee broers met passie voor banden en klantservice. Expertise, kwaliteit en persoonlijke service sinds 2020." />
+        <meta name="keywords" content="over ons, familie bedrijf, bandenwinkel, banden expert, Ariana Bandencentraal, klantservice, expertise, betrouwbaar, lokaal bedrijf België" />
+        
+        <link rel="canonical" href="https://arianabandencentralebv.be/about" />
+        
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Over Ons - Familie Bedrijf | Ariana Bandencentraal" />
+        <meta property="og:description" content="Ontdek het verhaal achter Ariana Bandencentraal. Familie-bedrijf met passie voor banden en service." />
+        <meta property="og:url" content="https://arianabandencentralebv.be/about" />
+        <meta property="og:locale" content={currentLang === 'nl' ? 'nl_BE' : 'en_US'} />
+        
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Over Ons - Ariana Bandencentraal" />
+        <meta name="twitter:description" content="Familie-bedrijf met passie voor banden en klantservice" />
+        
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "AboutPage",
+            "name": "Over Ons - Ariana Bandencentraal",
+            "description": "Familie-bedrijf gespecialiseerd in premium banden en velgen",
+            "url": "https://arianabandencentralebv.be/about",
+            "mainEntity": {
+              "@type": "Organization",
+              "name": "Ariana Bandencentraal",
+              "description": "Familie bandenwinkel gerund door twee broers",
+              "foundingDate": "2020",
+              "founders": [
+                {
+                  "@type": "Person",
+                  "name": "Ahmadullah",
+                  "jobTitle": "Digital Operations Manager"
+                },
+                {
+                  "@type": "Person",
+                  "name": "Amirjan",
+                  "jobTitle": "Logistics & Supply Manager"
+                }
+              ]
+            }
+          })}
+        </script>
+      </Helmet>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Hero Section */}
         <div className="text-center mb-16">
@@ -229,6 +280,7 @@ const AboutPage = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

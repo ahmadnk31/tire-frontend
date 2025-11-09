@@ -53,6 +53,9 @@ const Blog: React.FC = () => {
         search: searchTerm || undefined,
       });
     },
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
+    staleTime: 2 * 60 * 1000, // 2 minutes
   });
 
   console.log('📄 Blog page: React Query state:', {
@@ -66,18 +69,25 @@ const Blog: React.FC = () => {
   const { data: categoriesData } = useQuery({
     queryKey: ['blog-categories'],
     queryFn: () => blogApi.getCategories(),
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
+    staleTime: 10 * 60 * 1000, // 10 minutes - categories change less frequently
   });
 
   // Fetch featured posts
   const { data: featuredData } = useQuery({
     queryKey: ['blog-featured'],
     queryFn: () => blogApi.getFeatured(),
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const blogPosts: BlogPost[] = blogData?.posts || [];
   const categories: Category[] = categoriesData?.categories || [];
   const featuredPost = featuredData?.posts?.[0];
   const pagination = blogData?.pagination;
+  const totalPosts = blogData?.pagination?.total || blogPosts.length;
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
@@ -137,48 +147,48 @@ const Blog: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-6 sm:mb-8 lg:mb-12">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
             {t('blog.title')}
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto">
             {t('blog.description')}
           </p>
         </div>
 
         {/* Search and Filters */}
-        <div className="mb-8 flex flex-col lg:flex-row gap-4">
+        <div className="mb-4 sm:mb-6 lg:mb-8 flex flex-col lg:flex-row gap-3 sm:gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 sm:h-5 sm:w-5" />
               <input
                 type="text"
                 placeholder={t('blog.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => handleSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             <button
               onClick={() => handleCategoryChange('all')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                 selectedCategory === 'all'
                   ? 'bg-primary text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
               }`}
             >
-              All ({categories.reduce((sum, cat) => sum + cat.count, 0)})
+              All ({totalPosts})
             </button>
             {categories.map(category => (
               <button
                 key={category.name}
                 onClick={() => handleCategoryChange(category.name)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                   selectedCategory === category.name
                     ? 'bg-primary text-white'
                     : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
@@ -192,48 +202,48 @@ const Blog: React.FC = () => {
 
         {/* Featured Post */}
         {featuredPost && selectedCategory === 'all' && !searchTerm && currentPage === 1 && (
-          <div className="mb-12">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              <span className="text-sm font-medium text-primary">{t('blog.featured')}</span>
+          <div className="mb-6 sm:mb-8 lg:mb-12">
+            <div className="flex items-center gap-2 mb-3 sm:mb-4">
+              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+              <span className="text-xs sm:text-sm font-medium text-primary">{t('blog.featured')}</span>
             </div>
-            <div className="bg-white rounded-xl overflow-hidden shadow-lg">
+            <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden shadow-lg">
               <div className="grid grid-cols-1 lg:grid-cols-2">
-                <div className="relative h-64 lg:h-full">
+                <div className="relative h-48 sm:h-64 lg:h-full">
                   <img
                     src={featuredPost.image || 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=450&fit=crop'}
                     alt={featuredPost.title}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 bg-primary text-white text-sm font-medium rounded-full">
+                  <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
+                    <span className="px-2 py-1 sm:px-3 bg-primary text-white text-xs sm:text-sm font-medium rounded-full">
                       {featuredPost.category}
                     </span>
                   </div>
                 </div>
-                <div className="p-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                <div className="p-4 sm:p-6 lg:p-8">
+                  <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 lg:mb-4">
                     {featuredPost.title}
                   </h2>
-                  <p className="text-gray-600 mb-6">
+                  <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-5 lg:mb-6">
                     {featuredPost.excerpt}
                   </p>
-                  <div className="flex items-center gap-4 text-sm text-gray-500 mb-6">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 lg:gap-4 text-xs sm:text-sm text-gray-500 mb-4 sm:mb-5 lg:mb-6">
                     <div className="flex items-center gap-1">
-                      <User className="h-4 w-4" />
-                      {featuredPost.author}
+                      <User className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span className="hidden sm:inline">{featuredPost.author}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
+                      <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
                       {new Date(featuredPost.publishedAt).toLocaleDateString()}
                     </div>
                     <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
+                      <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
                       {featuredPost.readTime}
                     </div>
                     <div className="flex items-center gap-1">
-                      <Eye className="h-4 w-4" />
-                      {featuredPost.views} views
+                      <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+                      {featuredPost.views}
                     </div>
                   </div>
                   <Button 
@@ -252,15 +262,15 @@ const Blog: React.FC = () => {
 
         {/* Loading State */}
         {isLoading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white rounded-xl overflow-hidden shadow-md animate-pulse">
-                <div className="h-48 bg-gray-200"></div>
-                <div className="p-6">
-                  <div className="h-4 bg-gray-200 rounded mb-3"></div>
-                  <div className="h-4 bg-gray-200 rounded mb-3 w-3/4"></div>
-                  <div className="h-3 bg-gray-200 rounded mb-4"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+              <div key={i} className="bg-white rounded-lg sm:rounded-xl overflow-hidden shadow-md animate-pulse">
+                <div className="h-40 sm:h-48 bg-gray-200"></div>
+                <div className="p-4 sm:p-6">
+                  <div className="h-3 sm:h-4 bg-gray-200 rounded mb-2 sm:mb-3"></div>
+                  <div className="h-3 sm:h-4 bg-gray-200 rounded mb-2 sm:mb-3 w-3/4"></div>
+                  <div className="h-2 sm:h-3 bg-gray-200 rounded mb-3 sm:mb-4"></div>
+                  <div className="h-2 sm:h-3 bg-gray-200 rounded w-1/2"></div>
                 </div>
               </div>
             ))}
@@ -269,7 +279,7 @@ const Blog: React.FC = () => {
 
         {/* Blog Posts Grid */}
         {!isLoading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
             {blogPosts.length === 0 ? (
               <div className="col-span-full text-center py-12">
                 <div className="text-gray-400 mb-4">
@@ -296,37 +306,37 @@ const Blog: React.FC = () => {
               </div>
             ) : (
               blogPosts.map(post => (
-                <article key={post.id} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow flex flex-col h-full">
+                <article key={post.id} className="bg-white rounded-lg sm:rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow flex flex-col h-full">
                   <div className="relative">
                     <img
                       src={post.image || 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop'}
                       alt={post.title}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-auto object-cover aspect-square"
                     />
-                    <div className="absolute top-4 left-4">
-                      <span className="px-3 py-1 bg-primary text-white text-sm font-medium rounded-full">
+                    <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
+                      <span className="px-2 py-1 sm:px-3 bg-primary text-white text-xs sm:text-sm font-medium rounded-full">
                         {post.category}
                       </span>
                     </div>
                   </div>
-                  <div className="p-6 flex flex-col flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                  <div className="p-4 sm:p-5 lg:p-6 flex flex-col flex-1">
+                    <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 mb-2 sm:mb-3 line-clamp-2">
                       {post.title}
                     </h3>
-                    <p className="text-gray-600 mb-4 line-clamp-3">
+                    <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 line-clamp-3">
                       {post.excerpt}
                     </p>
-                    <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 lg:gap-4 text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
                       <div className="flex items-center gap-1">
-                        <User className="h-4 w-4" />
-                        {post.author}
+                        <User className="h-3 w-3 sm:h-4 sm:w-4" />
+                        <span className="hidden sm:inline">{post.author}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
+                        <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
                         {post.readTime}
                       </div>
                       <div className="flex items-center gap-1">
-                        <Eye className="h-4 w-4" />
+                        <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
                         {post.views}
                       </div>
                     </div>

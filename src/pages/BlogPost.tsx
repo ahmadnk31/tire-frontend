@@ -45,6 +45,9 @@ const BlogPost: React.FC = () => {
     queryKey: ['blog-post', slug],
     queryFn: () => blogApi.getBySlug(slug!),
     enabled: !!slug,
+    retry: 3, // Retry failed requests 3 times
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000), // Exponential backoff: 1s, 2s, 4s
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
   });
 
   // Helper function to safely access storage
@@ -145,21 +148,33 @@ const BlogPost: React.FC = () => {
 
   const post = postData?.post;
   const comments = post?.comments || [];
- // Social share logic
+  
+  // Prepare meta tags for social sharing (before rendering)
+  const metaTitle = post?.title || t('blog.title');
+  const metaDescription = post?.excerpt || t('blog.description');
+  const metaImage = post?.image || (import.meta.env.VITE_APP_URL ? `${import.meta.env.VITE_APP_URL}/logo.png` : '/logo.png');
+  const metaUrl = typeof window !== 'undefined' ? window.location.href : '';
+  
+  // Social share logic
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
   const shareText = post ? encodeURIComponent(post.title) : '';
   const encodedUrl = encodeURIComponent(shareUrl);
+  
   const handleCopy = () => {
     navigator.clipboard.writeText(shareUrl);
-    toast({ title: 'Link copied!', description: 'You can now share this link.' });
+    toast({ 
+      title: t('common.success'), 
+      description: t('blog.linkCopied') 
+    });
   };
+  
   const handleCommentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!commentForm.content) {
       toast({
-        title: "Missing comment",
-        description: "Please enter your comment.",
+        title: t('blog.comments.missingComment'),
+        description: t('blog.comments.enterComment'),
         variant: "destructive",
       });
       return;
@@ -168,8 +183,8 @@ const BlogPost: React.FC = () => {
     // For logged-in users, use their info; for guests, require name and email
     if (!isLoggedIn && (!commentForm.authorName || !commentForm.authorEmail)) {
       toast({
-        title: "Missing fields",
-        description: "Please fill in your name and email.",
+        title: t('blog.comments.missingFields'),
+        description: t('blog.comments.fillFields'),
         variant: "destructive",
       });
       return;
@@ -177,12 +192,6 @@ const BlogPost: React.FC = () => {
 
     addCommentMutation.mutate(commentForm);
   };
-
-  // Prepare meta tags for social sharing
-  const metaTitle = post?.title || '';
-  const metaDescription = post?.excerpt || '';
-  const metaImage = post?.image || (import.meta.env.VITE_APP_URL ? `${import.meta.env.VITE_APP_URL}/logo.png` : '/logo.png');
-  const metaUrl = typeof window !== 'undefined' ? window.location.href : '';
 
   if (isLoading) {
     return (
@@ -208,15 +217,43 @@ const BlogPost: React.FC = () => {
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Blog post not found
-            </h3>
-            <p className="text-gray-600 mb-4">
-              The blog post you're looking for doesn't exist or has been removed.
-            </p>
-            <Button onClick={() => navigate('/blog')}>
-              Back to Blog
-            </Button>
+            <div className="mb-4">
+              {error ? (
+                <div className="text-red-500">
+                  <svg className="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Error loading blog post
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    We're having trouble loading this blog post. Please try again later.
+                  </p>
+                  <div className="text-sm text-gray-500 mb-4">
+                    {error instanceof Error ? error.message : 'Unknown error occurred'}
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Blog post not found
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    The blog post you're looking for doesn't exist or has been removed.
+                  </p>
+                </>
+              )}
+            </div>
+            <div className="flex gap-3 justify-center">
+              <Button onClick={() => navigate('/blog')} variant="outline">
+                Back to Blog
+              </Button>
+              {error && (
+                <Button onClick={() => window.location.reload()}>
+                  Try Again
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -226,16 +263,32 @@ const BlogPost: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>{metaTitle}</title>
+        <title>{metaTitle} | {t('blog.title')}</title>
+        <meta name="description" content={metaDescription} />
+        <meta name="keywords" content={post?.tags?.join(', ') || t('blog.keywords')} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="article" />
         <meta property="og:title" content={metaTitle} />
         <meta property="og:description" content={metaDescription} />
         <meta property="og:image" content={metaImage} />
         <meta property="og:url" content={metaUrl} />
-        <meta property="og:type" content="article" />
+        <meta property="og:site_name" content={t('seo.siteName')} />
+        {post?.publishedAt && <meta property="article:published_time" content={post.publishedAt} />}
+        {post?.author && <meta property="article:author" content={post.author} />}
+        {post?.category && <meta property="article:section" content={post.category} />}
+        {post?.tags?.map(tag => <meta key={tag} property="article:tag" content={tag} />)}
+        
+        {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={metaTitle} />
         <meta name="twitter:description" content={metaDescription} />
         <meta name="twitter:image" content={metaImage} />
+        
+        {/* Additional SEO */}
+        <link rel="canonical" href={metaUrl} />
+        <meta name="robots" content="index, follow" />
+        <meta name="language" content={t('seo.language')} />
       </Helmet>
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -246,7 +299,7 @@ const BlogPost: React.FC = () => {
             className="mb-8 flex items-center gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Blog
+            {t('common.back')} {t('navigation.blog')}
           </Button>
 
   {/* Article Header */}
@@ -269,7 +322,7 @@ const BlogPost: React.FC = () => {
 
           {/* Social Share Buttons */}
           <div className="flex flex-wrap gap-3 items-center p-4 border-b border-gray-100 mb-4">
-            <span className="font-semibold text-gray-700 flex items-center gap-1"><Share2 className="h-4 w-4" /> Share:</span>
+            <span className="font-semibold text-gray-700 flex items-center gap-1"><Share2 className="h-4 w-4" /> {t('common.share')}:</span>
             <a
               href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
               target="_blank"
@@ -292,7 +345,7 @@ const BlogPost: React.FC = () => {
               onClick={handleCopy}
               className="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm flex items-center gap-1"
             >
-              <Copy className="h-4 w-4" /> Copy Link
+              <Copy className="h-4 w-4" /> {t('common.copy')}
             </button>
           </div>
           {/* Embed instructions */}
@@ -301,7 +354,7 @@ const BlogPost: React.FC = () => {
             <pre className="bg-gray-100 rounded p-2 mt-2 text-xs overflow-x-auto"><code>{`<iframe src="${import.meta.env.VITE_APP_URL || window.location.origin}/blog/embed/${slug}" width="100%" height="600" frameborder="0" style="border:0;overflow:auto;"></iframe>`}</code></pre>
             <span className="text-xs text-gray-500">Copy and paste this HTML into any website to embed this post.</span>
           </div>
-          <div className="p-8">
+          <div className="p-2">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               {post.title}
             </h1>
@@ -342,7 +395,7 @@ const BlogPost: React.FC = () => {
             )}
 
             {/* Article Content */}
-            <div className="prose prose-lg max-w-none">
+            <div className="prose prose-lg max-w-none m-0 p-0">
               <RichTextEditor
                 value={post.content}
                 onChange={() => {}} // Read-only
@@ -354,7 +407,7 @@ const BlogPost: React.FC = () => {
         </article>
 
         {/* Comments Section */}
-        <div className="bg-white rounded-xl shadow-lg p-8">
+        <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
           <div className="flex items-center gap-2 mb-6">
             <MessageCircle className="h-5 w-5 text-primary" />
             <h2 className="text-2xl font-bold text-gray-900">
@@ -363,7 +416,7 @@ const BlogPost: React.FC = () => {
           </div>
 
           {/* Comment Form */}
-          <form onSubmit={handleCommentSubmit} className="mb-8 p-6 bg-gray-50 rounded-lg">
+          <form onSubmit={handleCommentSubmit} className="mb-8 p-4 sm:p-6 bg-gray-50 rounded-lg">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Leave a Comment
             </h3>

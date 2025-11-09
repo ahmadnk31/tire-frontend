@@ -96,6 +96,7 @@ export function HeroCarousel() {
     }
   };
 
+  // Auto-advance carousel
   useEffect(() => {
     if (slides.length <= 1 || isHovered) return;
     timeoutRef.current = setTimeout(() => {
@@ -105,6 +106,17 @@ export function HeroCarousel() {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, [current, slides.length, isHovered]);
+
+  // Prefetch next slide image for better performance
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const nextIndex = (current + 1) % slides.length;
+    const nextSlide = slides[nextIndex] as any;
+    if (nextSlide?.type === 'image' && nextSlide?.src) {
+      const img = new Image();
+      img.src = nextSlide.src;
+    }
+  }, [current, slides]);
 console.log('HeroCarousel rendered with slides:', banners);
   if (isLoading) {
     return <HeroCarouselSkeleton />;
@@ -160,6 +172,9 @@ console.log('HeroCarousel rendered with slides:', banners);
             alt={currentSlide.headline}
             className="object-cover w-full h-full"
             style={{ objectPosition: 'center' }}
+            loading={current === 0 ? "eager" : "lazy"}
+            fetchPriority={current === 0 ? "high" : "low"}
+            decoding="async"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=450&fit=crop";

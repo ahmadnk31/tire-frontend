@@ -661,7 +661,9 @@
   "blog": {
     "title": "Tire Knowledge Hub",
     "description": "Expert insights, maintenance tips, and industry news to help you make informed decisions",
+    "keywords": "tires, tire maintenance, tire safety, tire tips, auto care",
     "searchPlaceholder": "Search articles...",
+    "linkCopied": "Link copied to clipboard",
     "categories": {
       "all": "All Articles",
       "tips": "Tips & Guides",
@@ -672,6 +674,21 @@
     },
     "featured": "Featured Article",
     "readMore": "Read More",
+    "comments": {
+      "title": "Comments",
+      "noComments": "No comments yet",
+      "beFirst": "Be the first to comment",
+      "submitComment": "Submit Comment",
+      "yourName": "Your Name",
+      "yourEmail": "Your Email",
+      "yourComment": "Your Comment",
+      "missingComment": "Missing comment",
+      "enterComment": "Please enter your comment",
+      "missingFields": "Missing fields",
+      "fillFields": "Please fill in your name and email",
+      "commentSubmitted": "Comment submitted",
+      "commentPending": "Your comment has been submitted and is awaiting approval"
+    },
     "posts": {
       "winterPrep": {
         "title": "Preparing Your Vehicle for Winter",
@@ -1449,9 +1466,35 @@
     }
   },
   "seo": {
+    "siteName": "Ariana Banden Service",
+    "language": "en",
     "defaultTitle": "Premium Tires & Professional Installation",
     "defaultDescription": "Ariana Banden Service - Your trusted tire expert in Ledegem, Belgium. Premium tires, professional installation, and exceptional service for all vehicle types.",
-    "defaultKeywords": "tires, tyres, tire installation, Ledegem, Belgium, car tires, truck tires, automotive service, tire repair, wheel alignment"
+    "defaultKeywords": "tires, tyres, tire installation, Ledegem, Belgium, car tires, truck tires, automotive service, tire repair, wheel alignment",
+    "home": {
+      "title": "Ariana Bandencentraal - Premium Winter, Summer & All-Season Tires | Expert Service Belgium",
+      "description": "🏆 Belgium's trusted tire specialist! Premium winter, summer & all-season tires from top brands: Michelin, Continental, Bridgestone, Pirelli, Goodyear. ✓ Free mounting ✓ Wheel alignment ✓ Balancing ✓ TPMS service ✓ Tire storage. Best quality-price ratio in Belgium. Shop online or visit our store.",
+      "keywords": "car tires Belgium, winter tires, summer tires, all-season tires, four-season tires, aluminum wheels, steel wheels, tire service, tire mounting, tire center, buy tires online, Michelin tires, Continental tires, Bridgestone, Pirelli, Goodyear, Dunlop, Hankook, Yokohama, tire change, tire storage, wheel alignment, balancing, TPMS, tire pressure sensor, tires Belgium, tires Antwerp, cheap tires, premium tires, auto parts, second-hand tires, used tires, truck tires, SUV tires, 4x4 tires, performance tires, run-flat tires, eco tires, electric car tires, tire label, EU tire label, suspension, shock absorbers, brakes, tire hotel",
+      "ogTitle": "Ariana Bandencentraal - Premium Tire Expert in Belgium",
+      "ogDescription": "Specialist in winter, summer & all-season tires. Top brands: Michelin, Continental, Pirelli. Free mounting & balancing. Best service & prices!",
+      "twitterTitle": "Ariana Bandencentraal - Your Tire Expert 🚗",
+      "twitterDescription": "🏆 Premium tires from top brands | 🔧 Free mounting & balancing | 📍 Belgium | ⭐ Best service guarantee"
+    },
+    "products": {
+      "title": "Shop Premium Tires & Wheels Online | All Brands & Sizes | Ariana Bandencentraal",
+      "description": "Browse our complete collection of premium tires: winter, summer, all-season tires from Michelin, Continental, Bridgestone, Pirelli, Goodyear. All sizes available. Advanced filtering by size, brand, season. Free expert advice. Fast delivery. Professional mounting service included.",
+      "keywords": "buy tires online, tire shop Belgium, winter tire sale, summer tire deals, all-season tire prices, Michelin Belgium, Continental Belgium, Bridgestone prices, Pirelli shop, Goodyear Belgium, tire sizes, 205/55R16, 225/45R17, 195/65R15, SUV tires, car tires, performance tires, budget tires, premium tires, tire comparison, best tire deals, tire offers, discount tires",
+      "ogTitle": "Shop Premium Tires & Wheels - All Brands Available",
+      "ogDescription": "Complete tire collection: winter, summer, all-season. Top brands at competitive prices. Free mounting & expert advice.",
+      "twitterTitle": "Shop Premium Tires Online 🛞",
+      "twitterDescription": "🔍 All brands & sizes | 💰 Best prices | 🚚 Fast delivery | 🔧 Free mounting",
+      "featuredTitle": "Best Selling Tires | Top Rated Models | Ariana Bandencentraal",
+      "featuredDescription": "Discover our best-selling tire models. Customer favorites from Michelin, Continental, Bridgestone, Pirelli. Proven quality, excellent reviews. Popular sizes in stock. Free mounting and balancing included.",
+      "featuredOgTitle": "Best Selling Tires - Customer Favorites",
+      "featuredOgDescription": "Our most popular tire models. Top rated by customers. Premium quality at competitive prices.",
+      "featuredTwitterTitle": "Best Selling Tires 🏆",
+      "featuredTwitterDescription": "⭐ Top rated models | 👥 Customer favorites | ✓ In stock | 🚀 Fast delivery"
+    }
   },
   "contact": {
     "title": "Contact Us",

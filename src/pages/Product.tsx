@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Helmet } from 'react-helmet-async';
 import { productsApi, reviewsApi } from "@/lib/api";
 import { wishlistApi } from "@/lib/wishlistApi";
 import { useToast } from "@/hooks/use-toast";
@@ -16,7 +17,7 @@ import { ReviewHoverCard } from "@/components/ui/review-hover-card";
 
 
 export default function ProductPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
@@ -244,18 +245,6 @@ export default function ProductPage() {
 
     wishlistMutation.mutate({ productId: product.id, isWishlisted });
   };
-  // Use real review data if available, fallback to product data
-  const rating = reviewStats?.stats?.averageRating || Number(product?.rating) || 0;
-  const reviewCount = reviewStats?.stats?.totalReviews || product?.reviews || 0;
-
-  // Debug logging
-  console.log('🔍 [Product Page] Review data:', {
-    reviewStats,
-    productRating: product?.rating,
-    productReviews: product?.reviews,
-    finalRating: rating,
-    finalReviewCount: reviewCount
-  });
 
   const nextImage = () => {
     setImageTransition(true);
@@ -439,8 +428,125 @@ export default function ProductPage() {
     );
   }
 
+  // Prepare dynamic meta data
+  const currentLang = i18n.language;
+  const productTitle = `${product.name} ${product.brand} | ${product.category || 'Banden'} | Ariana Bandencentraal`;
+  const productDescription = product.description 
+    ? `${product.description.substring(0, 155)}...` 
+    : `Koop ${product.name} van ${product.brand}. ${product.category || 'Premium banden'} tegen de beste prijs. Gratis montage en balanceren. Direct leverbaar.`;
+  const productPrice = product.price ? formatEuro(product.price) : '';
+  const productImage = productImages[0] || '/logo.png';
+  const productUrl = `https://arianabandencentralebv.be/products/${slug}`;
+  const availability = product.stock && product.stock > 0 ? 'InStock' : 'OutOfStock';
+  const rating = reviewStats?.averageRating || 0;
+  const reviewCount = reviewStats?.totalReviews || 0;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4 sm:py-8">
+    <>
+      <Helmet>
+        <title>{productTitle}</title>
+        <meta name="description" content={productDescription} />
+        <meta name="keywords" content={`${product.name}, ${product.brand}, ${product.category}, banden kopen, autobanden, ${product.season || ''} banden, bandenmaat, bandenprijs`} />
+        
+        {/* Canonical URL */}
+        <link rel="canonical" href={productUrl} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="product" />
+        <meta property="og:title" content={productTitle} />
+        <meta property="og:description" content={productDescription} />
+        <meta property="og:image" content={productImage} />
+        <meta property="og:url" content={productUrl} />
+        <meta property="og:locale" content={currentLang === 'nl' ? 'nl_BE' : 'en_US'} />
+        <meta property="og:site_name" content="Ariana Bandencentraal" />
+        <meta property="product:brand" content={product.brand} />
+        <meta property="product:availability" content={availability} />
+        <meta property="product:condition" content="new" />
+        <meta property="product:price:amount" content={String(product.price)} />
+        <meta property="product:price:currency" content="EUR" />
+        {product.category && <meta property="product:category" content={product.category} />}
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={productTitle} />
+        <meta name="twitter:description" content={productDescription} />
+        <meta name="twitter:image" content={productImage} />
+        
+        {/* Product Schema.org structured data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": product.name,
+            "description": productDescription,
+            "image": productImages,
+            "brand": {
+              "@type": "Brand",
+              "name": product.brand
+            },
+            "sku": product.sku || product.id,
+            "offers": {
+              "@type": "Offer",
+              "url": productUrl,
+              "priceCurrency": "EUR",
+              "price": product.price,
+              "availability": `https://schema.org/${availability}`,
+              "itemCondition": "https://schema.org/NewCondition",
+              "priceValidUntil": new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
+              "seller": {
+                "@type": "Organization",
+                "name": "Ariana Bandencentraal"
+              }
+            },
+            ...(reviewCount > 0 && {
+              "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": rating,
+                "reviewCount": reviewCount,
+                "bestRating": 5,
+                "worstRating": 1
+              }
+            }),
+            "category": product.category || "Tires",
+            ...(product.season && { "additionalProperty": [
+              {
+                "@type": "PropertyValue",
+                "name": "Season",
+                "value": product.season
+              }
+            ]})
+          })}
+        </script>
+        
+        {/* Breadcrumb Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://arianabandencentralebv.be/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Producten",
+                "item": "https://arianabandencentralebv.be/products"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": product.name,
+                "item": productUrl
+              }
+            ]
+          })}
+        </script>
+      </Helmet>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4 sm:py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Fullscreen Modal rendered at root level, outside main grid */}
         {fullscreen && (
@@ -1138,6 +1244,6 @@ export default function ProductPage() {
       </div>
       </div>
   </div>
-  
+  </>
   );
 }

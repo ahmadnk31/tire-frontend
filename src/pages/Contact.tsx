@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { Helmet } from 'react-helmet-async';
 import { MapPin, Phone, Mail, Clock, Send, MessageCircle, User, FileText } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { submitContactForm, ContactFormData } from "../lib/api/contact";
 
 const Contact = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState({
     name: "",
@@ -128,8 +129,74 @@ const Contact = () => {
     }
   };
 
+  const currentLang = i18n.language;
+  const pageTitle = searchParams.get('subject') === 'order-tracking' 
+    ? 'Track Your Order | Ariana Bandencentraal'
+    : 'Contact Ons - Banden Expert België | Ariana Bandencentraal';
+  const pageDescription = searchParams.get('subject') === 'order-tracking'
+    ? 'Track your tire order status. Get real-time updates on your delivery and installation schedule.'
+    : 'Neem contact op met Ariana Bandencentraal. 3 vestigingen in België en Engeland. Expert advies over banden, montage service, prijsoffertes. Telefonisch, email of WhatsApp bereikbaar.';
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta name="keywords" content="contact, banden advies, bandenwinkel locatie, openingstijden, telefoonnummer, email, WhatsApp, vestigingen België, Ledegem, Gent, bandenservice contact" />
+        
+        <link rel="canonical" href="https://arianabandencentralebv.be/contact" />
+        
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:url" content="https://arianabandencentralebv.be/contact" />
+        <meta property="og:locale" content={currentLang === 'nl' ? 'nl_BE' : 'en_US'} />
+        
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ContactPage",
+            "name": "Contact - Ariana Bandencentraal",
+            "description": "Contact informatie voor Ariana Bandencentraal vestigingen",
+            "url": "https://arianabandencentralebv.be/contact",
+            "mainEntity": {
+              "@type": "LocalBusiness",
+              "name": "Ariana Bandencentraal",
+              "image": "https://arianabandencentralebv.be/logo.png",
+              "telephone": "+32 467 66 21 97",
+              "email": "info@arianabandencentralebv.be",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Provinciebaan 192A",
+                "addressLocality": "Ledegem",
+                "postalCode": "8880",
+                "addressCountry": "BE"
+              },
+              "openingHoursSpecification": [
+                {
+                  "@type": "OpeningHoursSpecification",
+                  "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                  "opens": "09:00",
+                  "closes": "18:00"
+                },
+                {
+                  "@type": "OpeningHoursSpecification",
+                  "dayOfWeek": "Saturday",
+                  "opens": "09:00",
+                  "closes": "18:00"
+                }
+              ],
+              "priceRange": "€€",
+              "areaServed": "Belgium"
+            }
+          })}
+        </script>
+      </Helmet>
+      <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
@@ -516,6 +583,7 @@ const Contact = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

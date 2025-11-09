@@ -667,7 +667,10 @@ export const blogApi = {
     category?: string;
     search?: string;
     featured?: boolean;
-  }) => {
+  }, retryCount = 0) => {
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 1000;
+    
     try {
       console.log('🔍 Frontend: Fetching blog posts with params:', params);
       
@@ -689,44 +692,96 @@ export const blogApi = {
       console.log('📊 Frontend: Returning blog data:', result);
       
       return result;
-    } catch (error) {
-      console.error('❌ Frontend: Blog API error:', error);
+    } catch (error: any) {
+      console.error(`❌ Frontend: Blog API error (attempt ${retryCount + 1}/${MAX_RETRIES + 1}):`, error);
+      
+      const is503Error = error?.message?.includes('503');
+      const isNetworkError = error?.message?.includes('Failed to fetch') || error?.message?.includes('Network');
+      
+      if ((is503Error || isNetworkError) && retryCount < MAX_RETRIES) {
+        console.log(`Retrying in ${RETRY_DELAY * (retryCount + 1)}ms...`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (retryCount + 1)));
+        return blogApi.getAll(params, retryCount + 1);
+      }
+      
       return { posts: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0, hasNext: false, hasPrev: false } };
     }
   },
 
   // Get featured posts
-  getFeatured: async () => {
+  getFeatured: async (retryCount = 0) => {
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 1000;
+    
     try {
       const response = await apiClient.get('/blog/featured');
       // apiClient.get returns JSON directly, not wrapped in data property
       return response || { posts: [] };
-    } catch (error) {
-      console.error('Featured posts API error:', error);
+    } catch (error: any) {
+      console.error(`Featured posts API error (attempt ${retryCount + 1}/${MAX_RETRIES + 1}):`, error);
+      
+      const is503Error = error?.message?.includes('503');
+      const isNetworkError = error?.message?.includes('Failed to fetch') || error?.message?.includes('Network');
+      
+      if ((is503Error || isNetworkError) && retryCount < MAX_RETRIES) {
+        console.log(`Retrying in ${RETRY_DELAY * (retryCount + 1)}ms...`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (retryCount + 1)));
+        return blogApi.getFeatured(retryCount + 1);
+      }
+      
       return { posts: [] };
     }
   },
 
   // Get categories
-  getCategories: async () => {
+  getCategories: async (retryCount = 0) => {
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 1000;
+    
     try {
       const response = await apiClient.get('/blog/categories');
       // apiClient.get returns JSON directly, not wrapped in data property
       return response || { categories: [] };
-    } catch (error) {
-      console.error('Categories API error:', error);
+    } catch (error: any) {
+      console.error(`Categories API error (attempt ${retryCount + 1}/${MAX_RETRIES + 1}):`, error);
+      
+      const is503Error = error?.message?.includes('503');
+      const isNetworkError = error?.message?.includes('Failed to fetch') || error?.message?.includes('Network');
+      
+      if ((is503Error || isNetworkError) && retryCount < MAX_RETRIES) {
+        console.log(`Retrying in ${RETRY_DELAY * (retryCount + 1)}ms...`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (retryCount + 1)));
+        return blogApi.getCategories(retryCount + 1);
+      }
+      
       return { categories: [] };
     }
   },
 
   // Get single post by slug
-  getBySlug: async (slug: string) => {
+  getBySlug: async (slug: string, retryCount = 0): Promise<{ post: any } | { post: null }> => {
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 1000; // 1 second
+    
     try {
       const response = await apiClient.get(`/blog/${slug}`);
       // apiClient.get returns JSON directly, not wrapped in data property
       return response || { post: null };
-    } catch (error) {
-      console.error('Blog post API error:', error);
+    } catch (error: any) {
+      console.error(`Blog post API error (attempt ${retryCount + 1}/${MAX_RETRIES + 1}):`, error);
+      
+      // Check if it's a 503 Service Unavailable or network error
+      const is503Error = error?.message?.includes('503');
+      const isNetworkError = error?.message?.includes('Failed to fetch') || error?.message?.includes('Network');
+      
+      // Retry only for 503 or network errors, and only if we haven't exceeded max retries
+      if ((is503Error || isNetworkError) && retryCount < MAX_RETRIES) {
+        console.log(`Retrying in ${RETRY_DELAY}ms...`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (retryCount + 1))); // Exponential backoff
+        return blogApi.getBySlug(slug, retryCount + 1);
+      }
+      
+      // If max retries reached or it's a different error, return null
       return { post: null };
     }
   },

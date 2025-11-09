@@ -13,10 +13,10 @@ export const Store = () => {
   const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
-    // Initial page load delay to show skeleton
+    // Reduced initial page load delay for faster perceived performance
     const timer = setTimeout(() => {
       setInitialLoading(false);
-    }, 800);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, []);

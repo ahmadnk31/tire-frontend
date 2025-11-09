@@ -606,6 +606,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <Button
             variant="outline"
             size="sm"
+            type='button'
             onClick={addColumnBefore}
             title="Add column before"
           >
@@ -613,6 +614,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           </Button>
           <Button
             variant="outline"
+            type='button'
             size="sm"
             onClick={addColumnAfter}
             title="Add column after"
@@ -622,6 +624,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <Button
             variant="outline"
             size="sm"
+            type='button'
             onClick={deleteColumn}
             title="Delete column"
           >
@@ -631,6 +634,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <Button
             variant="outline"
             size="sm"
+            type='button'
             onClick={addRowBefore}
             title="Add row before"
           >
@@ -639,6 +643,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <Button
             variant="outline"
             size="sm"
+            type='button'
             onClick={addRowAfter}
             title="Add row after"
           >
@@ -647,6 +652,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <Button
             variant="outline"
             size="sm"
+            type='button'
             onClick={deleteRow}
             title="Delete row"
           >
@@ -656,6 +662,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <Button
             variant="outline"
             size="sm"
+            type='button'
             onClick={deleteTable}
             title="Delete table"
           >
@@ -687,6 +694,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <Button
             variant="outline"
             size="sm"
+            type='button'
             onClick={() => {
               editor.chain().focus().updateAttributes('image', { width: '25%' }).run();
             }}
@@ -697,6 +705,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <Button
             variant="outline"
             size="sm"
+            type='button'
             onClick={() => {
               editor.chain().focus().updateAttributes('image', { width: '50%' }).run();
             }}
@@ -707,6 +716,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <Button
             variant="outline"
             size="sm"
+            type='button'
             onClick={() => {
               editor.chain().focus().updateAttributes('image', { width: '100%' }).run();
             }}
